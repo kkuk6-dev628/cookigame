@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="win32">
+      <UniqueIdentifier>{84a8ebd7-7cf0-47f6-b75e-d441df67da40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{715254bc-d70b-4ec5-bf29-467dd3ace079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Controllers">
+      <UniqueIdentifier>{dc88ab65-b896-4428-ab5f-06a7f623494b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Models">
+      <UniqueIdentifier>{25b94db3-f236-4e18-ac71-267eb5c916b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Models\ShowObjects">
+      <UniqueIdentifier>{bb59d8cb-d131-4d55-a5e3-a7b110e7a727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Models\Tiles">
+      <UniqueIdentifier>{f17bc825-f9f5-421d-9bd6-d793a5acb7fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Models\DataModels">
+      <UniqueIdentifier>{aa46e734-47e2-428f-a3fd-dfb75ab30182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Layers">
+      <UniqueIdentifier>{3165f5cb-8b03-477e-881d-757dd3b2e8a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\General">
+      <UniqueIdentifier>{1de75af9-7082-4e0d-aee2-c10007135bb7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\AppDelegate.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\HelloWorldScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\SpawnController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\ActionController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\GameController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\LevelController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\SoundController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\ShowObjects\ShowObject.cpp">
+      <Filter>src\Models\ShowObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\TileBase.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\DataModels\Level.cpp">
+      <Filter>src\Models\DataModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\DataModels\BoardData.cpp">
+      <Filter>src\Models\DataModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\DataModels\UserData.cpp">
+      <Filter>src\Models\DataModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\DataModels\CustomSpawnTableItem.cpp">
+      <Filter>src\Models\DataModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\DataModels\BoardLayerData.cpp">
+      <Filter>src\Models\DataModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\General\Utils.cpp">
+      <Filter>src\General</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\AppDelegate.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\HelloWorldScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\SpawnController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\ActionController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\GameController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\LevelController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\SoundController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\ShowObjects\ShowObject.h">
+      <Filter>src\Models\ShowObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\TileBase.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\DataModels\Level.h">
+      <Filter>src\Models\DataModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\DataModels\BoardData.h">
+      <Filter>src\Models\DataModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\DataModels\UserData.h">
+      <Filter>src\Models\DataModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\General\EnumTypes.h">
+      <Filter>src\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\General\enum.h">
+      <Filter>src\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\DataModels\CustomSpawnTableItem.h">
+      <Filter>src\Models\DataModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\General\TypeDefs.h">
+      <Filter>src\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\DataModels\BoardLayerData.h">
+      <Filter>src\Models\DataModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\General\Utils.h">
+      <Filter>src\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\General\Constants.h">
+      <Filter>src\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\DataModels\TileData.h">
+      <Filter>src\Models\DataModels</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="game.rc">
+      <Filter>resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
