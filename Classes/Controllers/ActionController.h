@@ -2,7 +2,10 @@
 class ActionController
 {
 public:
-	ActionController();
 	~ActionController();
+	static ActionController* getInstance();
+private:
+	ActionController();
+	static ActionController* instance;
 };
 

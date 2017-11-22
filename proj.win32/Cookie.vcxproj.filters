@@ -31,15 +31,15 @@
     <Filter Include="src\General">
       <UniqueIdentifier>{1de75af9-7082-4e0d-aee2-c10007135bb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Scenes">
+      <UniqueIdentifier>{a56d99fd-cb69-449b-96ee-7745b223ac9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>win32</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\AppDelegate.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Controllers\SpawnController.cpp">
@@ -84,15 +84,19 @@
     <ClCompile Include="..\Classes\General\Utils.cpp">
       <Filter>src\General</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Scenes\StartScene.cpp">
+      <Filter>src\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Scenes\MainMenuScene.cpp">
+      <Filter>src\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>win32</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\AppDelegate.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Controllers\SpawnController.h">
@@ -152,6 +156,13 @@
     <ClInclude Include="..\Classes\Models\DataModels\TileData.h">
       <Filter>src\Models\DataModels</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Scenes\StartScene.h">
+      <Filter>src\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Scenes\MainMenuScene.h">
+      <Filter>src\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

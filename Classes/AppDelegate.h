@@ -2,6 +2,11 @@
 #define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
+//#include <vld.h>
+
+//#define _CRTDBG_MAP_ALLOC
+//#include <cstdlib>
+//#include <crtdbg.h>
 
 /**
 @brief    The cocos2d Application.

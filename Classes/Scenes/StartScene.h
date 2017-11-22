@@ -3,8 +3,9 @@
 
 #include "cocos2d.h"
 #include "Controllers/LevelController.h"
+#include "Controllers/GameController.h"
 
-class HelloWorld : public cocos2d::Layer
+class StartScene : public cocos2d::Layer
 {
 public:
     static cocos2d::Scene* createScene();
@@ -14,12 +15,13 @@ public:
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
 	void initControllers();
+	void releaseControllers();
 
 	// implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+	CREATE_FUNC(StartScene);
 
 private:
-	LevelController* levelController;
+	GameController* gameController = nullptr;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

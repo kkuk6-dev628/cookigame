@@ -8,6 +8,7 @@ Level::Level()
 
 Level::~Level()
 {
+	this->boards->release();
 }
 
 /**
@@ -39,7 +40,8 @@ void Level::initWithJson(rapidjson::Value& json)
 	assert(json["numericId"].GetInt() == this->levelNumber);
 	assert(json["boards"].IsArray());
 
-	this->boards = new std::list<BoardData>();
+	this->boards = cocos2d::__Array::create();
+	this->boards->retain();
 
 #ifndef NDEBUG
 	cocos2d::log("Level number: %d", this->levelNumber);
@@ -48,9 +50,9 @@ void Level::initWithJson(rapidjson::Value& json)
 	auto& boardsArray = json["boards"].GetArray();
 	for (auto& v : boardsArray)
 	{
-		BoardData board;
-		board.initWithJson(v);
-		this->boards->push_back(board);
+		auto board = BoardData::create();
+		board->initWithJson(v);
+		this->boards->addObject(board);
 	}
 }
 

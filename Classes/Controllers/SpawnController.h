@@ -1,8 +1,14 @@
 #pragma once
+
 class SpawnController
 {
 public:
-	SpawnController();
+	
 	~SpawnController();
+	static SpawnController* getInstance();
+
+private:
+	SpawnController();
+	static SpawnController* instance;
 };
 

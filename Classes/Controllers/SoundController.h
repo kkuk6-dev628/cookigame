@@ -2,7 +2,11 @@
 class SoundController
 {
 public:
-	SoundController();
 	~SoundController();
+	static SoundController* getInstance();
+
+private:
+	SoundController();
+	static SoundController* instance;
 };
 

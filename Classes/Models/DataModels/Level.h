@@ -19,7 +19,7 @@ public:
 private:
 	int levelNumber;
 	char episode;
-	std::list<BoardData>* boards;
+	cocos2d::__Array* boards;
 	std::string title;
 	bool isHardLevel;
 	std::list<std::string>* pregameBoosters;
@@ -41,19 +41,19 @@ public:
 
 	__declspec(property(get = level_number)) int LevelNumber;
 
+	cocos2d::__Array* boards1() const
+	{
+		return boards;
+	}
+
+	__declspec(property(get = boards1)) cocos2d::__Array* Boards;
+
 	char episode1() const
 	{
 		return episode;
 	}
 
 	__declspec(property(get = episode1)) char Episode;
-
-	std::list<BoardData>* boards1() const
-	{
-		return boards;
-	}
-
-	__declspec(property(get = boards1)) std::list<BoardData>* Boards;
 
 	std::string title1() const
 	{

@@ -7,7 +7,7 @@ class CustomSpawnTableItem
 public:
 	CustomSpawnTableItem();
 	~CustomSpawnTableItem();
-	static SpawnTablesList LoadSpawnTablesFromJson(rapidjson::Value& json);
+	static SpawnTablesList CreateSpawnTablesFromJson(rapidjson::Value& json);
 	void initWithJson(rapidjson::Value& json);
 
 private:

@@ -63,7 +63,8 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\lib;$(LibraryPath)</LibraryPath>
@@ -151,7 +152,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controllers\SoundController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SpawnController.cpp" />
     <ClCompile Include="..\Classes\General\Utils.cpp" />
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\BoardData.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\BoardLayerData.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\CustomSpawnTableItem.cpp" />
@@ -160,6 +160,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\ShowObjects\ShowObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\TileBase.cpp" />
+    <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp" />
+    <ClCompile Include="..\Classes\Scenes\MainMenuScene.cpp" />
+    <ClCompile Include="..\Classes\Scenes\StartScene.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,7 +177,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\General\EnumTypes.h" />
     <ClInclude Include="..\Classes\General\TypeDefs.h" />
     <ClInclude Include="..\Classes\General\Utils.h" />
-    <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="..\Classes\Models\DataModels\BoardData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\BoardLayerData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\CustomSpawnTableItem.h" />
@@ -184,6 +186,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\ShowObjects\ShowObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\TileBase.h" />
+    <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
+    <ClInclude Include="..\Classes\Scenes\MainMenuScene.h" />
+    <ClInclude Include="..\Classes\Scenes\StartScene.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

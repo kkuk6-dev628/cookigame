@@ -5,11 +5,14 @@
 class BoardLayerData : public cocos2d::Ref
 {
 public:
-	BoardLayerData(char width, char height);
 	~BoardLayerData();
-
+	static BoardLayerData* create(char width, char height);
 	void initWithJson(rapidjson::Value& json);
 
+private:
+	BoardLayerData(char width, char height);
+
+public:
 	char Width;
 	char Height;
 	

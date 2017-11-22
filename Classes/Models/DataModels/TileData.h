@@ -16,7 +16,7 @@ struct TileData
 	SetTypes SetType = SetTypes::set;
 	bool CreateJelly;
 	HiderSegmentPosition HiderSegPosition = HiderSegmentPosition::body;
-	ChainTypes Chain = ChainTypes::chain1;
+	std::string Chain;
 	std::string SpawnType;
 	SpawnTable SpawnData;
 	char Zone;
@@ -44,7 +44,14 @@ struct TileData
 		itr = data.FindMember("color");
 		if (itr != data.MemberEnd() && itr->value.IsString())
 		{
-			this->Color = TileColors::_from_string(itr->value.GetString());
+			try
+			{
+				this->Color = TileColors::_from_string(itr->value.GetString());
+			}
+			catch (const std::runtime_error& error)
+			{
+				cocos2d::log("Undefined TileColors Type: %s", itr->value.GetString());
+			}
 		}
 
 		itr = data.FindMember("direction");
@@ -80,7 +87,14 @@ struct TileData
 		itr = data.FindMember("modifier_type");
 		if (itr != data.MemberEnd() && itr->value.IsString())
 		{
-			this->ModifierType = ModifierTypes::_from_string(itr->value.GetString());
+			try
+			{
+				this->ModifierType = ModifierTypes::_from_string(itr->value.GetString());
+			}
+			catch (const std::runtime_error& error)
+			{
+				cocos2d::log("Undefined ModifierTypes Type: %s", itr->value.GetString());
+			}
 		}
 
 		itr = data.FindMember("gridSize");
@@ -93,7 +107,14 @@ struct TileData
 		itr = data.FindMember("setType");
 		if (itr != data.MemberEnd() && itr->value.IsString())
 		{
-			this->SetType = SetTypes::_from_string(itr->value.GetString());
+			try
+			{
+				this->SetType = SetTypes::_from_string(itr->value.GetString());
+			}
+			catch (const std::runtime_error& error)
+			{
+				cocos2d::log("Undefined SetTypes Type: %s", itr->value.GetString());
+			}
 		}
 
 		itr = data.FindMember("createJelly");
@@ -105,13 +126,20 @@ struct TileData
 		itr = data.FindMember("position");
 		if (itr != data.MemberEnd() && itr->value.IsString())
 		{
-			this->HiderSegPosition = HiderSegmentPosition::_from_string(itr->value.GetString());
+			try
+			{
+				this->HiderSegPosition = HiderSegmentPosition::_from_string(itr->value.GetString());
+			}
+			catch (const std::runtime_error& error)
+			{
+				cocos2d::log("Undefined HiderSegmentPosition Type: %s", itr->value.GetString());
+			}
 		}
 
 		itr = data.FindMember("chain");
 		if (itr != data.MemberEnd() && itr->value.IsString())
 		{
-			this->Chain = ChainTypes::_from_string(itr->value.GetString());
+			this->Chain = itr->value.GetString();
 		}
 
 		itr = data.FindMember("spawn_data");

@@ -3,6 +3,7 @@
 #include "spine/AttachmentVertices.h"
 #include "json/document.h"
 #include "General/Constants.h"
+#include "Models/DataModels/UserData.h"
 
 USING_NS_CC;
 using namespace std;
@@ -23,6 +24,11 @@ LevelController* LevelController::getInstance()
 
 LevelController::~LevelController()
 {
+	if (this->currentLevel != nullptr)
+	{
+		delete this->currentLevel;
+	}
+
 }
 
 void LevelController::loadEpisodesInfo()
@@ -49,13 +55,17 @@ void LevelController::loadEpisodesInfo()
 
 void LevelController::loadCurrentLevel()
 {
-	//this->currentLevel = new Level();
-	//this->currentLevel->load(31);
-
-
-	for (auto i = 1; i <= 700; i++)
+	if (this->currentLevel != nullptr)
 	{
-		this->currentLevel = new Level();
-		this->currentLevel->load(i);
+		delete this->currentLevel;
 	}
+	this->currentLevel = new Level();
+	this->currentLevel->load(UserData::getInstance()->TopLevel);
+
+
+	//for (auto i = 1; i <= 700; i++)
+	//{
+	//	this->currentLevel = new Level();
+	//	this->currentLevel->load(i);
+	//}
 }

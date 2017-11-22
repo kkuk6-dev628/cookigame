@@ -7,14 +7,17 @@
 #include "General/TypeDefs.h"
 #include "CustomSpawnTableItem.h"
 
-class BoardData
+class BoardData : public cocos2d::Ref
 {
 public:
-	BoardData();
 	~BoardData();
+	static BoardData* create();
 	static TileColorsTable CreateColorsTableFromJson(const rapidjson::Value& json);
 	static std::list<CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
 	void initWithJson(rapidjson::Value& json);
+
+private:
+	BoardData();
 
 private:
 	cocos2d::__Dictionary* layers;

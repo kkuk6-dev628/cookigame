@@ -10,6 +10,14 @@ BoardData::BoardData()
 
 BoardData::~BoardData()
 {
+	this->layers->release();
+}
+
+BoardData* BoardData::create()
+{
+	BoardData* boardData = new BoardData();
+	boardData->autorelease();
+	return boardData;
 }
 
 TileColorsTable BoardData::CreateColorsTableFromJson(const rapidjson::Value& json)
@@ -50,8 +58,8 @@ std::list<CustomSpawnTableItem>* BoardData::CreateCustomSpawnTablesListFromJson(
 void BoardData::initWithJson(rapidjson::Value& json)
 {
 	assert(json.IsObject());
-	this->conveyorSpawnTable = CustomSpawnTableItem::LoadSpawnTablesFromJson(json["conveyor_spawn_table"]);
-	this->spawnTable = CustomSpawnTableItem::LoadSpawnTablesFromJson(json["spawn_table"]);
+	this->conveyorSpawnTable = CustomSpawnTableItem::CreateSpawnTablesFromJson(json["conveyor_spawn_table"]);
+	this->spawnTable = CustomSpawnTableItem::CreateSpawnTablesFromJson(json["spawn_table"]);
 	this->transitionOut = json["transitionOut"].GetString();
 	this->width = json["width"].GetInt();
 	this->height = json["height"].GetInt();
@@ -70,13 +78,14 @@ void BoardData::initWithJson(rapidjson::Value& json)
 
 	auto& layersJson = json["layers"];
 	this->layers = cocos2d::__Dictionary::create();
+	this->layers->retain();
 	for (auto itr = layersJson.MemberBegin(); itr != layersJson.MemberEnd(); ++itr)
 	{
 		if (itr->value.IsObject() && !itr->value.ObjectEmpty())
 		{
-			BoardLayerData boardLayer(this->width, this->height);
-			boardLayer.initWithJson(itr->value);
-			this->layers->setObject(&boardLayer, itr->name.GetString());
+			auto boardLayer = BoardLayerData::create(this->width, this->height);
+			boardLayer->initWithJson(itr->value);
+			this->layers->setObject(boardLayer, itr->name.GetString());
 		}
 	}
 }
