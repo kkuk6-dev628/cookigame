@@ -2,7 +2,6 @@
 #include <string>
 #include "json/document.h"
 #include "General/TypeDefs.h"
-#include "BoardData.h"
 using namespace rapidjson;
 
 class Level
@@ -15,6 +14,8 @@ public:
 	void initWithJson(rapidjson::Value& json);
 	static char GetEpisodeNumber(const int levelNumber);
 	static std::string GetEpisodeFileName(char episodeNumber);
+
+	rapidjson::Value* BoardsJson;
 
 private:
 	int levelNumber;
@@ -30,7 +31,6 @@ private:
 	std::string background;
 	std::list<int>* scores;
 	bool ignoreEveryoneHardDelta;
-
 
 #pragma region Get Set Methods
 public:

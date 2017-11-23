@@ -24,33 +24,32 @@ LevelController* LevelController::getInstance()
 
 LevelController::~LevelController()
 {
-	if (this->currentLevel != nullptr)
-	{
-		delete this->currentLevel;
-	}
-
 }
 
-void LevelController::loadEpisodesInfo()
+void LevelController::loadEpisodeInfo(const char episodeNumber)
 {
 	const auto fileUtils = FileUtils::getInstance();
-
-	auto epNumber = 1;
-	auto totalLevelsCount = 0;
-	auto episodeFileName = StringUtils::format("levels/%s%d.json", EpisodeFilePrefix.c_str(), epNumber);
-	while (fileUtils->isFileExist(episodeFileName))
+	if (this->episodeNumber != episodeNumber)
 	{
-		this->episodesCount = epNumber;
+		this->episodeNumber = episodeNumber;
+		auto totalLevelsCount = 0;
+		const auto episodeFileName = StringUtils::format("levels/%s%d.json", EpisodeFilePrefix.c_str(), episodeNumber);
 		auto fileContent = fileUtils->getStringFromFile(episodeFileName);
-		rapidjson::Document epJson;
-		epJson.Parse<0>(fileContent.c_str());
-		const auto levelCount = epJson["data"]["level"].Size();
-		totalLevelsCount += levelCount;
-		this->episodesInfo.push_back(levelCount);
-		epNumber++;
-		episodeFileName = StringUtils::format("levels/%s%d.json", EpisodeFilePrefix.c_str(), epNumber);
+		this->JsonDoc.Parse<0>(fileContent.c_str());
 	}
-	cocos2d::log("Read Level Info: episodes count - %d, level count - %d", this->episodesInfo.size(), totalLevelsCount);
+	//while (fileUtils->isFileExist(episodeFileName))
+	//{
+	//	this->episodesCount = epNumber;
+	//	auto fileContent = fileUtils->getStringFromFile(episodeFileName);
+	//	rapidjson::Document epJson;
+	//	epJson.Parse<0>(fileContent.c_str());
+	//	const auto levelCount = epJson["data"]["level"].Size();
+	//	totalLevelsCount += levelCount;
+	//	this->episodesInfo.push_back(levelCount);
+	//	epNumber++;
+	//	episodeFileName = StringUtils::format("levels/%s%d.json", EpisodeFilePrefix.c_str(), epNumber);
+	//}
+	//cocos2d::log("Read Level Info: episodes count - %d, level count - %d", this->episodesInfo.size(), totalLevelsCount);
 }
 
 void LevelController::loadCurrentLevel()
@@ -61,11 +60,4 @@ void LevelController::loadCurrentLevel()
 	}
 	this->currentLevel = new Level();
 	this->currentLevel->load(UserData::getInstance()->TopLevel);
-
-
-	//for (auto i = 1; i <= 700; i++)
-	//{
-	//	this->currentLevel = new Level();
-	//	this->currentLevel->load(i);
-	//}
 }

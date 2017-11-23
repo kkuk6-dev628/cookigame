@@ -3,6 +3,7 @@
 #include "SpawnController.h"
 #include "Models/DataModels/UserData.h"
 #include "SoundController.h"
+#include "BoardController.h"
 
 class GameController
 {
@@ -11,19 +12,25 @@ public:
 	static GameController* getInstance();
 	void goMainMenu();
 	void goGamePlay();
+	BoardController* getBoardController();
 
 private:
 	GameController();
 
+	void loadGamePlayTextureAtlases();
+
 	static GameController* instance;
 
-	LevelController* levelController;
-	SpawnController* spawnController;
-	SoundController* soundController;
-	UserData* userData;
+	LevelController* levelController = nullptr;
+	SpawnController* spawnController = nullptr;
+	SoundController* soundController = nullptr;
+	UserData* userData = nullptr;
 
+	BoardController* boardController = nullptr;
+	rapidjson::Value* boardData = nullptr;
 	char episodeNumber = 1;
-
+	Level* currentLevel = nullptr;
+	char currentBoardIndex = -1;
 
 public:
 	char episode_number() const
@@ -31,7 +38,7 @@ public:
 		return episodeNumber;
 	}
 
-	void episode_number(char episodeNumber)
+	void episode_number(const char episodeNumber)
 	{
 		this->episodeNumber = episodeNumber;
 	}

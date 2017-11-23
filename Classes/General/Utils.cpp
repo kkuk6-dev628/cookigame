@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include "Constants.h"
 
 
 Utils::Utils()
@@ -32,4 +33,9 @@ GridPos Utils::StrToGridPos(std::string str, std::string delim)
 	gridPos.Col = atoi(strCol.c_str());
 	gridPos.Row = atoi(strRow.c_str());
 	return gridPos;
+}
+
+cocos2d::Vec2 Utils::Grid2BoardPos(char col, char row, float boardWidth, float boardHeight)
+{
+	return cocos2d::Vec2(col * CellSize + CellSize / 2, row * CellSize + CellSize / 2);
 }

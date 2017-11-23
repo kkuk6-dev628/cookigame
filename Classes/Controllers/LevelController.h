@@ -1,5 +1,4 @@
 #pragma once
-#include "deprecated/CCArray.h"
 #include <list>
 #include "Models/DataModels/Level.h"
 
@@ -9,9 +8,12 @@ public:
 	static LevelController* getInstance();
 	~LevelController();
 
-	void loadEpisodesInfo();
+	void loadEpisodeInfo(char episodeNumber);
 	void loadCurrentLevel();
-	Level* getCurrentLevel(){ return currentLevel; }
+	Level* getCurrentLevel() const { return currentLevel; }
+	rapidjson::Document JsonDoc;
+	char episodeNumber;
+
 
 private:
 	LevelController();
@@ -20,9 +22,9 @@ private:
 	static LevelController* instance;
 	Level* currentLevel = nullptr;
 
-
 #pragma region Get Set Methods
 public:
+	
 	Level* current_level() const
 	{
 		return currentLevel;

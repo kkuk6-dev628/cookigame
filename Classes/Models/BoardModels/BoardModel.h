@@ -5,22 +5,28 @@
 #include <list>
 #include "General/EnumTypes.h"
 #include "General/TypeDefs.h"
-#include "CustomSpawnTableItem.h"
+#include "Models/DataModels/CustomSpawnTableItem.h"
 
-class BoardData : public cocos2d::Ref
+class BoardLayerModel;
+
+class BoardModel : public cocos2d::Ref
 {
 public:
-	~BoardData();
-	static BoardData* create();
+	~BoardModel();
 	static TileColorsTable CreateColorsTableFromJson(const rapidjson::Value& json);
 	static std::list<CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
 	void initWithJson(rapidjson::Value& json);
+	BoardModel();
+
+	BoardLayerModel* getMatchLayer() const { return reinterpret_cast<BoardLayerModel*>(boardLayers->objectForKey(LayerId::Match)); }
 
 private:
-	BoardData();
+
+public:
+	rapidjson::Document LayersJson;
 
 private:
-	cocos2d::__Dictionary* layers;
+	cocos2d::__Dictionary* boardLayers;
 	int width;
 	int height;
 	std::string transitionOut;
@@ -33,8 +39,22 @@ private:
 	SpawnTablesList liquidSpawnTable;
 	cocos2d::__Array* data;
 
+
 #pragma region Get Set Methods
+
 public:
+	cocos2d::__Dictionary* layers2() const
+	{
+		return boardLayers;
+	}
+
+	void layers2(cocos2d::__Dictionary* layers)
+	{
+		this->boardLayers = layers;
+	}
+
+	__declspec(property(get = layers2, put = layers2)) cocos2d::__Dictionary* BoardLayers;
+
 	std::list<Goal>* goals1() const
 	{
 		return goals;
@@ -60,18 +80,6 @@ public:
 
 	__declspec(property(get = custom_spawn_table, put = custom_spawn_table)) std::list<CustomSpawnTableItem>*
 	CustomSpawnTable;
-
-	cocos2d::__Dictionary* layers1() const
-	{
-		return layers;
-	}
-
-	void layers1(cocos2d::__Dictionary* layers)
-	{
-		this->layers = layers;
-	}
-
-	__declspec(property(get = layers1, put = layers1)) cocos2d::__Dictionary* Layers;
 
 	int width1() const
 	{

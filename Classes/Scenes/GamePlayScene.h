@@ -2,6 +2,7 @@
 #include "platform/CCPlatformMacros.h"
 #include "2d/CCScene.h"
 #include "2d/CCLayer.h"
+#include "Controllers/BoardController.h"
 
 USING_NS_CC; 
 
@@ -19,5 +20,7 @@ public:
 	// implement the "static create()" method manually
 	CREATE_FUNC(GamePlayScene);
 
+private:
+	BoardController* boardController;
 };
 

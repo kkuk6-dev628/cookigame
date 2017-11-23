@@ -48,7 +48,7 @@ struct TileData
 			{
 				this->Color = TileColors::_from_string(itr->value.GetString());
 			}
-			catch (const std::runtime_error& error)
+			catch (const std::runtime_error&)
 			{
 				cocos2d::log("Undefined TileColors Type: %s", itr->value.GetString());
 			}
@@ -91,7 +91,7 @@ struct TileData
 			{
 				this->ModifierType = ModifierTypes::_from_string(itr->value.GetString());
 			}
-			catch (const std::runtime_error& error)
+			catch (const std::runtime_error&)
 			{
 				cocos2d::log("Undefined ModifierTypes Type: %s", itr->value.GetString());
 			}
@@ -111,7 +111,7 @@ struct TileData
 			{
 				this->SetType = SetTypes::_from_string(itr->value.GetString());
 			}
-			catch (const std::runtime_error& error)
+			catch (const std::runtime_error&)
 			{
 				cocos2d::log("Undefined SetTypes Type: %s", itr->value.GetString());
 			}
@@ -130,7 +130,7 @@ struct TileData
 			{
 				this->HiderSegPosition = HiderSegmentPosition::_from_string(itr->value.GetString());
 			}
-			catch (const std::runtime_error& error)
+			catch (const std::runtime_error&)
 			{
 				cocos2d::log("Undefined HiderSegmentPosition Type: %s", itr->value.GetString());
 			}

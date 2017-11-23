@@ -1,6 +1,6 @@
 #include "StartScene.h"
-#include "SimpleAudioEngine.h"
-#include "Controllers/LevelController.h"
+#include "General/Constants.h"
+
 
 USING_NS_CC;
 
@@ -31,15 +31,20 @@ bool StartScene::init()
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	//BoardController::setCellSize((visibleSize.width - 9) / 9);
 
-    /////////////////////////////
+	CellSize = (visibleSize.width - 9) / 9;
+	CenterX = origin.x + visibleSize.width / 2;
+	CenterY = visibleSize.height / 2 + origin.y;
+    
+	/////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
     auto closeItem = MenuItemImage::create(
-                                           "GreenButton.png",
-                                           "GreenButton.png",
+                                           "images/GreenButton.png",
+                                           "images/GreenButton.png",
                                            CC_CALLBACK_1(StartScene::menuCloseCallback, this));
     
 	closeItem->setPosition(Vec2(origin.x + visibleSize.width / 2,
@@ -66,7 +71,7 @@ bool StartScene::init()
     this->addChild(label, 1);
 
     // add "StartScene" splash screen"
-    auto sprite = Sprite::create("Social_000_BG.png");
+    auto sprite = Sprite::create("images/Social_000_BG.png");
 
     // position the sprite on the center of the screen
     sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
@@ -85,7 +90,7 @@ void StartScene::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
 	//auto currLevel = this->levelController->getCurrentLevel();
-	//auto board = static_cast<BoardData*>(currLevel->Boards->getObjectAtIndex(0));
+	//auto board = static_cast<BoardModel*>(currLevel->Boards->getObjectAtIndex(0));
 	//auto layer = board->Layers->objectForKey("3");
 	//this->gameController->goMainMenu();
 	this->gameController->goGamePlay();

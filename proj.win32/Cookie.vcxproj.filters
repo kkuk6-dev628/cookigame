@@ -34,6 +34,9 @@
     <Filter Include="src\Scenes">
       <UniqueIdentifier>{a56d99fd-cb69-449b-96ee-7745b223ac9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Models\BoardModels">
+      <UniqueIdentifier>{de0960ee-d463-4316-8642-09cda5063e05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,13 +66,7 @@
     <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp">
       <Filter>src\Models\Tiles</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Models\Tiles\TileBase.cpp">
-      <Filter>src\Models\Tiles</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Models\DataModels\Level.cpp">
-      <Filter>src\Models\DataModels</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Models\DataModels\BoardData.cpp">
       <Filter>src\Models\DataModels</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Models\DataModels\UserData.cpp">
@@ -90,7 +87,31 @@
     <ClCompile Include="..\Classes\Scenes\MainMenuScene.cpp">
       <Filter>src\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp" />
+    <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp">
+      <Filter>src\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\Tile.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\BoardController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\BoardModels\BoardLayerModel.cpp">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\BoardModels\Cell.cpp">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\BoardModels\BoardModel.cpp">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\General\Constants.cpp">
+      <Filter>src\General</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Layers\BoardLayer.cpp">
+      <Filter>src\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -120,13 +141,7 @@
     <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h">
       <Filter>src\Models\Tiles</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Models\Tiles\TileBase.h">
-      <Filter>src\Models\Tiles</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Models\DataModels\Level.h">
-      <Filter>src\Models\DataModels</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Models\DataModels\BoardData.h">
       <Filter>src\Models\DataModels</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Models\DataModels\UserData.h">
@@ -162,7 +177,31 @@
     <ClInclude Include="..\Classes\Scenes\MainMenuScene.h">
       <Filter>src\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
+    <ClInclude Include="..\Classes\Scenes\GamePlayScene.h">
+      <Filter>src\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\Tile.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\BoardController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\BoardModels\BoardLayerModel.h">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\BoardModels\Cell.h">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\BoardModels\BoardModel.h">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClInclude>
+    <ClInclude Include="Macros.h">
+      <Filter>src\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Layers\BoardLayer.h">
+      <Filter>src\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

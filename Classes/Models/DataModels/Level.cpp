@@ -1,5 +1,6 @@
 #include "Level.h"
 #include "General/Constants.h"
+#include "Controllers/LevelController.h"
 
 Level::Level()
 {
@@ -20,11 +21,11 @@ void Level::load(const int levelNumber)
 	this->levelNumber = levelNumber;
 	this->episode = GetEpisodeNumber(levelNumber);
 
-	auto jsonContent = cocos2d::FileUtils::getInstance()->getStringFromFile(GetEpisodeFileName(this->episode));
-	rapidjson::Document jsonDoc;
-	jsonDoc.Parse<0>(jsonContent.c_str());
-	assert(jsonDoc.IsObject());
-	auto& levelsJson = jsonDoc["data"]["level"].GetArray();
+	auto levelCtrl = LevelController::getInstance();
+	levelCtrl->loadEpisodeInfo(this->episode);
+
+	assert(levelCtrl->JsonDoc.IsObject());
+	auto& levelsJson = levelCtrl->JsonDoc["data"]["level"].GetArray();
 
 	for (auto& v : levelsJson)
 	{
@@ -47,13 +48,8 @@ void Level::initWithJson(rapidjson::Value& json)
 	cocos2d::log("Level number: %d", this->levelNumber);
 #endif
 
-	auto& boardsArray = json["boards"].GetArray();
-	for (auto& v : boardsArray)
-	{
-		auto board = BoardData::create();
-		board->initWithJson(v);
-		this->boards->addObject(board);
-	}
+	//auto& boardsArray = json["boards"].GetArray();
+	this->BoardsJson = &(json["boards"]);
 }
 
 

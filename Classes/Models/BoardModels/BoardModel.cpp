@@ -1,26 +1,29 @@
-#include "BoardData.h"
-#include "CustomSpawnTableItem.h"
-#include "BoardLayerData.h"
+#include "deprecated/CCDictionary.h"
+#include "BoardModel.h"
+#include "BoardLayerModel.h"
 
 
-BoardData::BoardData()
+BoardModel::BoardModel()
 {
+	this->boardLayers = cocos2d::__Dictionary::create();
+	this->boardLayers->retain();
+
 }
 
 
-BoardData::~BoardData()
+BoardModel::~BoardModel()
 {
-	this->layers->release();
+	this->boardLayers->release();
 }
 
-BoardData* BoardData::create()
-{
-	BoardData* boardData = new BoardData();
-	boardData->autorelease();
-	return boardData;
-}
+//BoardModel* BoardModel::create()
+//{
+//	BoardModel* boardData = new BoardModel();
+//	boardData->autorelease();
+//	return boardData;
+//}
 
-TileColorsTable BoardData::CreateColorsTableFromJson(const rapidjson::Value& json)
+TileColorsTable BoardModel::CreateColorsTableFromJson(const rapidjson::Value& json)
 {
 	if (json.IsObject())
 	{
@@ -37,7 +40,7 @@ TileColorsTable BoardData::CreateColorsTableFromJson(const rapidjson::Value& jso
 	return nullptr;
 }
 
-std::list<CustomSpawnTableItem>* BoardData::CreateCustomSpawnTablesListFromJson(rapidjson::Value& json)
+std::list<CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTablesListFromJson(rapidjson::Value& json)
 {
 	if (json.IsArray() && json.Size() > 0)
 	{
@@ -55,7 +58,7 @@ std::list<CustomSpawnTableItem>* BoardData::CreateCustomSpawnTablesListFromJson(
 	return nullptr;
 }
 
-void BoardData::initWithJson(rapidjson::Value& json)
+void BoardModel::initWithJson(rapidjson::Value& json)
 {
 	assert(json.IsObject());
 	this->conveyorSpawnTable = CustomSpawnTableItem::CreateSpawnTablesFromJson(json["conveyor_spawn_table"]);
@@ -77,15 +80,14 @@ void BoardData::initWithJson(rapidjson::Value& json)
 	this->customSpawnTable = CreateCustomSpawnTablesListFromJson(json["custom_spawn_table"]);
 
 	auto& layersJson = json["layers"];
-	this->layers = cocos2d::__Dictionary::create();
-	this->layers->retain();
 	for (auto itr = layersJson.MemberBegin(); itr != layersJson.MemberEnd(); ++itr)
 	{
 		if (itr->value.IsObject() && !itr->value.ObjectEmpty())
 		{
-			auto boardLayer = BoardLayerData::create(this->width, this->height);
+			auto boardLayer = BoardLayerModel::create(this->width, this->height);
 			boardLayer->initWithJson(itr->value);
-			this->layers->setObject(boardLayer, itr->name.GetString());
+			const auto layerIndex = atoi(itr->name.GetString());
+			this->boardLayers->setObject(boardLayer, layerIndex);
 		}
 	}
 }

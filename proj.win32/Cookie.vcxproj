@@ -147,19 +147,25 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\Controllers\ActionController.cpp" />
+    <ClCompile Include="..\Classes\Controllers\BoardController.cpp" />
     <ClCompile Include="..\Classes\Controllers\GameController.cpp" />
     <ClCompile Include="..\Classes\Controllers\LevelController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SoundController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SpawnController.cpp" />
+    <ClCompile Include="..\Classes\General\Constants.cpp" />
     <ClCompile Include="..\Classes\General\Utils.cpp" />
-    <ClCompile Include="..\Classes\Models\DataModels\BoardData.cpp" />
+    <ClCompile Include="..\Classes\Layers\BoardLayer.cpp" />
+    <ClCompile Include="..\Classes\Models\BoardModels\BoardLayerModel.cpp" />
+    <ClCompile Include="..\Classes\Models\BoardModels\BoardModel.cpp" />
+    <ClCompile Include="..\Classes\Models\BoardModels\Cell.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\BoardLayerData.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\CustomSpawnTableItem.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\Level.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\UserData.cpp" />
     <ClCompile Include="..\Classes\Models\ShowObjects\ShowObject.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp" />
-    <ClCompile Include="..\Classes\Models\Tiles\TileBase.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\Tile.cpp" />
     <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp" />
     <ClCompile Include="..\Classes\Scenes\MainMenuScene.cpp" />
     <ClCompile Include="..\Classes\Scenes\StartScene.cpp" />
@@ -168,6 +174,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\Controllers\ActionController.h" />
+    <ClInclude Include="..\Classes\Controllers\BoardController.h" />
     <ClInclude Include="..\Classes\Controllers\GameController.h" />
     <ClInclude Include="..\Classes\Controllers\LevelController.h" />
     <ClInclude Include="..\Classes\Controllers\SoundController.h" />
@@ -177,18 +184,23 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\General\EnumTypes.h" />
     <ClInclude Include="..\Classes\General\TypeDefs.h" />
     <ClInclude Include="..\Classes\General\Utils.h" />
-    <ClInclude Include="..\Classes\Models\DataModels\BoardData.h" />
+    <ClInclude Include="..\Classes\Layers\BoardLayer.h" />
+    <ClInclude Include="..\Classes\Models\BoardModels\BoardLayerModel.h" />
+    <ClInclude Include="..\Classes\Models\BoardModels\BoardModel.h" />
+    <ClInclude Include="..\Classes\Models\BoardModels\Cell.h" />
     <ClInclude Include="..\Classes\Models\DataModels\BoardLayerData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\CustomSpawnTableItem.h" />
     <ClInclude Include="..\Classes\Models\DataModels\Level.h" />
     <ClInclude Include="..\Classes\Models\DataModels\TileData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\UserData.h" />
     <ClInclude Include="..\Classes\Models\ShowObjects\ShowObject.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h" />
-    <ClInclude Include="..\Classes\Models\Tiles\TileBase.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\Tile.h" />
     <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
     <ClInclude Include="..\Classes\Scenes\MainMenuScene.h" />
     <ClInclude Include="..\Classes\Scenes\StartScene.h" />
+    <ClInclude Include="Macros.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

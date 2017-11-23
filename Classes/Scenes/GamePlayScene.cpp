@@ -1,6 +1,7 @@
 #include "GamePlayScene.h"
 #include "2d/CCSprite.h"
 #include "Controllers/GameController.h"
+#include "Controllers/BoardController.h"
 
 
 GamePlayScene::GamePlayScene()
@@ -38,13 +39,14 @@ bool GamePlayScene::init()
 
 	//code here
 
-	std::string bgImageName = StringUtils::format("Game_%03d_BG.png", GameController::getInstance()->EpisodeNumber);
+	std::string bgImageName = StringUtils::format("images/Game_%03d_BG.png", GameController::getInstance()->EpisodeNumber);
 	Size winSize = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
 	auto bg = Sprite::create(bgImageName);
 	float scale = winSize.height / bg->getContentSize().height;
 	bg->setScale(scale, scale);
 	bg->setPosition(Point(winSize.width / 2, winSize.height / 2));
 	this->addChild(bg);
-
+	boardController = GameController::getInstance()->getBoardController();
+	this->addChild(boardController);
 	return true;
 }

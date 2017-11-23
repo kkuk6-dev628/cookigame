@@ -1,6 +1,7 @@
 #include "GameController.h"
 #include "Scenes/MainMenuScene.h"
 #include "Scenes/GamePlayScene.h"
+#include "Models/BoardModels/BoardLayerModel.h"
 
 USING_NS_CC;
 
@@ -12,6 +13,14 @@ GameController::GameController()
 	this->spawnController = SpawnController::getInstance();
 	this->soundController = SoundController::getInstance();
 	this->userData = UserData::getInstance();
+	this->currentLevel = this->levelController->getCurrentLevel();
+	BoardLayerModel::RegisterTileClasses();
+}
+
+void GameController::loadGamePlayTextureAtlases()
+{
+	auto spriteFrameCache = SpriteFrameCache::getInstance();
+	spriteFrameCache->addSpriteFramesWithFile("atlas/tiles.plist");
 }
 
 
@@ -41,5 +50,29 @@ void GameController::goMainMenu()
 
 void GameController::goGamePlay()
 {
+	loadGamePlayTextureAtlases();
+	levelController->loadCurrentLevel();
+	this->currentLevel = levelController->getCurrentLevel();
+	this->boardData = this->currentLevel->BoardsJson;
 	Director::getInstance()->pushScene(TransitionFade::create(0.6f, GamePlayScene::createScene()));
 }
+
+BoardController* GameController::getBoardController()
+{
+	currentBoardIndex++;
+	assert(boardData->IsArray() && boardData->Size() > 0);
+	if (currentBoardIndex >= boardData->Size())
+	{
+		currentBoardIndex = -1;
+		return nullptr;
+	}
+	auto boardsArray = boardData->GetArray();
+	if (boardController != nullptr)
+	{
+		delete boardController;
+	}
+	boardController = new BoardController();
+	boardController->initWithJson(boardsArray[currentBoardIndex]);
+	return boardController;
+}
+

@@ -1,10 +1,15 @@
 #pragma once
-#include "TileBase.h"
-class LargeTile :
-	public TileBase
+#include "CookieTile.h"
+
+class LargeTile : public CookieTile
 {
 public:
 	LargeTile();
 	~LargeTile();
 };
 
+
+class ColorPie3Object : public LargeTile
+{
+
+};
