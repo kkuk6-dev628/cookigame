@@ -15,7 +15,14 @@ public:
 
 	void initWithJson(rapidjson::Value& json);
 
-	Cell* getCell(const char col, const char row) const { return cells[row][col]; }
+	Cell* getCell(const char col, const char row) const
+	{
+		if (col < 0 || col >= Width || row < 0 || row >= Height)
+		{
+			return nullptr;
+		}
+		return cells[row][col];
+	}
 
 private:
 	BoardLayerModel(char width, char height);

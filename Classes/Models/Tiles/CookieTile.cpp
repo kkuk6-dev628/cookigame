@@ -4,6 +4,7 @@
 
 
 CookieTile::CookieTile()
+	: TileBase()
 {
 	pCell = nullptr;
 }
@@ -16,7 +17,7 @@ CookieTile::~CookieTile()
 void CookieTile::setCell(Cell* cell)
 {
 	pCell = cell;
-	gridPos = pCell->getGridPos();
+	gridPos = pCell->gridPos;
 }
 
 void CookieTile::initWithJson(rapidjson::Value& json)

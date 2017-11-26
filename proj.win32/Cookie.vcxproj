@@ -158,13 +158,17 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\BoardModels\BoardLayerModel.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\BoardModel.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\Cell.cpp" />
+    <ClCompile Include="..\Classes\Models\BoardModels\Match.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\BoardLayerData.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\CustomSpawnTableItem.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\Level.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\UserData.cpp" />
     <ClCompile Include="..\Classes\Models\ShowObjects\ShowObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\LayeredMatchObject.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\MovingTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\Tile.cpp" />
     <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp" />
     <ClCompile Include="..\Classes\Scenes\MainMenuScene.cpp" />
@@ -188,6 +192,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\BoardModels\BoardLayerModel.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\BoardModel.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\Cell.h" />
+    <ClInclude Include="..\Classes\Models\BoardModels\Match.h" />
     <ClInclude Include="..\Classes\Models\DataModels\BoardLayerData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\CustomSpawnTableItem.h" />
     <ClInclude Include="..\Classes\Models\DataModels\Level.h" />
@@ -195,7 +200,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\DataModels\UserData.h" />
     <ClInclude Include="..\Classes\Models\ShowObjects\ShowObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\LayeredMatchObject.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\MovingTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\Tile.h" />
     <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
     <ClInclude Include="..\Classes\Scenes\MainMenuScene.h" />

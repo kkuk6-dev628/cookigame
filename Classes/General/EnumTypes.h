@@ -14,4 +14,14 @@ BETTER_ENUM(HiderSegmentPosition, char, head, tail, body)
 
 BETTER_ENUM(LayerId, char, Background = -1, UnderCover = 0, Cover = 1, PathCoveyor = 2, Waffle = 3, Match = 4, Toppling=5, Target=6, Portal=7, Spawner=8);
 
-BETTER_ENUM(AdjacentDirs, char, Left, Right, Up, Down)
+BETTER_ENUM(AdjacentDirs, char, 
+	W = 0, // left
+	E = 1, // right
+	N = 2, // up
+	S = 3, // down
+	SE,
+	SW,
+	NE,
+	NW,
+	NoDir
+	)

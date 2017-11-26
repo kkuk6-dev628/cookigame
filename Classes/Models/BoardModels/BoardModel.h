@@ -6,6 +6,7 @@
 #include "General/EnumTypes.h"
 #include "General/TypeDefs.h"
 #include "Models/DataModels/CustomSpawnTableItem.h"
+#include "Cell.h"
 
 class BoardLayerModel;
 
@@ -17,8 +18,11 @@ public:
 	static std::list<CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
 	void initWithJson(rapidjson::Value& json);
 	BoardModel();
+	Cell* getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs inDir, AdjacentDirs* newDir, bool counterClockWise);
 
 	BoardLayerModel* getMatchLayer() const { return reinterpret_cast<BoardLayerModel*>(boardLayers->objectForKey(LayerId::Match)); }
+
+	Cell* getTurnCell(LayerId layer, GridPos& refPos, bool counterClockWise);
 
 private:
 

@@ -3,6 +3,7 @@
 #include "Models/Tiles/Tile.h"
 #include "General/Utils.h"
 #include "Models/Tiles/LargeTile.h"
+#include "Models/Tiles/LayeredMatchObject.h"
 
 static factory TileClassFactory;
 #define REGISTER_CLASS(n) TileClassFactory.register_class<n>(#n)
@@ -23,6 +24,16 @@ BoardLayerModel::BoardLayerModel(char width, char height)
 		{
 			cells[i][j] = new Cell();
 			cells[i][j]->setGridPos(j, i);
+			if (i > 1)
+			{
+				cells[i - 1][j]->upCell = cells[i][j];
+				cells[i][j]->downCell = cells[i - 1][j];
+			}
+			if (j > 1)
+			{
+				cells[i][j - 1]->rightCell = cells[i][j];
+				cells[i][j]->leftCell = cells[i][j - 1];
+			}
 		}
 	}
 	
@@ -75,6 +86,10 @@ void BoardLayerModel::initWithJson(rapidjson::Value& json)
 				const auto tile = static_cast<CookieTile*>(TileClassFactory.construct(typeName));
 				if (tile != nullptr)
 				{
+					tile->initWithGrid(gridPos.Col, gridPos.Row);
+					tile->initWithJson(itr->value);
+
+					this->cells[gridPos.Row][gridPos.Col]->setGridPos(gridPos.Col, gridPos.Row);
 					this->cells[gridPos.Row][gridPos.Col]->setSourceTile(tile);
 				}
 			}

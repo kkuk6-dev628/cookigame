@@ -8,8 +8,8 @@ void TileBase::initWithGrid(const char col, const char row)
 	setContentSize(Size(CellSize, CellSize));
 	setAnchorPoint(Vec2(0.5, 0.5));
 	setPosition(pos.x, pos.y);
-	Col = col;
-	Row = row;
+	gridPos.Col = col;
+	gridPos.Row = row;
 }
 
 void TileBase::initTexture(const std::string textureName)

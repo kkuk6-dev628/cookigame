@@ -12,7 +12,7 @@ public:
 	CookieTile* getSourceTile() const { return pSourceTile; }
 	void setSourceTile(CookieTile* pTile);
 	void setGridPos(const char col, const char row) { gridPos.Col = col; gridPos.Row = row; }
-	GridPos getGridPos() const { return gridPos; }
+	GridPos gridPos;
 
 public:
 	Cell* upCell = nullptr;
@@ -22,7 +22,6 @@ public:
 
 private:
 	CookieTile* pSourceTile = nullptr;
-	GridPos gridPos;
 	bool isEmpty = true;
 
 

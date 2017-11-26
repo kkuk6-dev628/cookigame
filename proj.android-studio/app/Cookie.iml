@@ -16,6 +16,7 @@
         </afterSyncTasks>
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res" />
         <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
       </configuration>
     </facet>
@@ -96,7 +97,6 @@
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="libcocos2dx" exported="" />
-    <orderEntry type="library" exported="" name="android-android-19" level="project" />
     <orderEntry type="library" exported="" name="com.android.vending.expansion.zipfile" level="project" />
     <orderEntry type="library" exported="" name="httpclient-4.4.1.1" level="project" />
     <orderEntry type="library" exported="" name="android-async-http-1.4.9" level="project" />

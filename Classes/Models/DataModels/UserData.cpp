@@ -15,8 +15,7 @@ UserData::UserData()
 {
 	userDefault = cocos2d::UserDefault::getInstance();
 	topLevel = userDefault->getIntegerForKey("top_level", 1);
-	topLevel = MAX(topLevel, 2);
-
+	topLevel = MAX(topLevel, 1);
 }
 
 

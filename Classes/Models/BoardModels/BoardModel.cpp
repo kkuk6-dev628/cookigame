@@ -1,6 +1,7 @@
 #include "deprecated/CCDictionary.h"
 #include "BoardModel.h"
 #include "BoardLayerModel.h"
+#include "Controllers/SpawnController.h"
 
 
 BoardModel::BoardModel()
@@ -8,6 +9,49 @@ BoardModel::BoardModel()
 	this->boardLayers = cocos2d::__Dictionary::create();
 	this->boardLayers->retain();
 
+}
+
+Cell* BoardModel::getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs inputDir, AdjacentDirs* newDir, bool counterClockWise)
+{
+	auto layerModel = static_cast<BoardLayerModel*>(boardLayers->objectForKey(layer._to_integral()));
+	if (counterClockWise)
+	{
+		switch (inputDir)
+		{
+		case AdjacentDirs::E:
+			*newDir = AdjacentDirs::N;
+			return layerModel->getCell(refPos.Col, refPos.Row - 1);
+		case AdjacentDirs::W:
+			*newDir = AdjacentDirs::S;
+			return layerModel->getCell(refPos.Col, refPos.Row + 1);
+		case AdjacentDirs::N:
+			*newDir = AdjacentDirs::W;
+			return layerModel->getCell(refPos.Col + 1, refPos.Row);
+		case AdjacentDirs::S:
+			*newDir = AdjacentDirs::E;
+			return layerModel->getCell(refPos.Col - 1, refPos.Row);
+		}
+		return nullptr;
+	}
+	else
+	{
+		switch (inputDir)
+		{
+		case AdjacentDirs::E:
+			*newDir = AdjacentDirs::S;
+			return layerModel->getCell(refPos.Col, refPos.Row + 1);
+		case AdjacentDirs::W:
+			*newDir = AdjacentDirs::N;
+			return layerModel->getCell(refPos.Col, refPos.Row - 1);
+		case AdjacentDirs::N:
+			*newDir = AdjacentDirs::E;
+			return layerModel->getCell(refPos.Col - 1, refPos.Row);
+		case AdjacentDirs::S:
+			*newDir = AdjacentDirs::W;
+			return layerModel->getCell(refPos.Col + 1, refPos.Row);
+		}
+		return nullptr;
+	}
 }
 
 
@@ -67,6 +111,9 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	this->width = json["width"].GetInt();
 	this->height = json["height"].GetInt();
 	this->colors = CreateColorsTableFromJson(json["colors"]);
+
+	SpawnController::getInstance()->setColorTable(colors);
+
 	this->colorsEasy = CreateColorsTableFromJson(json["colorsEasy"]);
 	this->goals = new std::list<Goal>();
 	auto& goalsArray = json["goals"].GetArray();

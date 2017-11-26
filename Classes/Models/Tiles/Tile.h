@@ -1,5 +1,6 @@
 #pragma once
 #include "2d/CCSprite.h"
+#include "General/TypeDefs.h"
 
 USING_NS_CC;
 
@@ -12,8 +13,7 @@ public:
 	void initWithGrid(char col, char row);
 	virtual void initTexture(std::string textureName);
 
-	char Col = 0;
-	char Row = 0;
+	GridPos gridPos;
 
 protected:
 	Sprite* textureSprite = nullptr;

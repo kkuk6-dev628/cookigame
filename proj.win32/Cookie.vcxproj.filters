@@ -111,7 +111,21 @@
     <ClCompile Include="..\Classes\Layers\BoardLayer.cpp">
       <Filter>src\Layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\LayeredMatchObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\MovingTile.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\BoardModels\Match.cpp">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -201,7 +215,21 @@
     <ClInclude Include="..\Classes\Layers\BoardLayer.h">
       <Filter>src\Layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\LayeredMatchObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\MovingTile.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\BoardModels\Match.h">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
