@@ -19,6 +19,8 @@ BoardController::BoardController()
 	currentLevel = LevelController::getInstance()->getCurrentLevel();
 	spawnController = SpawnController::getInstance();
 	actionController = ActionController::getInstance();
+	poolController = PoolController::getInstance();
+
 	pendingCrushCells = __Array::create();
 	pendingCrushCells->retain();
 }
@@ -102,11 +104,11 @@ void BoardController::onTouchMoved(Touch* touch, Event* unused_event)
 			auto matchIdSelected = selectedTile->matchId;
 			auto matchIdTarget = targetTile->matchId;
 			selectedTile->showSwapAction(targetCell->gridPos, [this, matchIdSelected](){
-				this->releaseWaitingMatch(selectedTile);
+				this->releaseWaitingMatch(matchIdSelected);
 				cocos2d::log("matchid: %d", matchIdSelected);
 			});
 			targetTile->showSwapAction(selectedTile->gridPos, [this, matchIdTarget](){
-				this->releaseWaitingMatch(selectedTile);
+				this->releaseWaitingMatch(matchIdTarget);
 				cocos2d::log("matchid: %d", matchIdTarget);
 			});
 			swapTilesInternal(selectedTile->getCell(), targetCell);
@@ -152,9 +154,17 @@ void BoardController::onTouchCancelled(Touch* touch, Event* unused_event)
 {
 }
 
-void BoardController::releaseWaitingMatch(Node* tile)
+void BoardController::releaseWaitingMatch(const int matchId) const
 {
-	auto cookieTile = static_cast<CookieTile*>(tile);
+	Ref* itr = nullptr;
+	CCARRAY_FOREACH(pendingCrushCells, itr)
+	{
+		const auto match = static_cast<Match*>(itr);
+		if (match->matchId == matchId)
+		{
+			match->isWaiting = false;
+		}
+	}
 }
 
 
@@ -398,10 +408,9 @@ Match* BoardController::findMatch(Cell* startCell)
 		auto isSquareMatch = true;
 		AdjacentDirs newDir = AdjacentDirs::NoDir;
 		cell = boardModel->getTurnCell(LayerId::Match, startCell->gridPos, inDir, &newDir, false);
-		for (auto j = 0; j < 3 && cell != nullptr; j++)
+		for (auto j = 0; j < 3; j++)
 		{
-			tile = cell->getSourceTile();
-			if (cell->IsEmpty || tile == nullptr || color != tile->Color)
+			if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr || color != cell->getSourceTile()->Color)
 			{
 				isSquareMatch = false;
 				break;
@@ -445,6 +454,20 @@ void BoardController::swapTilesInternal(Cell* selectedCell, Cell* targetCell)
 void BoardController::doSomethingPerMove()
 {
 	moveCount++;
+}
+
+void BoardController::crushPendingTiles()
+{
+	Ref* itr = nullptr;
+	CCARRAY_FOREACH(pendingCrushCells, itr)
+	{
+		const auto match = static_cast<Match*>(itr);
+		if (!match->isWaiting)
+		{
+
+		}
+	}
+
 }
 
 void BoardController::update(float delta)

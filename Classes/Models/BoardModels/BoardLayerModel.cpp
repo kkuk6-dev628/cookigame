@@ -4,9 +4,8 @@
 #include "General/Utils.h"
 #include "Models/Tiles/LargeTile.h"
 #include "Models/Tiles/LayeredMatchObject.h"
+#include "Controllers/PoolController.h"
 
-static factory TileClassFactory;
-#define REGISTER_CLASS(n) TileClassFactory.register_class<n>(#n)
 
 BoardLayerModel::BoardLayerModel(char width, char height)
 {
@@ -24,12 +23,12 @@ BoardLayerModel::BoardLayerModel(char width, char height)
 		{
 			cells[i][j] = new Cell();
 			cells[i][j]->setGridPos(j, i);
-			if (i > 1)
+			if (i > 0)
 			{
 				cells[i - 1][j]->upCell = cells[i][j];
 				cells[i][j]->downCell = cells[i - 1][j];
 			}
-			if (j > 1)
+			if (j > 0)
 			{
 				cells[i][j - 1]->rightCell = cells[i][j];
 				cells[i][j]->leftCell = cells[i][j - 1];
@@ -63,13 +62,6 @@ BoardLayerModel* BoardLayerModel::create(char width, char height)
 
 }
 
-void BoardLayerModel::RegisterTileClasses()
-{
-	REGISTER_CLASS(LayeredMatchObject);
-	REGISTER_CLASS(WaffleObject);
-	REGISTER_CLASS(ColorPie3Object);
-
-}
 
 void BoardLayerModel::initWithJson(rapidjson::Value& json)
 {
@@ -83,7 +75,7 @@ void BoardLayerModel::initWithJson(rapidjson::Value& json)
 			if (itr1 != itr->value.MemberEnd() && itr1->value.IsString())
 			{
 				const auto typeName = itr1->value.GetString();
-				const auto tile = static_cast<CookieTile*>(TileClassFactory.construct(typeName));
+				auto tile = PoolController::getInstance()->getCookieTile(typeName);
 				if (tile != nullptr)
 				{
 					tile->initWithGrid(gridPos.Col, gridPos.Row);

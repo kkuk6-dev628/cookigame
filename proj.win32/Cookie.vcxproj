@@ -150,6 +150,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controllers\BoardController.cpp" />
     <ClCompile Include="..\Classes\Controllers\GameController.cpp" />
     <ClCompile Include="..\Classes\Controllers\LevelController.cpp" />
+    <ClCompile Include="..\Classes\Controllers\PoolController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SoundController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SpawnController.cpp" />
     <ClCompile Include="..\Classes\General\Constants.cpp" />
@@ -164,6 +165,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\DataModels\Level.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\UserData.cpp" />
     <ClCompile Include="..\Classes\Models\ShowObjects\ShowObject.cpp" />
+    <ClCompile Include="..\Classes\Models\TilePools\LayeredMatchObjectPool.cpp" />
+    <ClCompile Include="..\Classes\Models\TilePools\TilePool.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp" />
@@ -181,6 +184,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Controllers\BoardController.h" />
     <ClInclude Include="..\Classes\Controllers\GameController.h" />
     <ClInclude Include="..\Classes\Controllers\LevelController.h" />
+    <ClInclude Include="..\Classes\Controllers\PoolController.h" />
     <ClInclude Include="..\Classes\Controllers\SoundController.h" />
     <ClInclude Include="..\Classes\Controllers\SpawnController.h" />
     <ClInclude Include="..\Classes\General\Constants.h" />
@@ -199,6 +203,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\DataModels\TileData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\UserData.h" />
     <ClInclude Include="..\Classes\Models\ShowObjects\ShowObject.h" />
+    <ClInclude Include="..\Classes\Models\TilePools\LayeredMatchObjectPool.h" />
+    <ClInclude Include="..\Classes\Models\TilePools\TilePool.h" />
     <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h" />

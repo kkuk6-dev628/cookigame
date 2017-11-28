@@ -37,6 +37,9 @@
     <Filter Include="src\Models\BoardModels">
       <UniqueIdentifier>{de0960ee-d463-4316-8642-09cda5063e05}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Models\TilePools">
+      <UniqueIdentifier>{c3cfeb34-c9ec-452c-8025-534fe622505f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -126,6 +129,13 @@
     <ClCompile Include="..\Classes\Models\BoardModels\Match.cpp">
       <Filter>src\Models\BoardModels</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\PoolController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\TilePools\TilePool.cpp">
+      <Filter>src\Models\TilePools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\TilePools\LayeredMatchObjectPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -230,6 +240,13 @@
     <ClInclude Include="..\Classes\Models\BoardModels\Match.h">
       <Filter>src\Models\BoardModels</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\PoolController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\TilePools\TilePool.h">
+      <Filter>src\Models\TilePools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\TilePools\LayeredMatchObjectPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

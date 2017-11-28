@@ -14,7 +14,6 @@ GameController::GameController()
 	this->soundController = SoundController::getInstance();
 	this->userData = UserData::getInstance();
 	this->currentLevel = this->levelController->getCurrentLevel();
-	BoardLayerModel::RegisterTileClasses();
 }
 
 void GameController::loadGamePlayTextureAtlases()

@@ -15,5 +15,9 @@ public:
 
 	bool isMovable() const;
 	void showSwapAction(GridPos& gridPos, std::function<void()> callback);
+	void initWithJson(rapidjson::Value& json) override;
+
+protected:
+	MovingTileTypes movingTileType = MovingTileTypes::LayeredMatchObject;
 };
 

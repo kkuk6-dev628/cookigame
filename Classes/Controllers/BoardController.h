@@ -8,6 +8,7 @@
 #include "Models/BoardModels/Cell.h"
 #include "Models/Tiles/MovingTile.h"
 #include "Models/BoardModels/Match.h"
+#include "PoolController.h"
 
 class ActionController;
 class BoardModel;
@@ -37,10 +38,13 @@ public:
 	void onTouchEnded(Touch* touch, Event* unused_event) override;
 	void onTouchCancelled(Touch* touch, Event* unused_event) override;
 
-	void releaseWaitingMatch(Node* tile);
+	void releaseWaitingMatch(int matchId) const;
 	//void BoardController::initWithData(BoardModel* boardData);
 
 protected:
+
+#pragma region protected functions
+
 	void initBoardElements();
 	void addBackgroundTile(char col, char row) const;
 	void initNode();
@@ -52,8 +56,15 @@ protected:
 	int increaseMoveCount() { return ++moveCount; }
 	int getMatchId() { return ++matchId; }
 
+	void crushPendingTiles();
+
+#pragma endregion
+
+#pragma region protected data members
+
 	SpawnController* spawnController;
 	ActionController* actionController;
+	PoolController* poolController;
 
 	static float centerX;
 	static float centerY;
@@ -73,6 +84,9 @@ protected:
 
 	int moveCount = 0;
 	int matchId = 0;
+
+#pragma endregion
+
 protected:
 	void update(float delta) override;
 };

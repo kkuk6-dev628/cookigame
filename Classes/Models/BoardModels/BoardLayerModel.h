@@ -11,7 +11,6 @@ public:
 	~BoardLayerModel();
 	
 	static BoardLayerModel* create(char width, char height);
-	static void RegisterTileClasses();
 
 	void initWithJson(rapidjson::Value& json);
 

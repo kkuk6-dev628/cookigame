@@ -25,3 +25,17 @@ BETTER_ENUM(AdjacentDirs, char,
 	NW,
 	NoDir
 	)
+
+BETTER_ENUM(MovingTileTypes, char, 
+	LayeredMatchObject = 0,
+	BombBreakerObject,
+	ColumnBreakerObject,
+	RowBreakerObject,
+	XBreakerObject,
+	RainbowObject,
+	SeekerObject,
+	LiquidDrainerMatchObject,
+	LiquidFillerMatchObject,
+	PathMoverMatchObject,
+	DonutObject
+	)
