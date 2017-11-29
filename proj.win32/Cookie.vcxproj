@@ -156,7 +156,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\General\Constants.cpp" />
     <ClCompile Include="..\Classes\General\Utils.cpp" />
     <ClCompile Include="..\Classes\Layers\BoardLayer.cpp" />
-    <ClCompile Include="..\Classes\Models\BoardModels\BoardLayerModel.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\BoardModel.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\Cell.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\Match.cpp" />
@@ -193,7 +192,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\General\TypeDefs.h" />
     <ClInclude Include="..\Classes\General\Utils.h" />
     <ClInclude Include="..\Classes\Layers\BoardLayer.h" />
-    <ClInclude Include="..\Classes\Models\BoardModels\BoardLayerModel.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\BoardModel.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\Cell.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\Match.h" />

@@ -56,7 +56,15 @@ protected:
 	int increaseMoveCount() { return ++moveCount; }
 	int getMatchId() { return ++matchId; }
 
-	void crushPendingTiles();
+	/// ///// /////////
+	void crushPendingCells();
+	void fallTiles();
+
+
+
+	void crushCell(Cell* pCell);
+
+	////////////////////
 
 #pragma endregion
 

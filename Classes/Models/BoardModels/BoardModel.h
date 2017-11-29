@@ -17,12 +17,20 @@ public:
 	static TileColorsTable CreateColorsTableFromJson(const rapidjson::Value& json);
 	static std::list<CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
 	void initWithJson(rapidjson::Value& json);
+	void addLayerWithJson(rapidjson::Value& json, LayerId layerNumber) const;
 	BoardModel();
+	void initCells();
 	Cell* getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs inDir, AdjacentDirs* newDir, bool counterClockWise);
 
 	BoardLayerModel* getMatchLayer() const { return reinterpret_cast<BoardLayerModel*>(boardLayers->objectForKey(LayerId::Match)); }
 
 	Cell* getTurnCell(LayerId layer, GridPos& refPos, bool counterClockWise);
+
+	float getCurrentLiquidLevel() const { return currentLiquidLevel; }
+	void setCurrentLiquidLevel(float liquidLevel);
+
+	Cell* getCell(const char col, const char row) const;
+
 
 private:
 
@@ -42,7 +50,10 @@ private:
 	std::list<CustomSpawnTableItem>* customSpawnTable;
 	SpawnTablesList liquidSpawnTable;
 	cocos2d::__Array* data;
+	LiquidSystem* liquidSystem;
 
+	Cell*** cells;
+	float currentLiquidLevel = 0;
 
 #pragma region Get Set Methods
 

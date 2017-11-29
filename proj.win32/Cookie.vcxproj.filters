@@ -99,9 +99,6 @@
     <ClCompile Include="..\Classes\Controllers\BoardController.cpp">
       <Filter>src\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Models\BoardModels\BoardLayerModel.cpp">
-      <Filter>src\Models\BoardModels</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Models\BoardModels\Cell.cpp">
       <Filter>src\Models\BoardModels</Filter>
     </ClCompile>
@@ -209,9 +206,6 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Controllers\BoardController.h">
       <Filter>src\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Models\BoardModels\BoardLayerModel.h">
-      <Filter>src\Models\BoardModels</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Models\BoardModels\Cell.h">
       <Filter>src\Models\BoardModels</Filter>

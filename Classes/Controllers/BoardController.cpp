@@ -1,7 +1,6 @@
 #include "BoardController.h"
 #include "Models/BoardModels/BoardModel.h"
 #include "LevelController.h"
-#include "Models/BoardModels/BoardLayerModel.h"
 #include "Models/BoardModels/Cell.h"
 #include "proj.win32/Macros.h"
 #include "General/Constants.h"
@@ -176,7 +175,7 @@ Cell* BoardController::getMatchCell(const Vec2 boardPos) const
 	{
 		return nullptr;
 	}
-	return boardModel->getMatchLayer()->getCell(gridPos.Col, gridPos.Row);
+	return boardModel->getCell(gridPos.Col, gridPos.Row);
 }
 
 Cell* BoardController::getMatchCell(GridPos& pos) const
@@ -185,7 +184,7 @@ Cell* BoardController::getMatchCell(GridPos& pos) const
 	{
 		return nullptr;
 	}
-	return boardModel->getMatchLayer()->getCell(pos.Col, pos.Row);
+	return boardModel->getCell(pos.Col, pos.Row);
 }
 
 Cell* BoardController::getMatchCell(char col, char row) const
@@ -194,7 +193,7 @@ Cell* BoardController::getMatchCell(char col, char row) const
 	{
 		return nullptr;
 	}
-	return boardModel->getMatchLayer()->getCell(col, row);
+	return boardModel->getCell(col, row);
 }
 
 void BoardController::onEnterTransitionDidFinish()
@@ -228,13 +227,11 @@ void BoardController::initBoardElements()
 	layeredMatchLayer = BoardLayer::create();
 	layeredMatchLayer->initWithGrid(boardModel->Width, boardModel->Height);
 
-	const auto matchLayer = boardModel->getMatchLayer();
-
 	for (char i = 0; i < boardModel->Height; i++)
 	{
 		for (char j = 0; j < boardModel->Width; j++)
 		{
-			const auto cell = matchLayer->getCell(j, i);
+			const auto cell = boardModel->getCell(j, i);
 
 			if (cell->IsEmpty) continue;
 
@@ -253,7 +250,6 @@ void BoardController::initBoardElements()
 
 void BoardController::addBackgroundTile(const char col, const char row) const
 {
-	const auto matchLayer = boardModel->getMatchLayer();
 	bool borders[4] = { false, false, false, false };
 	auto backgroundTile = TileBase::create();
 	backgroundTile->initWithGrid(col, row);
@@ -267,7 +263,7 @@ void BoardController::addBackgroundTile(const char col, const char row) const
 		const char adjRow = row + AdjacentIndents[k][0];
 		if (0 <= adjCol && adjCol < boardModel->Width
 			&& 0 <= adjRow && adjRow < boardModel->Height
-			&& !(matchLayer->getCell(adjCol, adjRow)->IsEmpty))
+			&& !(boardModel->getCell(adjCol, adjRow)->IsEmpty))
 		{
 			borders[k] = false;
 		}
@@ -365,7 +361,7 @@ Match* BoardController::findMatch(Cell* startCell)
 			break;
 		}
 		cell = cell->leftCell;
-		down++;
+		left++;
 	}
 	// right check
 	cell = startCell->rightCell;
@@ -377,7 +373,7 @@ Match* BoardController::findMatch(Cell* startCell)
 			break;
 		}
 		cell = cell->rightCell;
-		down++;
+		right++;
 	}
 
 	Match* match = nullptr;
@@ -396,7 +392,7 @@ Match* BoardController::findMatch(Cell* startCell)
 		{
 			for (int i = startCell->gridPos.Col - left; i <= startCell->gridPos.Col + right; i++)
 			{
-				match->vMatchedCells->push_back(getMatchCell(i, startCell->gridPos.Row));
+				match->hMatchedCells->push_back(getMatchCell(i, startCell->gridPos.Row));
 			}
 		}
 	}   
@@ -456,7 +452,7 @@ void BoardController::doSomethingPerMove()
 	moveCount++;
 }
 
-void BoardController::crushPendingTiles()
+void BoardController::crushPendingCells()
 {
 	Ref* itr = nullptr;
 	CCARRAY_FOREACH(pendingCrushCells, itr)
@@ -464,10 +460,48 @@ void BoardController::crushPendingTiles()
 		const auto match = static_cast<Match*>(itr);
 		if (!match->isWaiting)
 		{
-
+			if (match->getHMatchCount() > 2)
+			{
+				for (auto& cell : *(match->hMatchedCells))
+				{
+					if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr) continue;
+					poolController->recycleCookieTile(cell->getSourceTile());
+				}
+			}
+			if (match->getVMatchCount() > 2)
+			{
+				for (auto& cell : *(match->vMatchedCells))
+				{
+					if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr) continue;
+					poolController->recycleCookieTile(cell->getSourceTile());
+				}
+			}
+			if (match->getSMatchCount() > 3)
+			{
+				for (auto& cell : *(match->sMatchedCells))
+				{
+					if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr) continue;
+					poolController->recycleCookieTile(cell->getSourceTile());
+				}
+			}
 		}
 	}
 
+}
+
+void BoardController::fallTiles()
+{
+	
+}
+
+void BoardController::crushCell(Cell* cell)
+{
+	if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr)
+	{
+		return;
+	}
+	poolController->recycleCookieTile(cell->getSourceTile());
+	cell->clear();
 }
 
 void BoardController::update(float delta)
@@ -475,4 +509,5 @@ void BoardController::update(float delta)
 	Layer::update(delta);
 
 	actionController->runPendingActions();
+	crushPendingCells();
 }

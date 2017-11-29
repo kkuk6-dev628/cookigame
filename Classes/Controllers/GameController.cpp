@@ -1,7 +1,6 @@
 #include "GameController.h"
 #include "Scenes/MainMenuScene.h"
 #include "Scenes/GamePlayScene.h"
-#include "Models/BoardModels/BoardLayerModel.h"
 
 USING_NS_CC;
 

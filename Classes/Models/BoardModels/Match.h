@@ -17,7 +17,12 @@ public:
 	std::list<Cell*>* hMatchedCells;
 	std::list<Cell*>* vMatchedCells;
 	std::list<Cell*>* sMatchedCells;
-private:
+
+	int getHMatchCount() const { return hMatchedCells != nullptr ? hMatchedCells->size() : 0; }
+	int getVMatchCount() const { return vMatchedCells != nullptr ? vMatchedCells->size() : 0; }
+	int getSMatchCount() const { return sMatchedCells != nullptr ? sMatchedCells->size() : 0; }
+
+	private:
 	Match();
 };
 

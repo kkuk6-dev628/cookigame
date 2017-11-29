@@ -1,7 +1,8 @@
 #include "deprecated/CCDictionary.h"
 #include "BoardModel.h"
-#include "BoardLayerModel.h"
 #include "Controllers/SpawnController.h"
+#include "General/Utils.h"
+#include "Controllers/PoolController.h"
 
 
 BoardModel::BoardModel()
@@ -11,25 +12,49 @@ BoardModel::BoardModel()
 
 }
 
+void BoardModel::initCells()
+{
+	cells = new Cell**[height];
+	for (auto i = 0; i < height; i++)
+	{
+		cells[i] = new Cell*[width];
+
+		for (auto j = 0; j < width; j++)
+		{
+			cells[i][j] = new Cell();
+			cells[i][j]->setGridPos(j, i);
+			if (i > 0)
+			{
+				cells[i - 1][j]->upCell = cells[i][j];
+				cells[i][j]->downCell = cells[i - 1][j];
+			}
+			if (j > 0)
+			{
+				cells[i][j - 1]->rightCell = cells[i][j];
+				cells[i][j]->leftCell = cells[i][j - 1];
+			}
+		}
+	}
+}
+
 Cell* BoardModel::getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs inputDir, AdjacentDirs* newDir, bool counterClockWise)
 {
-	auto layerModel = static_cast<BoardLayerModel*>(boardLayers->objectForKey(layer._to_integral()));
 	if (counterClockWise)
 	{
 		switch (inputDir)
 		{
 		case AdjacentDirs::E:
 			*newDir = AdjacentDirs::N;
-			return layerModel->getCell(refPos.Col, refPos.Row - 1);
+			return getCell(refPos.Col, refPos.Row - 1);
 		case AdjacentDirs::W:
 			*newDir = AdjacentDirs::S;
-			return layerModel->getCell(refPos.Col, refPos.Row + 1);
+			return getCell(refPos.Col, refPos.Row + 1);
 		case AdjacentDirs::N:
 			*newDir = AdjacentDirs::W;
-			return layerModel->getCell(refPos.Col + 1, refPos.Row);
+			return getCell(refPos.Col + 1, refPos.Row);
 		case AdjacentDirs::S:
 			*newDir = AdjacentDirs::E;
-			return layerModel->getCell(refPos.Col - 1, refPos.Row);
+			return getCell(refPos.Col - 1, refPos.Row);
 		}
 		return nullptr;
 	}
@@ -39,25 +64,61 @@ Cell* BoardModel::getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs input
 		{
 		case AdjacentDirs::E:
 			*newDir = AdjacentDirs::S;
-			return layerModel->getCell(refPos.Col, refPos.Row + 1);
+			return getCell(refPos.Col, refPos.Row + 1);
 		case AdjacentDirs::W:
 			*newDir = AdjacentDirs::N;
-			return layerModel->getCell(refPos.Col, refPos.Row - 1);
+			return getCell(refPos.Col, refPos.Row - 1);
 		case AdjacentDirs::N:
 			*newDir = AdjacentDirs::E;
-			return layerModel->getCell(refPos.Col - 1, refPos.Row);
+			return getCell(refPos.Col - 1, refPos.Row);
 		case AdjacentDirs::S:
 			*newDir = AdjacentDirs::W;
-			return layerModel->getCell(refPos.Col + 1, refPos.Row);
+			return getCell(refPos.Col + 1, refPos.Row);
 		}
 		return nullptr;
 	}
+}
+
+void BoardModel::setCurrentLiquidLevel(const float liquidLevel)
+{
+	currentLiquidLevel = liquidLevel;
+	for (char i = 0; i < currentLiquidLevel; i++)
+	{
+		for (char j = 0; j < width; j++)
+		{
+			
+		}
+	}
+}
+
+Cell* BoardModel::getCell(const char col, const char row) const
+{
+	if (col < 0 || col >= Width || row < 0 || row >= Height)
+	{
+		return nullptr;
+	}
+	return cells[row][col];
 }
 
 
 BoardModel::~BoardModel()
 {
 	this->boardLayers->release();
+	if (liquidSystem != nullptr)
+	{
+		CC_SAFE_DELETE(liquidSystem);
+	}
+
+	for (auto i = 0; i < height; i++)
+	{
+		for (auto j = 0; j < width; j++)
+		{
+			CC_SAFE_DELETE(cells[i][j]);
+		}
+		CC_SAFE_DELETE_ARRAY(cells[i]);
+	}
+	CC_SAFE_DELETE_ARRAY(cells);
+
 }
 
 //BoardModel* BoardModel::create()
@@ -110,6 +171,10 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	this->transitionOut = json["transitionOut"].GetString();
 	this->width = json["width"].GetInt();
 	this->height = json["height"].GetInt();
+	if (width > 0 && height > 0)
+	{
+		initCells();
+	}
 	this->colors = CreateColorsTableFromJson(json["colors"]);
 
 	SpawnController::getInstance()->setColorTable(colors);
@@ -131,10 +196,69 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	{
 		if (itr->value.IsObject() && !itr->value.ObjectEmpty())
 		{
-			auto boardLayer = BoardLayerModel::create(this->width, this->height);
-			boardLayer->initWithJson(itr->value);
+			//auto boardLayer = BoardLayerModel::create(this->width, this->height);
+			//boardLayer->initWithJson(itr->value, cells);
 			const auto layerIndex = atoi(itr->name.GetString());
-			this->boardLayers->setObject(boardLayer, layerIndex);
+			if (LayerId::_is_valid(layerIndex))
+			{
+				const auto layerId = LayerId::_from_integral(layerIndex);
+				addLayerWithJson(itr->value, layerId);
+			}
+			//this->boardLayers->setObject(boardLayer, layerIndex);
 		}
 	}
+
+	auto& data = json["data"];
+	if (data.IsArray() && data.Size() > 0)
+	{
+		auto& dataArray = data.GetArray();
+		for (auto& customData : dataArray)
+		{
+			if (customData.IsObject() && !customData.ObjectEmpty())
+			{
+				const auto dataType = customData["type"].GetString();
+
+				if (dataType == "LiquidSystem")
+				{
+					liquidSystem = new LiquidSystem();
+					liquidSystem->TurnTimer = customData["turn_timer"].GetInt();
+					liquidSystem->LevelMax = customData["level_max"].GetFloat();
+					liquidSystem->FillerToggle = customData["filler_toggle"].GetInt();
+					liquidSystem->DrainerToggle = customData["drainer_toggle"].GetInt();
+					liquidSystem->DrainStep = customData["drain_step"].GetFloat();
+					liquidSystem->FillStep = customData["fill_step"].GetFloat();
+					liquidSystem->LevelMin = customData["level_min"].GetFloat();
+					liquidSystem->LevelStep = customData["level_step"].GetFloat();
+					liquidSystem->LevelStart = customData["level_start"].GetFloat();
+				}
+			}
+		}
+	}
+
+}
+
+void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNumber) const
+{
+	for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
+	{
+		if (itr->value.IsObject() && !itr->value.ObjectEmpty())
+		{
+			auto gridPos = Utils::StrToGridPos(itr->name.GetString(), "_");
+			assert(this->Width > gridPos.Col && this->Height > gridPos.Row);
+			const auto itr1 = itr->value.FindMember("type");
+			if (itr1 != itr->value.MemberEnd() && itr1->value.IsString())
+			{
+				const auto typeName = itr1->value.GetString();
+				auto tile = PoolController::getInstance()->getCookieTile(typeName);
+				if (tile != nullptr)
+				{
+					tile->initWithGrid(gridPos.Col, gridPos.Row);
+					tile->initWithJson(itr->value);
+
+					cells[gridPos.Row][gridPos.Col]->setTileToLayer(tile, layerNumber);
+				}
+			}
+		}
+	}
+
 }

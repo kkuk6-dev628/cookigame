@@ -37,5 +37,7 @@ BETTER_ENUM(MovingTileTypes, char,
 	LiquidDrainerMatchObject,
 	LiquidFillerMatchObject,
 	PathMoverMatchObject,
-	DonutObject
+	DonutObject,
+	ChocolateChipObject,
+	ChocolateCheesecakeObject
 	)
