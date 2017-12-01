@@ -132,7 +132,6 @@
     <ClCompile Include="..\Classes\Models\TilePools\TilePool.cpp">
       <Filter>src\Models\TilePools</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Models\TilePools\LayeredMatchObjectPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -240,7 +239,6 @@
     <ClInclude Include="..\Classes\Models\TilePools\TilePool.h">
       <Filter>src\Models\TilePools</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Models\TilePools\LayeredMatchObjectPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

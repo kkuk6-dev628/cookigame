@@ -164,7 +164,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\DataModels\Level.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\UserData.cpp" />
     <ClCompile Include="..\Classes\Models\ShowObjects\ShowObject.cpp" />
-    <ClCompile Include="..\Classes\Models\TilePools\LayeredMatchObjectPool.cpp" />
     <ClCompile Include="..\Classes\Models\TilePools\TilePool.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp" />
@@ -201,7 +200,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\DataModels\TileData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\UserData.h" />
     <ClInclude Include="..\Classes\Models\ShowObjects\ShowObject.h" />
-    <ClInclude Include="..\Classes\Models\TilePools\LayeredMatchObjectPool.h" />
     <ClInclude Include="..\Classes\Models\TilePools\TilePool.h" />
     <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h" />

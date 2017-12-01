@@ -1,6 +1,8 @@
 #include "StartScene.h"
 #include "General/Constants.h"
-
+#include "cocostudio/ActionTimeline/CSLoader.h"
+#include "ui/UIButton.h"
+#include "cocostudio/CocoStudio.h"
 
 USING_NS_CC;
 
@@ -37,23 +39,56 @@ bool StartScene::init()
 	CenterX = origin.x + visibleSize.width / 2;
 	CenterY = visibleSize.height / 2 + origin.y;
     
+	/// load cocos studio scene
+	auto spriteFrameCache = SpriteFrameCache::getInstance();
+	spriteFrameCache->addSpriteFramesWithFile("res/texture/backgraund.plist");
+
+	auto rootNode = CSLoader::createNode("res/startScene.csb");
+	addChild(rootNode);
+
+	ui::Button *m_btn_start = static_cast<ui::Button*>(rootNode->getChildByName("btnPlay"));
+	m_btn_start->addClickEventListener(CC_CALLBACK_1(StartScene::menuCloseCallback, this));
+
+
+	cocostudio::timeline::ActionTimeline* action = CSLoader::createTimeline("res/startScene.csb");
+	action->play("animation0", false);
+	action->setLastFrameCallFunc([=]() {
+		action->clearLastFrameCallFunc();
+		action->play("animation1", true);
+	});
+	rootNode->runAction(action);
+
+	//auto aniRoot = rootNode->getChildByName("ani");
+	//if (aniRoot) {
+	//	for (int i = 0; i < aniRoot->getChildrenCount(); i++) {
+
+	//		auto node = aniRoot->getChildren().at(i);
+	//		auto naction = dynamic_cast<cocostudio::timeline::ActionTimeline*>(node->getActionByTag(node->getTag()));
+	//		if (naction) {
+	//			node->runAction(naction);
+	//			naction->gotoFrameAndPlay(0, true);
+	//		}
+	//	}
+	//}
+
+
 	/////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
-                                           "images/GreenButton.png",
-                                           "images/GreenButton.png",
-                                           CC_CALLBACK_1(StartScene::menuCloseCallback, this));
-    
-	closeItem->setPosition(Vec2(origin.x + visibleSize.width / 2,
-		visibleSize.height / 2 + origin.y));
+ //   auto closeItem = MenuItemImage::create(
+ //                                          "images/GreenButton.png",
+ //                                          "images/GreenButton.png",
+ //                                          CC_CALLBACK_1(StartScene::menuCloseCallback, this));
+ //   
+	//closeItem->setPosition(Vec2(origin.x + visibleSize.width / 2,
+	//	visibleSize.height / 2 + origin.y));
 
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+ //   // create menu, it's an autorelease object
+ //   auto menu = Menu::create(closeItem, NULL);
+ //   menu->setPosition(Vec2::ZERO);
+ //   this->addChild(menu, 1);
 
     /////////////////////////////
     // 3. add your codes below...
@@ -61,24 +96,24 @@ bool StartScene::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    auto label = Label::createWithTTF("Hello Cookie", "fonts/Marker Felt.ttf", 24);
-    
-    // position the label on the center of the screen
-    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - label->getContentSize().height));
+ //   auto label = Label::createWithTTF("Hello Cookie", "fonts/Marker Felt.ttf", 24);
+ //   
+ //   // position the label on the center of the screen
+ //   label->setPosition(Vec2(origin.x + visibleSize.width/2,
+ //                           origin.y + visibleSize.height - label->getContentSize().height));
 
-    // add the label as a child to this layer
-    this->addChild(label, 1);
+ //   // add the label as a child to this layer
+ //   this->addChild(label, 1);
 
-    // add "StartScene" splash screen"
-    auto sprite = Sprite::create("images/Social_000_BG.png");
+ //   // add "StartScene" splash screen"
+ //   auto sprite = Sprite::create("images/Social_000_BG.png");
 
-    // position the sprite on the center of the screen
-    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-	sprite->setScale(3, 3);
+ //   // position the sprite on the center of the screen
+ //   sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+	//sprite->setScale(3, 3);
 
-    // add the sprite as a child to this layer
-    this->addChild(sprite, 0);
+ //   // add the sprite as a child to this layer
+ //   this->addChild(sprite, 0);
 
 	this->initControllers();
     
