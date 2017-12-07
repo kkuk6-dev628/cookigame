@@ -7,423 +7,423 @@
             <key>BombBreakerObject_blue.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{70,0},{79,79}}</string>
+                <string>{{67,67},{67,69}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{5,5},{67,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>BombBreakerObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{149,0},{79,79}}</string>
+                <string>{{585,67},{65,69}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,5},{65,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>BombBreakerObject_orange.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,79},{79,79}}</string>
+                <string>{{1783,0},{65,67}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,6},{65,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>BombBreakerObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,79},{79,79}}</string>
+                <string>{{390,67},{65,69}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,5},{65,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>BombBreakerObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,79},{79,79}}</string>
+                <string>{{325,67},{65,69}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,4},{65,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>BombBreakerObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,158},{79,79}}</string>
+                <string>{{1517,0},{65,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,5},{65,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>ColumnBreakerObject_blue.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{147,158},{79,79}}</string>
+                <string>{{256,67},{69,69}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,5},{69,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>ColumnBreakerObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,237},{79,79}}</string>
+                <string>{{1450,0},{67,67}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,6},{67,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>ColumnBreakerObject_orange.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,237},{79,79}}</string>
+                <string>{{455,67},{69,69}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{5,5},{69,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>ColumnBreakerObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,237},{79,79}}</string>
+                <string>{{139,0},{69,61}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,8},{69,61}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>ColumnBreakerObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,316},{79,79}}</string>
+                <string>{{277,0},{67,63}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,8},{67,63}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>ColumnBreakerObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,316},{79,79}}</string>
+                <string>{{1917,0},{69,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{5,5},{69,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LayeredMatchObject_blue.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,316},{79,79}}</string>
+                <string>{{612,0},{67,65}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{5,7},{67,65}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LayeredMatchObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,395},{79,79}}</string>
+                <string>{{0,67},{67,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{5,6},{67,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LayeredMatchObject_orange.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,395},{79,79}}</string>
+                <string>{{1848,0},{69,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,5},{69,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LayeredMatchObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,395},{79,79}}</string>
+                <string>{{208,0},{69,61}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,9},{69,61}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LayeredMatchObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,474},{79,79}}</string>
+                <string>{{545,0},{67,63}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{5,8},{67,63}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LayeredMatchObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,474},{79,79}}</string>
+                <string>{{478,0},{67,63}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,7},{67,63}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidDrainerMatchObject_bule.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,474},{79,79}}</string>
+                <string>{{524,67},{61,69}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-3,3}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,2},{61,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidDrainerMatchObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,553},{79,79}}</string>
+                <string>{{195,67},{61,69}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-2,3}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,2},{61,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidDrainerMatchObject_orange.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,553},{79,79}}</string>
+                <string>{{134,67},{61,69}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-2,3}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,2},{61,69}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidDrainerMatchObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,553},{79,79}}</string>
+                <string>{{720,67},{61,71}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,4}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{8,0},{61,71}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidDrainerMatchObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,632},{79,79}}</string>
+                <string>{{923,67},{63,71}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,4}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,0},{63,71}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidDrainerMatchObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,632},{79,79}}</string>
+                <string>{{1477,67},{63,79}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,0},{63,79}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidFillerMatchObject_blue.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,632},{79,79}}</string>
+                <string>{{1406,67},{71,77}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-4,-1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{0,2},{71,77}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidFillerMatchObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,711},{79,79}}</string>
+                <string>{{1335,67},{71,77}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-2,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{2,1},{71,77}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidFillerMatchObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,711},{79,79}}</string>
+                <string>{{986,67},{63,71}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-2,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,4},{63,71}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidFillerMatchObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,711},{79,79}}</string>
+                <string>{{1191,67},{65,73}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-3,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,2},{65,73}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>LiquidFillerMatchObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,790},{79,79}}</string>
+                <string>{{781,67},{63,71}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{7,4},{63,71}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>PathGoalObject.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,790},{79,79}}</string>
+                <string>{{1256,67},{79,77}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,-1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{0,2},{79,77}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>PathMoverMatchObject_blue.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,790},{79,79}}</string>
+                <string>{{1617,67},{77,79}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{1,0},{77,79}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>PathMoverMatchObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,869},{79,79}}</string>
+                <string>{{1540,67},{77,79}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{0,0},{77,79}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>PathMoverMatchObject_orange.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,869},{79,79}}</string>
+                <string>{{1694,67},{79,79}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -436,33 +436,33 @@
             <key>PathMoverMatchObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,869},{79,79}}</string>
+                <string>{{1122,67},{69,73}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,2}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,1},{69,73}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>PathMoverMatchObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,948},{79,79}}</string>
+                <string>{{1852,67},{77,79}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{0,0},{77,79}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>PathMoverMatchObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,948},{79,79}}</string>
+                <string>{{1773,67},{79,79}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -475,254 +475,254 @@
             <key>RainbowObject.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,948},{79,79}}</string>
+                <string>{{1049,67},{73,73}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,3},{73,73}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>RowBreakerObject_blue.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,1027},{79,79}}</string>
+                <string>{{679,0},{69,65}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{5,6},{69,65}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>RowBreakerObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,1027},{79,79}}</string>
+                <string>{{965,0},{71,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,5},{71,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>RowBreakerObject_orange.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,1027},{79,79}}</string>
+                <string>{{1107,0},{69,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{5,5},{69,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>RowBreakerObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,1106},{79,79}}</string>
+                <string>{{68,0},{71,61}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{4,9},{71,61}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>RowBreakerObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,1106},{79,79}}</string>
+                <string>{{411,0},{67,63}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,-1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,9},{67,63}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>RowBreakerObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,1106},{79,79}}</string>
+                <string>{{344,0},{67,63}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,7},{67,63}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>SeekerObject_bule.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,1185},{79,79}}</string>
+                <string>{{844,67},{79,71}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{0,4},{79,71}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>SeekerObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,1185},{79,79}}</string>
+                <string>{{892,0},{73,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{2,6},{73,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>SeekerObject_orange.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,1185},{79,79}}</string>
+                <string>{{1036,0},{71,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-1,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{3,6},{71,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>SeekerObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,1264},{79,79}}</string>
+                <string>{{748,0},{73,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-2,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{1,6},{73,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>SeekerObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,1264},{79,79}}</string>
+                <string>{{821,0},{71,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-2,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{2,6},{71,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>SeekerObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,1264},{79,79}}</string>
+                <string>{{1176,0},{73,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{-3,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{0,6},{73,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>XBreakerObject_bule.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,1343},{79,79}}</string>
+                <string>{{1383,0},{67,67}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,6},{67,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>XBreakerObject_green.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,1343},{79,79}}</string>
+                <string>{{1649,0},{67,67}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,6},{67,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>XBreakerObject_orange.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,1343},{79,79}}</string>
+                <string>{{1582,0},{67,67}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,6},{67,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>XBreakerObject_purple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,1422},{79,79}}</string>
+                <string>{{1316,0},{67,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,5},{67,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>XBreakerObject_red.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,1422},{79,79}}</string>
+                <string>{{1716,0},{67,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,5},{67,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>XBreakerObject_yellow.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{158,1422},{79,79}}</string>
+                <string>{{1249,0},{67,67}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{79,79}}</string>
+                <string>{{6,5},{67,67}}</string>
                 <key>sourceSize</key>
                 <string>{79,79}</string>
             </dict>
             <key>bg_tile.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,0},{70,70}}</string>
+                <string>{{650,67},{70,70}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -735,7 +735,7 @@
             <key>border.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{79,158},{68,9}}</string>
+                <string>{{0,0},{68,9}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -757,9 +757,9 @@
             <key>realTextureFileName</key>
             <string>tiles.png</string>
             <key>size</key>
-            <string>{237,1501}</string>
+            <string>{1986,146}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:7f30622552340d4c22b33702103f4b90:6526c546308a055ca96a7969f8beed3b:e7ba09821896df177254bf002289be44$</string>
+            <string>$TexturePacker:SmartUpdate:ee81fb844d1b05eccb2b04ff77629d4d:6526c546308a055ca96a7969f8beed3b:e7ba09821896df177254bf002289be44$</string>
             <key>textureFileName</key>
             <string>tiles.png</string>
         </dict>

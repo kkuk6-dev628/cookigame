@@ -4,6 +4,8 @@
 #include "General/EnumTypes.h"
 
 
+class FallPath;
+
 class CKAction
 {
 public:
@@ -22,9 +24,12 @@ public:
 
 	void runPendingActions() const;
 
+	char getRunningActionCount();
+
 	cocos2d::Action* createScaleBouncingAction(cocos2d::Node* node);
 	cocos2d::Action* createDirectionalScaleAction(cocos2d::Node* node, AdjacentDirs dir);
-	cocos2d::Action* createTileMoveAction(const cocos2d::Vec2& startPos, const cocos2d::Vec2& targetPos, std::function<void()> callback) const;
+	cocos2d::Action* createMoveThroughAction(FallPath* path, std::function<void()> callback, cocos2d::Node* node);
+	cocos2d::Action* createTileMoveAction(const cocos2d::Vec2& startPos, const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node) const;
 
 	void endAction(cocos2d::Node* node) const;
 

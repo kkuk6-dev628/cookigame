@@ -32,99 +32,136 @@ private:
 	std::list<int>* scores;
 	bool ignoreEveryoneHardDelta;
 
-#pragma region Get Set Methods
+
 public:
-	int level_number() const
+	int getLevelNumber() const
 	{
 		return levelNumber;
 	}
 
-	__declspec(property(get = level_number)) int LevelNumber;
-
-	cocos2d::__Array* boards1() const
+	void setLevelNumber(int level_number)
 	{
-		return boards;
+		levelNumber = level_number;
 	}
 
-	__declspec(property(get = boards1)) cocos2d::__Array* Boards;
-
-	char episode1() const
+	char getEpisode() const
 	{
 		return episode;
 	}
 
-	__declspec(property(get = episode1)) char Episode;
+	void setEpisode(char episode)
+	{
+		this->episode = episode;
+	}
 
-	std::string title1() const
+	cocos2d::__Array* getBoards() const
+	{
+		return boards;
+	}
+
+	void setBoards(cocos2d::__Array* boards)
+	{
+		this->boards = boards;
+	}
+
+	std::string getTitle() const
 	{
 		return title;
 	}
 
-	__declspec(property(get = title1)) std::string Title;
+	void setTitle(const std::string& title)
+	{
+		this->title = title;
+	}
 
-	bool is_hard_level() const
+	bool getIsHardLevel() const
 	{
 		return isHardLevel;
 	}
 
-	__declspec(property(get = is_hard_level)) bool IsHardLevel;
+	void setIsHardLevel(bool is_hard_level)
+	{
+		isHardLevel = is_hard_level;
+	}
 
-	std::list<std::string>* pregame_boosters() const
+	std::list<std::string>* getPregameBoosters() const
 	{
 		return pregameBoosters;
 	}
 
-	__declspec(property(get = pregame_boosters)) std::list<std::string>* PregameBoosters;
+	void setPregameBoosters(std::list<std::string>* basic_strings)
+	{
+		pregameBoosters = basic_strings;
+	}
 
-	char pregame_boosters_at_move() const
+	char getPregameBoostersAtMove() const
 	{
 		return pregameBoostersAtMove;
 	}
 
-	__declspec(property(get = pregame_boosters_at_move)) char PregameBoostersAtMove;
+	void setPregameBoostersAtMove(char pregame_boosters_at_move)
+	{
+		pregameBoostersAtMove = pregame_boosters_at_move;
+	}
 
-	char game1() const
+	char getGame() const
 	{
 		return game;
 	}
 
-	__declspec(property(get = game1)) char Game;
+	void setGame(char game)
+	{
+		this->game = game;
+	}
 
-	std::list<std::string>* boosters1() const
+	std::list<std::string>* getBoosters() const
 	{
 		return boosters;
 	}
 
-	__declspec(property(get = boosters1)) std::list<std::string>* Boosters;
+	void setBoosters(std::list<std::string>* basic_strings)
+	{
+		boosters = basic_strings;
+	}
 
-	std::list<Limit>* limit1() const
+	std::list<Limit>* getLimit() const
 	{
 		return limit;
 	}
 
-	__declspec(property(get = limit1)) std::list<Limit>* Limit1;
+	void setLimit(std::list<Limit>* limits)
+	{
+		limit = limits;
+	}
 
-	std::string background1() const
+	std::string getBackground() const
 	{
 		return background;
 	}
 
-	__declspec(property(get = background1)) std::string Background;
+	void setBackground(const std::string& background)
+	{
+		this->background = background;
+	}
 
-	std::list<int>* scores1() const
+	std::list<int>* getScores() const
 	{
 		return scores;
 	}
 
-	__declspec(property(get = scores1)) std::list<int>* Scores;
+	void setScores(std::list<int>* scores)
+	{
+		this->scores = scores;
+	}
 
-	bool ignore_everyone_hard_delta() const
+	bool getIgnoreEveryoneHardDelta() const
 	{
 		return ignoreEveryoneHardDelta;
 	}
 
-	__declspec(property(get = ignore_everyone_hard_delta)) bool IgnoreEveryoneHardDelta;
-#pragma endregion
-
+	void setIgnoreEveryoneHardDelta(bool ignore_everyone_hard_delta)
+	{
+		ignoreEveryoneHardDelta = ignore_everyone_hard_delta;
+	}
 };
 

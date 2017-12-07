@@ -13,6 +13,7 @@
 class ActionController;
 class BoardModel;
 class Level;
+class FallPath;
 USING_NS_CC;
 
 class BoardController : public Layer
@@ -24,6 +25,7 @@ public:
 	static char getCellSize() { return cellSize; };
 	static void setCellSize(const char cs) { cellSize = cs; }
 
+	bool init() override;
 	void initControllersWithBoard() const;
 	void initWithJson(rapidjson::Value& data);
 	CREATE_FUNC(BoardController);
@@ -45,24 +47,26 @@ protected:
 
 #pragma region protected functions
 
+	void processLogic(float);
+
 	void initBoardElements();
 	void addBackgroundTile(char col, char row) const;
 	void initNode();
 	int canSwapTiles(Cell* selectedCell, Cell* targetCell, bool addToCrush=true);
-	Match* findMatch(Cell* startCell);
-	void swapTilesInternal(Cell* selectedCell, Cell* targetCell);
+	Match* findMatch(Cell* startCell) const;
+	void swapTilesInternal(Cell* selectedCell, Cell* targetCell) const;
 
 	void doSomethingPerMove();
 	int increaseMoveCount() { return ++moveCount; }
 	int getMatchId() { return ++matchId; }
 
-	/// ///// /////////
 	void crushPendingCells();
+	void crushMatch(Match* match);
 	void fallTiles();
+	FallPath* findFallPath(Cell* cell);
+	void checkMatchesInBoard();
 
-
-
-	void crushCell(Cell* pCell);
+	void crushCell(Cell* pCell) const;
 
 	////////////////////
 

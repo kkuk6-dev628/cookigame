@@ -33,16 +33,14 @@ private:
 	char currentBoardIndex = -1;
 
 public:
-	char episode_number() const
+	char getEpisodeNumber() const
 	{
 		return episodeNumber;
 	}
 
-	void episode_number(const char episodeNumber)
+	void setEpisodeNumber(const char episodeNumber)
 	{
 		this->episodeNumber = episodeNumber;
 	}
-
-	__declspec(property(get = episode_number, put = episode_number)) char EpisodeNumber;
 };
 

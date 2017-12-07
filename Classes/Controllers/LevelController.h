@@ -22,17 +22,5 @@ private:
 	static LevelController* instance;
 	Level* currentLevel = nullptr;
 
-#pragma region Get Set Methods
-public:
-	
-	Level* current_level() const
-	{
-		return currentLevel;
-	}
-
-	__declspec(property(get = current_level)) Level* CurrentLevel;
-
-
-#pragma endregion
 };
 

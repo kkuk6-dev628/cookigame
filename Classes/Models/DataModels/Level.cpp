@@ -25,7 +25,7 @@ void Level::load(const int levelNumber)
 	levelCtrl->loadEpisodeInfo(this->episode);
 
 	assert(levelCtrl->JsonDoc.IsObject());
-	auto& levelsJson = levelCtrl->JsonDoc["data"]["level"].GetArray();
+	auto levelsJson = levelCtrl->JsonDoc["data"]["level"].GetArray();
 
 	for (auto& v : levelsJson)
 	{

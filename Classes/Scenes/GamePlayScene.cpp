@@ -39,7 +39,7 @@ bool GamePlayScene::init()
 
 	//code here
 
-	std::string bgImageName = StringUtils::format("images/Game_%03d_BG.png", GameController::getInstance()->EpisodeNumber);
+	std::string bgImageName = StringUtils::format("images/Game_%03d_BG.png", GameController::getInstance()->getEpisodeNumber());
 	Size winSize = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
 	auto bg = Sprite::create(bgImageName);
 	float scale = winSize.height / bg->getContentSize().height;

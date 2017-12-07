@@ -37,7 +37,7 @@ bool MainMenuScene::init()
 
 	//code here
 
-	std::string episodeImageName = StringUtils::format("Map_%03d_BG.png", GameController::getInstance()->EpisodeNumber);
+	std::string episodeImageName = StringUtils::format("Map_%03d_BG.png", GameController::getInstance()->getEpisodeNumber());
 	Size winSize = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
 	auto bg = Sprite::create(episodeImageName);
 	bg->setPosition(Point(winSize.width / 2, winSize.height / 2));

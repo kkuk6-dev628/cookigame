@@ -8,6 +8,7 @@ public:
 	static SpawnController* getInstance();
 	void setColorTable(TileColorsTable ct) const;
 	TileColors getSpawnColor() const;
+	MovingTileTypes getSpawnType() const;
 
 private:
 	TileColorsTable colorTable;

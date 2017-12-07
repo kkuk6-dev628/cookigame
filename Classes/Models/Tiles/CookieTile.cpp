@@ -20,12 +20,17 @@ void CookieTile::setCell(Cell* cell)
 	gridPos = pCell->gridPos;
 }
 
+void CookieTile::setCellPos()
+{
+	setPosition(Utils::Grid2BoardPos(gridPos));
+}
+
 void CookieTile::initWithJson(rapidjson::Value& json)
 {
 	this->type = json["type"].GetString();
 	auto& data = json["data"];
 
-	auto& itr = data.FindMember("layers");
+	auto itr = data.FindMember("layers");
 	if (itr != data.MemberEnd() && itr->value.IsInt())
 	{
 		this->layers = itr->value.GetInt();
@@ -99,7 +104,7 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	{
 		try
 		{
-			this->setType = SetTypes::_from_string(itr->value.GetString());
+			tileSetType = SetTypes::_from_string(itr->value.GetString());
 		}
 		catch (const std::runtime_error&)
 		{

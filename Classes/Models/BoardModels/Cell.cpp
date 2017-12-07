@@ -1,5 +1,7 @@
 #include "Cell.h"
 #include "Models/Tiles/CookieTile.h"
+#include "Models/Tiles/SpawnerObject.h"
+#include "Controllers/PoolController.h"
 
 Cell::Cell()
 {
@@ -44,13 +46,54 @@ void Cell::clear()
 	pSourceTile = nullptr;
 }
 
+void Cell::crushCell(bool showCrushEffect)
+{
+	if(showCrushEffect)
+	{
+		getSourceTile()->showCrushEffect();
+	}
+	PoolController::getInstance()->recycleCookieTile(getSourceTile());
+	clear();
+}
+
+void Cell::spawnMatchTile()
+{
+	auto spawnerObject = static_cast<SpawnerObject*>(layers->objectForKey(LayerId::Spawner));
+	if(spawnerObject != nullptr)
+	{
+		auto spawnedTile = spawnerObject->spawnMovingTile();
+		setSourceTile(spawnedTile);
+		boardLayer->addChild(spawnedTile);
+	}
+}
+
 Cell* Cell::getFallCell() const
 {
 	if (fallDirection > 0)
 	{
-		if (upCell != nullptr)
+		if(upCell == nullptr)
+		{
+			return nullptr;
+		}
+
+		if (!upCell->isFixed)
 		{
 			return upCell;
+		}
+		else
+		{
+			if(upCell->leftCell != nullptr && !upCell->leftCell->isFixed)
+			{
+				return upCell->leftCell;
+			}
+			else if(upCell->rightCell != nullptr && !upCell->rightCell->isFixed)
+			{
+				return upCell->rightCell;
+			}
+			else
+			{
+				return nullptr;
+			}
 		}
 	}
 	return nullptr;

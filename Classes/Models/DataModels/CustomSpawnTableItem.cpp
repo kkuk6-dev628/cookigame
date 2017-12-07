@@ -15,7 +15,7 @@ SpawnTablesList CustomSpawnTableItem::CreateSpawnTablesFromJson(rapidjson::Value
 	if (json.IsArray() && json.Size() > 0)
 	{
 		auto ret = new std::list<SpawnTable>();
-		auto& arr = json.GetArray();
+		auto arr = json.GetArray();
 
 		for (auto& conv : arr)
 		{

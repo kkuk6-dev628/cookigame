@@ -19,5 +19,5 @@ void LayeredMatchObject::initWithJson(rapidjson::Value& json)
 		color = SpawnController::getInstance()->getSpawnColor();
 	}
 	const auto textureName = StringUtils::format("%s_%s.png", type.c_str(), color._to_string());
-	initTexture(textureName);
+//	initTexture(textureName);
 }

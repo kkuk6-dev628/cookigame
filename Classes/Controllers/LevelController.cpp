@@ -59,5 +59,5 @@ void LevelController::loadCurrentLevel()
 		delete this->currentLevel;
 	}
 	this->currentLevel = new Level();
-	this->currentLevel->load(UserData::getInstance()->TopLevel);
+	this->currentLevel->load(UserData::getInstance()->getTopLevel());
 }

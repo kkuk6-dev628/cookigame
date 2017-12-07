@@ -35,13 +35,13 @@ GameController* GameController::getInstance()
 
 void GameController::goMainMenu()
 {
-	if (this->levelController->CurrentLevel == nullptr)
+	if (this->levelController->getCurrentLevel() == nullptr)
 	{
-		this->episodeNumber = Level::GetEpisodeNumber(this->userData->TopLevel);
+		this->episodeNumber = Level::GetEpisodeNumber(this->userData->getTopLevel());
 	}
 	else
 	{
-		this->episodeNumber = this->levelController->CurrentLevel->Episode;
+		this->episodeNumber = this->levelController->getCurrentLevel()->getEpisode();
 	}
 	Director::getInstance()->replaceScene(TransitionFade::create(0.6f, MainMenuScene::createScene()));
 }

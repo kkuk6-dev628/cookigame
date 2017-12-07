@@ -2,7 +2,6 @@
 #include "Models/BoardModels/BoardModel.h"
 #include "LevelController.h"
 #include "Models/BoardModels/Cell.h"
-#include "proj.win32/Macros.h"
 #include "General/Constants.h"
 #include "General/Utils.h"
 #include "Models/Tiles/Tile.h"
@@ -10,6 +9,8 @@
 #include "ActionController.h"
 #include "Models/Tiles/MovingTile.h"
 #include "Models/BoardModels/Match.h"
+#include "Models/BoardModels/FallPath.h"
+#include "Models/Tiles/SpawnerObject.h"
 
 char BoardController::cellSize = 79;
 
@@ -22,14 +23,31 @@ BoardController::BoardController()
 
 	pendingCrushCells = __Array::create();
 	pendingCrushCells->retain();
-}
 
+	schedule(schedule_selector(BoardController::processLogic));
+}
 
 BoardController::~BoardController()
 {
 	pendingCrushCells->release();
 }
 
+bool BoardController::init()
+{
+	if(!Layer::init())
+	{
+		return false;
+	}
+	return true;
+}
+
+void BoardController::processLogic(float)
+{
+	actionController->runPendingActions();
+	crushPendingCells();
+	fallTiles();
+	checkMatchesInBoard();
+}
 
 void BoardController::initControllersWithBoard() const
 {
@@ -54,7 +72,7 @@ bool BoardController::onTouchBegan(Touch* touch, Event* unused_event)
 {
 	const auto pos = convertToNodeSpace(touch->getLocation());
 	const auto cell = getMatchCell(pos);
-	if (cell == nullptr || cell->IsEmpty)
+	if (cell == nullptr || cell->isEmpty)
 	{
 		return false;
 	}
@@ -89,7 +107,7 @@ void BoardController::onTouchMoved(Touch* touch, Event* unused_event)
 	if (Utils::IsSameGrid(selectedTile->gridPos, adjacentPos)) return;
 
 	auto targetCell = getMatchCell(adjacentPos);
-	if (targetCell == nullptr || targetCell->IsEmpty)
+	if (targetCell == nullptr || targetCell->isEmpty)
 	{
 		selectedTile->showDirectionalScaleAction(dir);
 
@@ -106,11 +124,12 @@ void BoardController::onTouchMoved(Touch* touch, Event* unused_event)
 				this->releaseWaitingMatch(matchIdSelected);
 				cocos2d::log("matchid: %d", matchIdSelected);
 			});
-			targetTile->showSwapAction(selectedTile->gridPos, [this, matchIdTarget](){
+			targetTile->showSwapAction(selectedTile->gridPos, [this, matchIdTarget, targetCell](){
 				this->releaseWaitingMatch(matchIdTarget);
+				this->swapTilesInternal(this->selectedTile->getCell(), targetCell);
+				this->selectedTile = nullptr;
 				cocos2d::log("matchid: %d", matchIdTarget);
 			});
-			swapTilesInternal(selectedTile->getCell(), targetCell);
 			doSomethingPerMove();
 		}
 		else
@@ -124,9 +143,10 @@ void BoardController::onTouchMoved(Touch* touch, Event* unused_event)
 				selectedTile->showDirectionalScaleAction(dir);
 				targetTile->showDirectionalScaleAction(Utils::inverseDir(dir));
 			}
+			selectedTile = nullptr;
+
 		}
 	}
-	selectedTile = nullptr;
 }
 
 
@@ -138,7 +158,7 @@ void BoardController::onTouchEnded(Touch* touch, Event* unused_event)
 	}
 	auto pos = convertToNodeSpace(touch->getLocation());
 	const auto cell = getMatchCell(pos);
-	if (cell == nullptr || cell->IsEmpty)
+	if (cell == nullptr || cell->isEmpty)
 	{
 		return;
 	}
@@ -166,12 +186,11 @@ void BoardController::releaseWaitingMatch(const int matchId) const
 	}
 }
 
-
 Cell* BoardController::getMatchCell(const Vec2 boardPos) const
 {
 	const auto gridPos = Utils::Board2GridPos(boardPos);
-	if (gridPos.Col < 0 || gridPos.Col >= boardModel->Width 
-		|| gridPos.Row < 0 || gridPos.Row >= boardModel->Height)
+	if (gridPos.Col < 0 || gridPos.Col >= boardModel->getWidth() 
+		|| gridPos.Row < 0 || gridPos.Row >= boardModel->getHeight())
 	{
 		return nullptr;
 	}
@@ -180,7 +199,7 @@ Cell* BoardController::getMatchCell(const Vec2 boardPos) const
 
 Cell* BoardController::getMatchCell(GridPos& pos) const
 {
-	if (pos.Col < 0 || pos.Col >= boardModel->Width || pos.Row < 0 || pos.Row >= boardModel->Height)
+	if (pos.Col < 0 || pos.Col >= boardModel->getWidth() || pos.Row < 0 || pos.Row >= boardModel->getHeight())
 	{
 		return nullptr;
 	}
@@ -189,7 +208,7 @@ Cell* BoardController::getMatchCell(GridPos& pos) const
 
 Cell* BoardController::getMatchCell(char col, char row) const
 {
-	if (col < 0 || col >= boardModel->Width || row < 0 || row >= boardModel->Height)
+	if (col < 0 || col >= boardModel->getWidth() || row < 0 || row >= boardModel->getHeight())
 	{
 		return nullptr;
 	}
@@ -219,21 +238,22 @@ void BoardController::initBoardElements()
 		CC_SAFE_DELETE(backgroundLayer);
 	}
 	backgroundLayer = BoardLayer::create();
-	backgroundLayer->initWithGrid(boardModel->Width, boardModel->Height);
+	backgroundLayer->initWithGrid(boardModel->getWidth(), boardModel->getHeight());
 
 	borderLayer = BoardLayer::create();
-	borderLayer->initWithGrid(boardModel->Width, boardModel->Height);
+	borderLayer->initWithGrid(boardModel->getWidth(), boardModel->getHeight());
 
 	layeredMatchLayer = BoardLayer::create();
-	layeredMatchLayer->initWithGrid(boardModel->Width, boardModel->Height);
+	layeredMatchLayer->initWithGrid(boardModel->getWidth(), boardModel->getHeight());
 
-	for (char i = 0; i < boardModel->Height; i++)
+	for (char i = 0; i < boardModel->getHeight(); i++)
 	{
-		for (char j = 0; j < boardModel->Width; j++)
+		for (char j = 0; j < boardModel->getWidth(); j++)
 		{
 			const auto cell = boardModel->getCell(j, i);
+			cell->setBoardLayer(layeredMatchLayer);
 
-			if (cell->IsEmpty) continue;
+			if (cell->isEmpty) continue;
 
 			layeredMatchLayer->addChild(reinterpret_cast<Node*>(cell->getSourceTile()));
 			addBackgroundTile(j, i);
@@ -261,9 +281,9 @@ void BoardController::addBackgroundTile(const char col, const char row) const
 	{
 		const char adjCol = col + AdjacentIndents[k][1];
 		const char adjRow = row + AdjacentIndents[k][0];
-		if (0 <= adjCol && adjCol < boardModel->Width
-			&& 0 <= adjRow && adjRow < boardModel->Height
-			&& !(boardModel->getCell(adjCol, adjRow)->IsEmpty))
+		if (0 <= adjCol && adjCol < boardModel->getWidth()
+			&& 0 <= adjRow && adjRow < boardModel->getHeight()
+			&& !(boardModel->getCell(adjCol, adjRow)->isEmpty))
 		{
 			borders[k] = false;
 		}
@@ -286,13 +306,40 @@ void BoardController::addBackgroundTile(const char col, const char row) const
 
 void BoardController::initNode()
 {
-	auto const width = CellSize * boardModel->Width;
-	auto const height = CellSize * boardModel->Height;
+	auto const width = CellSize * boardModel->getWidth();
+	auto const height = CellSize * boardModel->getHeight();
 	setContentSize(Size(width, height));
 	const auto originX = CenterX - width / 2;
 	const auto originY = CenterY - height / 2;
 	setPosition(originX, originY);
 }
+
+void BoardController::checkMatchesInBoard()
+{
+	if(actionController->getRunningActionCount() > 0)
+	{
+		return;
+	}
+	for(char i = 0; i < boardModel->getHeight(); i++)
+	{
+		for(char j = 0; j < boardModel->getWidth(); j++)
+		{
+			auto cell = getMatchCell(j, i);
+			
+			if(cell == nullptr) continue;
+
+			auto match = findMatch(cell);
+
+			if(match == nullptr) continue;
+
+			match->matchId = getMatchId();
+			cell->getSourceTile()->matchId = match->matchId;
+			match->isWaiting = false;
+			pendingCrushCells->addObject(match);
+		}
+	}
+}
+
 
 int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool addToCrush)
 {
@@ -322,9 +369,9 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 	return canSwap;
 }
 
-Match* BoardController::findMatch(Cell* startCell)
+Match* BoardController::findMatch(Cell* startCell) const
 {
-	const auto color = startCell->getSourceTile()->Color;
+	const auto color = startCell->getSourceTile()->getTileColor();
 	char left = 0, right = 0, up = 0, down = 0;
 	// up check
 	auto cell = startCell->upCell;
@@ -332,7 +379,7 @@ Match* BoardController::findMatch(Cell* startCell)
 	while (cell != nullptr)
 	{
 		tile = cell->getSourceTile();
-		if (cell->IsEmpty || tile == nullptr || color != tile->Color)
+		if (cell->isEmpty || tile == nullptr || color != tile->getTileColor())
 		{
 			break;
 		}
@@ -344,7 +391,7 @@ Match* BoardController::findMatch(Cell* startCell)
 	while (cell != nullptr)
 	{
 		tile = cell->getSourceTile();
-		if (cell->IsEmpty || tile == nullptr || color != tile->Color)
+		if (cell->isEmpty || tile == nullptr || color != tile->getTileColor())
 		{
 			break;
 		}
@@ -356,7 +403,7 @@ Match* BoardController::findMatch(Cell* startCell)
 	while (cell != nullptr)
 	{
 		tile = cell->getSourceTile();
-		if (cell->IsEmpty || tile == nullptr || color != tile->Color)
+		if (cell->isEmpty || tile == nullptr || color != tile->getTileColor())
 		{
 			break;
 		}
@@ -368,7 +415,7 @@ Match* BoardController::findMatch(Cell* startCell)
 	while (cell != nullptr)
 	{
 		tile = cell->getSourceTile();
-		if (cell->IsEmpty || tile == nullptr || color != tile->Color)
+		if (cell->isEmpty || tile == nullptr || color != tile->getTileColor())
 		{
 			break;
 		}
@@ -406,7 +453,7 @@ Match* BoardController::findMatch(Cell* startCell)
 		cell = boardModel->getTurnCell(LayerId::Match, startCell->gridPos, inDir, &newDir, false);
 		for (auto j = 0; j < 3; j++)
 		{
-			if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr || color != cell->getSourceTile()->Color)
+			if (cell == nullptr || cell->isEmpty || cell->getSourceTile() == nullptr || color != cell->getSourceTile()->getTileColor())
 			{
 				isSquareMatch = false;
 				break;
@@ -432,15 +479,15 @@ Match* BoardController::findMatch(Cell* startCell)
 		for (auto j = 0; j < 3 && cell != nullptr; j++)
 		{
 			match->sMatchedCells->push_back(cell);
-			cell = boardModel->getTurnCell(LayerId::Match, cell->gridPos, inDir, &newDir, false);
 			inDir = newDir;
+			cell = boardModel->getTurnCell(LayerId::Match, cell->gridPos, inDir, &newDir, false);
 		}
 	}
 	if(match != nullptr) match->retain();
 	return match;
 }
 
-void BoardController::swapTilesInternal(Cell* selectedCell, Cell* targetCell)
+void BoardController::swapTilesInternal(Cell* selectedCell, Cell* targetCell) const
 {
 	const auto selectedTile = selectedCell->getSourceTile();
 	selectedCell->setSourceTile(targetCell->getSourceTile());
@@ -460,54 +507,111 @@ void BoardController::crushPendingCells()
 		const auto match = static_cast<Match*>(itr);
 		if (!match->isWaiting)
 		{
-			if (match->getHMatchCount() > 2)
-			{
-				for (auto& cell : *(match->hMatchedCells))
-				{
-					if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr) continue;
-					poolController->recycleCookieTile(cell->getSourceTile());
-				}
-			}
-			if (match->getVMatchCount() > 2)
-			{
-				for (auto& cell : *(match->vMatchedCells))
-				{
-					if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr) continue;
-					poolController->recycleCookieTile(cell->getSourceTile());
-				}
-			}
-			if (match->getSMatchCount() > 3)
-			{
-				for (auto& cell : *(match->sMatchedCells))
-				{
-					if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr) continue;
-					poolController->recycleCookieTile(cell->getSourceTile());
-				}
-			}
+			crushMatch(match);
+			pendingCrushCells->fastRemoveObject(match);
 		}
+	}
+
+}
+
+void BoardController::crushMatch(Match* match)
+{
+	crushCell(match->refCell);
+	if (match->hMatchedCells->size() > 2)
+	{
+		for (auto& cell : *match->hMatchedCells) crushCell(cell);
+	}
+	if (match->vMatchedCells->size() > 2)
+	{
+		for (auto& cell : *match->vMatchedCells) crushCell(cell);
+	}
+	if (match->sMatchedCells->size() > 2)
+	{
+		for (auto& cell : *match->sMatchedCells) crushCell(cell);
 	}
 
 }
 
 void BoardController::fallTiles()
 {
-	
+	for(char j = 0; j < boardModel->getWidth(); j++)
+	{
+		for(char i = boardModel->getCurrentLiquidLevel(); i < boardModel->getHeight(); i++)
+		{
+			auto cell = boardModel->getCell(j, i);
+			if(cell->isEmpty && cell->isFillable)
+			{
+				auto fallPath = findFallPath(cell);
+				if(fallPath->startCell != nullptr)
+				{
+					if(fallPath->startCell->isEmpty)
+					{
+						if(fallPath->startCell->containsSpawner())
+						{
+							fallPath->startCell->spawnMatchTile();
+							if(Utils::IsSameGrid(fallPath->startCell->gridPos, cell->gridPos))
+							{
+								static_cast<SpawnerObject*>(cell->getTileAtLayer(LayerId::Spawner))->initSpawnedCount();
+							}
+						}
+					}
+					if (!fallPath->startCell->isEmpty)
+					{
+						fallPath->showFallAction();
+						if(!Utils::IsSameGrid(fallPath->startCell->gridPos, cell->gridPos))
+						{
+							cell->setSourceTile(fallPath->startCell->getSourceTile());
+							fallPath->startCell->clear();
+						}
+						cell->getSourceTile()->setCellPos();
+
+					}
+				}
+			}
+		}
+	}
 }
 
-void BoardController::crushCell(Cell* cell)
+FallPath* BoardController::findFallPath(Cell* cell)
 {
-	if (cell == nullptr || cell->IsEmpty || cell->getSourceTile() == nullptr)
+	auto fallPath = new FallPath;
+	fallPath->endCell = cell;
+	auto targetCell = cell;
+	auto fallCell = targetCell->getFallCell();
+	while(fallCell != nullptr && fallCell->isEmpty)
+	{
+		if(fallCell->gridPos.Col != targetCell->gridPos.Col)
+		{
+			fallPath->pushGridPos(targetCell->gridPos);
+			fallPath->pushGridPos(fallCell->gridPos);
+		}
+		targetCell = fallCell;
+		fallCell = targetCell->getFallCell();
+	}
+	if(fallCell != nullptr)
+	{
+		fallPath->startCell = fallCell;
+	}
+	else if(targetCell->containsSpawner())
+	{
+		fallPath->startCell = targetCell;
+	}
+	
+	return fallPath;
+}
+
+void BoardController::crushCell(Cell* cell) const
+{
+	if (cell == nullptr || cell->isEmpty || cell->getSourceTile() == nullptr)
 	{
 		return;
 	}
-	poolController->recycleCookieTile(cell->getSourceTile());
-	cell->clear();
+	
+	cell->crushCell();
 }
 
 void BoardController::update(float delta)
 {
 	Layer::update(delta);
 
-	actionController->runPendingActions();
-	crushPendingCells();
 }

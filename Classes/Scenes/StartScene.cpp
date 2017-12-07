@@ -46,12 +46,12 @@ bool StartScene::init()
 	auto rootNode = CSLoader::createNode("res/startScene.csb");
 	addChild(rootNode);
 
-	ui::Button *m_btn_start = static_cast<ui::Button*>(rootNode->getChildByName("btnPlay"));
+	ui::Button *m_btn_start = static_cast<ui::Button*>(rootNode->getChildByName("play_button"));
 	m_btn_start->addClickEventListener(CC_CALLBACK_1(StartScene::menuCloseCallback, this));
 
 
-	cocostudio::timeline::ActionTimeline* action = CSLoader::createTimeline("res/startScene.csb");
-	action->play("animation0", false);
+	auto action = CSLoader::createTimeline("res/startScene.csb");
+	action->play("animation0", true);
 	action->setLastFrameCallFunc([=]() {
 		action->clearLastFrameCallFunc();
 		action->play("animation1", true);

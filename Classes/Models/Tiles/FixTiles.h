@@ -13,3 +13,8 @@ class CrackerObject : public FixTiles
 public:
 	CREATE_FUNC(CrackerObject)
 };
+
+class WaffleObject : public FixTiles
+{
+
+};

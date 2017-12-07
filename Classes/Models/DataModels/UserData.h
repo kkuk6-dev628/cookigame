@@ -19,17 +19,15 @@ private:
 #pragma region Get Set Method
 public:
 
-	int top_level() const
+	int getTopLevel() const
 	{
 		return topLevel;
 	}
 
-	void top_level(int topLevel)
+	void setTopLevel(int topLevel)
 	{
 		this->topLevel = topLevel;
 	}
-
-	__declspec(property(get = top_level, put = top_level)) int TopLevel;
 
 #pragma endregion
 

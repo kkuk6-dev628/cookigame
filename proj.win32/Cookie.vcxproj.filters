@@ -132,6 +132,24 @@
     <ClCompile Include="..\Classes\Models\TilePools\TilePool.cpp">
       <Filter>src\Models\TilePools</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Models\BoardModels\FallPath.cpp">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\ShowObjects\TileShowObject.cpp">
+      <Filter>src\Models\ShowObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\TilePools\TileShowObjectPool.cpp">
+      <Filter>src\Models\TilePools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\SpawnerObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\ShowObjects\AnimationShowObject.cpp">
+      <Filter>src\Models\ShowObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\TilePools\NodePool.cpp">
+      <Filter>src\Models\TilePools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -237,6 +255,24 @@
       <Filter>src\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Models\TilePools\TilePool.h">
+      <Filter>src\Models\TilePools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\BoardModels\FallPath.h">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\ShowObjects\TileShowObject.h">
+      <Filter>src\Models\ShowObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\TilePools\TileShowObjectPool.h">
+      <Filter>src\Models\TilePools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\SpawnerObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\ShowObjects\AnimationShowObject.h">
+      <Filter>src\Models\ShowObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\TilePools\NodePool.h">
       <Filter>src\Models\TilePools</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,12 @@
 #include "Tile.h"
 #include "General/Utils.h"
 #include "General/Constants.h"
+#include "Controllers/PoolController.h"
+
+TileBase::TileBase()
+{
+	poolController = PoolController::getInstance(); 
+}
 
 void TileBase::initWithGrid(const char col, const char row)
 {
@@ -14,11 +20,18 @@ void TileBase::initWithGrid(const char col, const char row)
 
 void TileBase::initTexture(const std::string textureName)
 {
-	textureSprite = Sprite::createWithSpriteFrameName(textureName);
-	textureSprite->setContentSize(Size(CellSize, CellSize));
-	textureSprite->setAnchorPoint(Vec2(0.5, 0.5));
-	textureSprite->setPosition(CellSize / 2, CellSize / 2);
-	addChild(textureSprite);
+	if(textureSprite == nullptr)
+	{
+		textureSprite = Sprite::createWithSpriteFrameName(textureName);
+		textureSprite->setContentSize(Size(CellSize, CellSize));
+		textureSprite->setAnchorPoint(Vec2(0.5, 0.5));
+		textureSprite->setPosition(CellSize / 2, CellSize / 2);
+		addChild(textureSprite);
+	}
+	else
+	{
+		textureSprite->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(textureName));
+	}
 }
 
 void BorderTile::initBorder(bool* borders)

@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <list>
 #include "Cell.h"
+#include "Controllers/PoolController.h"
 USING_NS_CC;
 
 class Match : public Ref
@@ -22,7 +23,12 @@ public:
 	int getVMatchCount() const { return vMatchedCells != nullptr ? vMatchedCells->size() : 0; }
 	int getSMatchCount() const { return sMatchedCells != nullptr ? sMatchedCells->size() : 0; }
 
-	private:
+	void crushAllCells() const;
+	void crushMatchedCells() const;
+	void crushCell(Cell* cell) const;
+
+private:
+	PoolController* poolController;
 	Match();
 };
 

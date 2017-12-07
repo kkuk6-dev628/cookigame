@@ -35,7 +35,7 @@ struct TileData
 		this->Type = json["type"].GetString();
 		auto& data = json["data"];
 
-		auto& itr = data.FindMember("layers");
+		auto itr = data.FindMember("layers");
 		if (itr != data.MemberEnd() && itr->value.IsInt())
 		{
 			this->Layers = itr->value.GetInt();

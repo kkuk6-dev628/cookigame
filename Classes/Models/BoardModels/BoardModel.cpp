@@ -81,19 +81,27 @@ Cell* BoardModel::getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs input
 
 void BoardModel::setCurrentLiquidLevel(const float liquidLevel)
 {
+	if(liquidSystem == nullptr)
+	{
+		currentLiquidLevel = 0;
+		return;
+	}
 	currentLiquidLevel = liquidLevel;
 	for (char i = 0; i < currentLiquidLevel; i++)
 	{
 		for (char j = 0; j < width; j++)
 		{
-			
+			if(!liquidSystem->containsIgnorePos(j, i) && !liquidSystem->containsIgnoreColumn(j) && !liquidSystem->containsIgnoreRow(i))
+			{
+				cells[i][j]->inWater = true;
+			}
 		}
 	}
 }
 
 Cell* BoardModel::getCell(const char col, const char row) const
 {
-	if (col < 0 || col >= Width || row < 0 || row >= Height)
+	if (col < 0 || col >= width || row < 0 || row >= height)
 	{
 		return nullptr;
 	}
@@ -150,7 +158,7 @@ std::list<CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTablesListFromJson
 	if (json.IsArray() && json.Size() > 0)
 	{
 		auto ret = new std::list<CustomSpawnTableItem>();
-		auto& arr = json.GetArray();
+		auto arr = json.GetArray();
 
 		for (auto& conv : arr)
 		{
@@ -181,7 +189,7 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 
 	this->colorsEasy = CreateColorsTableFromJson(json["colorsEasy"]);
 	this->goals = new std::list<Goal>();
-	auto& goalsArray = json["goals"].GetArray();
+	auto goalsArray = json["goals"].GetArray();
 	for (auto& v : goalsArray)
 	{
 		Goal goal;
@@ -211,7 +219,7 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	auto& data = json["data"];
 	if (data.IsArray() && data.Size() > 0)
 	{
-		auto& dataArray = data.GetArray();
+		auto dataArray = data.GetArray();
 		for (auto& customData : dataArray)
 		{
 			if (customData.IsObject() && !customData.ObjectEmpty())
@@ -230,6 +238,32 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 					liquidSystem->LevelMin = customData["level_min"].GetFloat();
 					liquidSystem->LevelStep = customData["level_step"].GetFloat();
 					liquidSystem->LevelStart = customData["level_start"].GetFloat();
+					if(customData["ignore_columns"].IsArray() && customData["ignore_columns"].Size() > 0)
+					{
+						auto ignorColumns = customData["ignore_columns"].GetArray();
+						for(auto& col : ignorColumns)
+						{
+							liquidSystem->IgnoreColumns.push_back(col.GetInt());
+						}
+					}
+					if (customData["ignore_rows"].IsArray() && customData["ignore_rows"].Size() > 0)
+					{
+						auto ignorRows = customData["ignore_rows"].GetArray();
+						for (auto& row : ignorRows)
+						{
+							liquidSystem->IgnoreRows.push_back(row.GetInt());
+						}
+					}
+					if (customData["ignore_grid_pos"].IsArray() && customData["ignore_grid_pos"].Size() > 0)
+					{
+						auto ignoreGridPos = customData["ignore_grid_pos"].GetArray();
+						for (auto& gridPos : ignoreGridPos)
+						{
+							auto gridPosStr = gridPos.GetString();
+							auto gPos = Utils::StrToGridPos(gridPosStr, ",");
+							liquidSystem->IgnoreGridPos.push_back(gPos);
+						}
+					}
 				}
 			}
 		}
@@ -244,7 +278,7 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 		if (itr->value.IsObject() && !itr->value.ObjectEmpty())
 		{
 			auto gridPos = Utils::StrToGridPos(itr->name.GetString(), "_");
-			assert(this->Width > gridPos.Col && this->Height > gridPos.Row);
+			assert(this->width > gridPos.Col && this->height > gridPos.Row);
 			const auto itr1 = itr->value.FindMember("type");
 			if (itr1 != itr->value.MemberEnd() && itr1->value.IsString())
 			{

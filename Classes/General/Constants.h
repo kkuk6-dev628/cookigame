@@ -8,7 +8,7 @@ static const std::string EpisodeFilePrefix = "LevelsConfigEpisode";
 static const char MaxCol = 9;
 static const char MaxRow = 9;
 static const char MaxTileCount = 9 * 9;
-static const float TileMovingTime = 0.2; 
+static const float TileMovingTime = 0.1f; 
 extern char CellSize;
 extern float CenterX;
 extern float CenterY;

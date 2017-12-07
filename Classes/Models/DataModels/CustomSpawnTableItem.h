@@ -16,28 +16,25 @@ private:
 
 
 public:
-	std::string name1() const
+	std::string getName() const
 	{
 		return name;
 	}
 
-	void name1(const std::string& name)
+	void setName(const std::string& name)
 	{
 		this->name = name;
 	}
 
-	__declspec(property(get = name1, put = name1)) std::string Name;
-
-	SpawnTablesList spawn_table() const
+	SpawnTablesList getSpawnTable() const
 	{
 		return spawnTable;
 	}
 
-	void spawn_table(SpawnTablesList spawnTables)
+	void setSpawnTable(SpawnTablesList spawnTables)
 	{
 		spawnTable = spawnTables;
 	}
 
-	__declspec(property(get = spawn_table, put = spawn_table)) SpawnTablesList SpawnTableData;
 };
 

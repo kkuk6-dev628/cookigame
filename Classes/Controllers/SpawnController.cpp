@@ -48,3 +48,8 @@ TileColors SpawnController::getSpawnColor() const
 
 	return TileColors::blue;
 }
+
+MovingTileTypes SpawnController::getSpawnType() const
+{
+	return MovingTileTypes::LayeredMatchObject;
+}

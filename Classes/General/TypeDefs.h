@@ -19,7 +19,7 @@ struct Goal
 		{
 			this->GoalType = GoalTypes::_from_string(json["object_type"].GetString());
 			this->GameType = json["type"].GetString();
-			auto& countTypesArray = json["round_end_count_types"].GetArray();
+			auto countTypesArray = json["round_end_count_types"].GetArray();
 			if (countTypesArray.Size() > 0)
 			{
 				this->RoundEndCountTypes = new std::list<std::string>();
@@ -45,7 +45,7 @@ struct SpawnTable
 	{
 		if (json.IsObject())
 		{
-			auto& itr = json.FindMember("layers");
+			auto itr = json.FindMember("layers");
 			if (itr != json.MemberEnd() && itr->value.IsInt())
 			{
 				this->Layers = itr->value.GetInt();
@@ -111,7 +111,7 @@ struct LiquidSystem
 	char LevelMax;
 	char FillerToggle;
 	char DrainerToggle;
-	std::list<GridPos>* IgnoreGridPos;
+	std::list<GridPos> IgnoreGridPos;
 	float DrainStep;
 	float FillStep;
 	char LevelMin;
@@ -120,6 +120,17 @@ struct LiquidSystem
 	std::string Type;
 	std::list<char> IgnoreRows;
 	float LevelStart;
+
+	bool containsIgnoreColumn(char col) { return std::find(IgnoreColumns.begin(), IgnoreColumns.end(), col) != IgnoreColumns.end(); }
+	bool containsIgnoreRow(char row) { return std::find(IgnoreRows.begin(), IgnoreRows.end(), row) != IgnoreRows.end(); }
+	bool containsIgnorePos(GridPos& pos)
+	{
+		return std::any_of(IgnoreGridPos.begin(), IgnoreGridPos.end(), [pos](GridPos ignorePos) { return ignorePos.Col == pos.Col && ignorePos.Row == pos.Row; });
+	}
+	bool containsIgnorePos(char col, char row)
+	{
+		return std::any_of(IgnoreGridPos.begin(), IgnoreGridPos.end(), [col, row](GridPos ignorePos) { return ignorePos.Col == col && ignorePos.Row == row; });
+	}
 };
 
 struct SpawnOnCollectSystem

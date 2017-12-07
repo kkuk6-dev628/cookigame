@@ -5,11 +5,14 @@
 USING_NS_CC;
 
 class Cell;
+class PoolController;
 
 class TileBase : public Node
 {
 public:
-	CREATE_FUNC(TileBase);
+	TileBase();
+
+	CREATE_FUNC(TileBase)
 	void initWithGrid(char col, char row);
 	virtual void initTexture(std::string textureName);
 
@@ -17,11 +20,13 @@ public:
 
 protected:
 	Sprite* textureSprite = nullptr;
+	PoolController* poolController = nullptr;
+
 };
 
 class BorderTile : public TileBase
 {
 public:
-	CREATE_FUNC(BorderTile);
+	CREATE_FUNC(BorderTile)
 	void initBorder(bool* borders);
 };
