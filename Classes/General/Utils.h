@@ -1,12 +1,15 @@
 #pragma once
 #include "TypeDefs.h"
+#include "Models/Tiles/CookieTile.h"
 
 class Utils
 {
 public:
 	Utils();
 	~Utils();
-	
+
+	static bool containsCell(std::list<Cell*>* cellsList, Cell* cell);
+
 	static GridSizeT StrToGridSize(std::string str, std::string delim);
 	
 	static GridPos StrToGridPos(std::string str, std::string delim);
@@ -20,5 +23,6 @@ public:
 	static AdjacentDirs getDirection(cocos2d::Vec2 offset);
 	static GridPos getAdjacentPos(GridPos& pos, AdjacentDirs dir);
 	static AdjacentDirs inverseDir(AdjacentDirs dir);
+	static bool IsBonusTile(MovingTileTypes tileType);
 };
 

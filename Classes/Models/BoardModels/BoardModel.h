@@ -7,6 +7,7 @@
 #include "General/TypeDefs.h"
 #include "Models/DataModels/CustomSpawnTableItem.h"
 #include "Cell.h"
+#include "Models/Tiles/FixTiles.h"
 
 class BoardLayerModel;
 
@@ -17,22 +18,42 @@ public:
 	static TileColorsTable CreateColorsTableFromJson(const rapidjson::Value& json);
 	static std::list<CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
 	void initWithJson(rapidjson::Value& json);
-	void addLayerWithJson(rapidjson::Value& json, LayerId layerNumber) const;
+	void addLayerWithJson(rapidjson::Value& json, LayerId layerNumber);
 	BoardModel();
 	void initCells();
 	Cell* getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs inDir, AdjacentDirs* newDir, bool counterClockWise);
 
 	BoardLayerModel* getMatchLayer() const { return reinterpret_cast<BoardLayerModel*>(boardLayers->objectForKey(LayerId::Match)); }
 
-	Cell* getTurnCell(LayerId layer, GridPos& refPos, bool counterClockWise);
-
 	float getCurrentLiquidLevel() const { return currentLiquidLevel; }
 	void setCurrentLiquidLevel(float liquidLevel);
 
 	Cell* getCell(const char col, const char row) const;
 
+	Cell* getSeekerTarget();
+	std::list<Cell*>* getSameColorCells(TileColors tileColor);
+	__Dictionary* getSpecialTiles();
+	Cell* getRandomCell();
+	Vec2 getRandomBoardPosition();
 
 private:
+	cocos2d::__Dictionary* boardLayers;
+	int width;
+	int height;
+	std::string transitionOut;
+	SpawnTablesList spawnTable;
+	SpawnTablesList conveyorSpawnTable;
+	TileColorsTable colors;
+	TileColorsTable colorsEasy;
+	std::list<Goal>* goals;
+	std::list<CustomSpawnTableItem>* customSpawnTable;
+	cocos2d::__Array* seekerPriorityList = nullptr;
+	SpawnTablesList liquidSpawnTable;
+	cocos2d::__Array* data;
+	LiquidSystem* liquidSystem;
+
+	Cell*** cells;
+	float currentLiquidLevel = 0;
 
 public:
 	rapidjson::Document LayersJson;
@@ -177,23 +198,6 @@ public:
 		currentLiquidLevel = current_liquid_level;
 	}
 
-private:
-	cocos2d::__Dictionary* boardLayers;
-	int width;
-	int height;
-	std::string transitionOut;
-	SpawnTablesList spawnTable;
-	SpawnTablesList conveyorSpawnTable;
-	TileColorsTable colors;
-	TileColorsTable colorsEasy;
-	std::list<Goal>* goals;
-	std::list<CustomSpawnTableItem>* customSpawnTable;
-	SpawnTablesList liquidSpawnTable;
-	cocos2d::__Array* data;
-	LiquidSystem* liquidSystem;
-
-	Cell*** cells;
-	float currentLiquidLevel = 0;
 
 };
 

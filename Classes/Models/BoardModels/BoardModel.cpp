@@ -79,6 +79,97 @@ Cell* BoardModel::getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs input
 	}
 }
 
+Cell* BoardModel::getSeekerTarget()
+{
+	if(seekerPriorityList == nullptr || seekerPriorityList->count() == 0)
+	{
+		return nullptr;
+	}
+	auto seekerTarget = static_cast<SeekerPriorityObject*>(seekerPriorityList->getRandomObject());
+	seekerTarget->countDownLayer();
+	auto retCell = seekerTarget->getCell();
+	if(seekerTarget->getLayers() < 0)
+	{
+		seekerPriorityList->removeObject(seekerTarget);
+		seekerTarget->release();
+	}
+	return retCell;
+}
+
+std::list<Cell*>* BoardModel::getSameColorCells(TileColors tileColor)
+{
+	auto ret = new std::list<Cell*>;
+	for (char i = 0; i < height; i++)
+	{
+		for (char j = 0; j < width; j++)
+		{
+			if(cells[i][j] != nullptr && !cells[i][j]->isOutCell && !cells[i][j]->isEmpty && cells[i][j]->getMovingTile()->getTileColor() == tileColor)
+			{
+				ret->push_back(cells[i][j]);
+			}
+		}
+	}
+	return ret;
+}
+
+__Dictionary* BoardModel::getSpecialTiles()
+{
+	auto specialTiles = __Dictionary::create();
+	auto breakers = __Array::create();
+	auto wafflesAndPathMovers = __Array::create();
+	auto liquids = __Array::create();
+
+	for(char i = 0; i < height; i++)
+	{
+		for(char j = 0; j < width; j++)
+		{
+			if(cells[i][j] == nullptr || cells[i][j]->isEmpty) continue;
+
+			auto tile = cells[i][j]->getSourceTile();
+			if(tile == nullptr) continue;
+
+			if(tile->getType() == "BombBreakerObject" || tile->getType() == "ColumnBreakerObject" || tile->getType() == "RowBreakerObject" || 
+				tile->getType() == "XBreakerObject")
+			{
+				breakers->addObject(tile->getCell());
+			}
+			if (tile->getType() == "WaffleObject" || tile->getType() == "PathMoverMatchObject")
+			{
+				wafflesAndPathMovers->addObject(tile->getCell());
+			}
+			if (tile->getType() == "LiquidDrainerMatchObject" || tile->getType() == "LiquidFillerMatchObject")
+			{
+				liquids->addObject(tile->getCell());
+			}
+		}
+	}
+
+	specialTiles->setObject(breakers, "breakers");
+	specialTiles->setObject(wafflesAndPathMovers, "wafflePath");
+	specialTiles->setObject(liquids, "liquids");
+	return specialTiles;
+}
+
+Cell* BoardModel::getRandomCell()
+{
+	auto col = static_cast<char>(rand_0_1() * width);
+	auto row = static_cast<char>(rand_0_1() * height);
+	while(cells[row][col] == nullptr || cells[row][col]->isOutCell || cells[row][col]->isEmpty)
+	{
+		col = static_cast<char>(rand_0_1() * width);
+		row = static_cast<char>(rand_0_1() * height);
+	}
+	return cells[row][col];
+}
+
+Vec2 BoardModel::getRandomBoardPosition()
+{
+	auto randX = rand_0_1() * (3.0f * CellSize) + 3.0f * CellSize;
+	auto randY = rand_0_1() * (3.0f * CellSize) + 3.0f * CellSize;
+	return Vec2(randX, randY);
+	//return Vec2(width * CellSize, height* CellSize);
+}
+
 void BoardModel::setCurrentLiquidLevel(const float liquidLevel)
 {
 	if(liquidSystem == nullptr)
@@ -271,7 +362,7 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 
 }
 
-void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNumber) const
+void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNumber)
 {
 	for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
 	{
@@ -290,9 +381,28 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 					tile->initWithJson(itr->value);
 
 					cells[gridPos.Row][gridPos.Col]->setTileToLayer(tile, layerNumber);
+
+					if(strcmp(typeName, "SeekerPriorityObject") == 0)
+					{
+						if(seekerPriorityList == nullptr)
+						{
+							seekerPriorityList = __Array::create();
+							seekerPriorityList->retain();
+						}
+						seekerPriorityList->addObject(tile);
+					}
+					else if (strcmp(typeName, "EmptyObject") == 0)
+					{
+						cells[gridPos.Row][gridPos.Col]->isOutCell = true;
+					}
+					else if (strcmp(typeName, "InvisibleBrickObject") == 0)
+					{
+						cells[gridPos.Row][gridPos.Col]->isOutCell = true;
+					}
 				}
 			}
 		}
 	}
 
 }
+

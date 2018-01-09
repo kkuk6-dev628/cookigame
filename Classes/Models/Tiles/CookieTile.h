@@ -12,12 +12,48 @@ public:
 	Cell* getCell() const { return pCell; }
 	void setCell(Cell* cell);
 
+	MovingTileTypes getMovingTileType() const;
+
 	void setCellPos();
 	virtual void initWithJson(rapidjson::Value& json);
+	virtual void initWithType(std::string typeName, TileColors color = TileColors::any);
 	virtual void showCrushEffect() {};
+	virtual void initTexture() {};
 
+	bool canMatch = true;
 	int matchId = 0;
 
+protected:
+	Cell* pCell;
+
+	std::string type;
+	char layers = 0;
+	TileColors color = TileColors::any;
+	std::string direction;
+	std::string name;
+	char priority = 0;
+	bool createSpread = false;
+	bool mirror = false;
+	ModifierTypes modifierType = ModifierTypes::NoShuffleModifier;
+	GridSizeT gridSize;
+	SetTypes tileSetType = SetTypes::set;
+	bool createJelly = false;
+	HiderSegmentPosition hiderSegPosition = HiderSegmentPosition::body;
+	std::string chain;
+	std::string spawnType;
+	SpawnTable spawnData;
+	char zone = 0;
+	std::string spawnTableName;
+	TileColors slot1 = TileColors::any;
+	TileColors slot2 = TileColors::any;
+	TileColors slot3 = TileColors::any;
+	TileColors slot4 = TileColors::any;
+	TileColors slot5 = TileColors::any;
+	TileColors slot6 = TileColors::any;
+	char sequenceId = 0;
+	char power = 0;
+
+public:
 	int getMatchId() const
 	{
 		return matchId;
@@ -288,35 +324,6 @@ public:
 		tileSetType = tile_set_type;
 	}
 
-protected:
-	Cell* pCell;
-
-	std::string type;
-	char layers = 0;
-	TileColors color = TileColors::any;
-	std::string direction;
-	std::string name;
-	char priority = 0;
-	bool createSpread = false;
-	bool mirror = false;
-	ModifierTypes modifierType = ModifierTypes::NoShuffleModifier;
-	GridSizeT gridSize;
-	SetTypes tileSetType = SetTypes::set;
-	bool createJelly = false;
-	HiderSegmentPosition hiderSegPosition = HiderSegmentPosition::body;
-	std::string chain;
-	std::string spawnType;
-	SpawnTable spawnData;
-	char zone = 0;
-	std::string spawnTableName;
-	TileColors slot1 = TileColors::any;
-	TileColors slot2 = TileColors::any;
-	TileColors slot3 = TileColors::any;
-	TileColors slot4 = TileColors::any;
-	TileColors slot5 = TileColors::any;
-	TileColors slot6 = TileColors::any;
-	char sequenceId = 0;
-	char power = 0;
 };
 
 

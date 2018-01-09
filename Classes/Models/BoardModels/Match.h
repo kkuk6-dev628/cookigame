@@ -1,7 +1,6 @@
 #pragma once
 #include "platform/CCPlatformMacros.h"
 #include "base/CCRef.h"
-#include <stdexcept>
 #include <list>
 #include "Cell.h"
 #include "Controllers/PoolController.h"
@@ -18,6 +17,7 @@ public:
 	std::list<Cell*>* hMatchedCells;
 	std::list<Cell*>* vMatchedCells;
 	std::list<Cell*>* sMatchedCells;
+	Cell* bonusMatchCell = nullptr;
 
 	int getHMatchCount() const { return hMatchedCells != nullptr ? hMatchedCells->size() : 0; }
 	int getVMatchCount() const { return vMatchedCells != nullptr ? vMatchedCells->size() : 0; }
@@ -26,6 +26,16 @@ public:
 	void crushAllCells() const;
 	void crushMatchedCells() const;
 	void crushCell(Cell* cell) const;
+
+	MovingTileTypes getAvailableBonusType();
+	bool checkBonusCreated(MovingTileTypes bonusType);
+
+	MatchType matchType = MatchType::NormalMatch;
+	TileColors color = TileColors::any;
+	char left = 0;
+	char right = 0;
+	char up = 0;
+	char down = 0;
 
 private:
 	PoolController* poolController;

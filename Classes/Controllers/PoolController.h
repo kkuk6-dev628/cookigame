@@ -34,6 +34,21 @@ public:
 	AnimationShowObject* getYellowCrushShow() const;
 	void recycleYellowCrushShow(AnimationShowObject* anim) const;
 
+	AnimationShowObject* getBlueSeekerShow() const;
+	void recycleBlueSeekerShow(AnimationShowObject* anim) const;
+	AnimationShowObject* getGreenSeekerShow() const;
+	void recycleGreenSeekerShow(AnimationShowObject* anim) const;
+	AnimationShowObject* getOrangeSeekerShow() const;
+	void recycleOrangeSeekerShow(AnimationShowObject* anim) const;
+	AnimationShowObject* getPurpleSeekerShow() const;
+	void recyclePurpleSeekerShow(AnimationShowObject* anim) const;
+	AnimationShowObject* getRedSeekerShow() const;
+	void recycleRedSeekerShow(AnimationShowObject* anim) const;
+	AnimationShowObject* getYellowSeekerShow() const;
+	void recycleYellowSeekerShow(AnimationShowObject* anim) const;
+	AnimationShowObject* getSeekerShow(TileColors color) const;
+	void recycleSeekerShow(AnimationShowObject* show) const;
+
 private:
 	PoolController();
 	static PoolController* instance;
@@ -47,5 +62,12 @@ private:
 	NodePool<AnimationShowObject>* purpleCrushShowPool;
 	NodePool<AnimationShowObject>* redCrushShowPool;
 	NodePool<AnimationShowObject>* yellowCrushShowPool;
+
+	NodePool<AnimationShowObject>* blueSeekerShowPool;
+	NodePool<AnimationShowObject>* greenSeekerShowPool;
+	NodePool<AnimationShowObject>* orangeSeekerShowPool;
+	NodePool<AnimationShowObject>* purpleSeekerShowPool;
+	NodePool<AnimationShowObject>* redSeekerShowPool;
+	NodePool<AnimationShowObject>* yellowSeekerShowPool;
 };
 

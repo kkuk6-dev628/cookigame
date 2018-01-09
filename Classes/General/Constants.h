@@ -10,6 +10,7 @@ static const char MaxRow = 9;
 static const char MaxTileCount = 9 * 9;
 static const float TileMovingTime = 0.1f; 
 extern char CellSize;
+extern char MovingTileSize;
 extern float CenterX;
 extern float CenterY;
 

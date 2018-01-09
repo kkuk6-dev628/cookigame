@@ -20,18 +20,20 @@ void TileBase::initWithGrid(const char col, const char row)
 
 void TileBase::initTexture(const std::string textureName)
 {
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(textureName);
+	if(spriteFrame == nullptr)
+	{
+		return;
+	}
 	if(textureSprite == nullptr)
 	{
-		textureSprite = Sprite::createWithSpriteFrameName(textureName);
-		textureSprite->setContentSize(Size(CellSize, CellSize));
-		textureSprite->setAnchorPoint(Vec2(0.5, 0.5));
-		textureSprite->setPosition(CellSize / 2, CellSize / 2);
+		textureSprite = Sprite::create();
 		addChild(textureSprite);
 	}
-	else
-	{
-		textureSprite->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(textureName));
-	}
+	textureSprite->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(textureName));
+	textureSprite->setContentSize(Size(CellSize, CellSize));
+	textureSprite->setAnchorPoint(Vec2(0.5, 0.5));
+	textureSprite->setPosition(CellSize / 2, CellSize / 2);
 }
 
 void BorderTile::initBorder(bool* borders)

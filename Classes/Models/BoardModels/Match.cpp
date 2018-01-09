@@ -36,6 +36,97 @@ void Match::crushCell(Cell* cell) const
 	cell->clear();
 }
 
+bool Match::checkBonusCreated(MovingTileTypes bonusType)
+{
+	for (auto& cell : *hMatchedCells)
+	{
+		auto tile = cell->getSourceTile();
+
+		if(tile != nullptr)
+		{
+			if(tile->getType() == bonusType._to_string())
+			{
+				return true;
+			}
+		}
+	}
+	for (auto& cell : *vMatchedCells)
+	{
+		auto tile = cell->getSourceTile();
+
+		if (tile != nullptr)
+		{
+			if (tile->getType() == bonusType._to_string())
+			{
+				return true;
+			}
+		}
+	}
+	for (auto& cell : *sMatchedCells)
+	{
+		auto tile = cell->getSourceTile();
+
+		if (tile != nullptr)
+		{
+			if (tile->getType() == bonusType._to_string())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+MovingTileTypes Match::getAvailableBonusType()
+{
+	MovingTileTypes bonusType = MovingTileTypes::LayeredMatchObject;
+	if (hMatchedCells->size() > 2)
+	{
+		if (hMatchedCells->size() > 4)
+		{
+			bonusType = MovingTileTypes::RainbowObject;
+		}
+		else if (vMatchedCells->size() > 2)
+		{
+			if ((left > 0 && right) || (up > 0 && down > 0))
+			{
+				bonusType = MovingTileTypes::XBreakerObject;
+			}
+			else
+			{
+				bonusType = MovingTileTypes::BombBreakerObject;
+			}
+		}
+		else if (hMatchedCells->size() == 4)
+		{
+			bonusType = MovingTileTypes::ColumnBreakerObject;
+		}
+	}
+	else if (vMatchedCells->size() > 2)
+	{
+		if (vMatchedCells->size() > 4)
+		{
+			bonusType = MovingTileTypes::RainbowObject;
+		}
+		else if (vMatchedCells->size() == 4)
+		{
+			//cocos2d::log("%d, %d, %d", match->hMatchedCells->size(), match->vMatchedCells->size(), match->sMatchedCells->size());
+			bonusType = MovingTileTypes::RowBreakerObject;
+		}
+	}
+	if (sMatchedCells->size() > 2)
+	{
+		if (bonusType._to_integral() == MovingTileTypes::LayeredMatchObject)
+		{
+			//cocos2d::log("%d, %d, %d", match->hMatchedCells->size(), match->vMatchedCells->size(), match->sMatchedCells->size());
+			bonusType = MovingTileTypes::SeekerObject;
+		}
+	}
+
+	return bonusType;
+}
+
 
 Match::Match()
 {

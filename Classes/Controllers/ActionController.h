@@ -18,6 +18,9 @@ class ActionController
 {
 public:
 	~ActionController();
+	char getPendingActionCount();
+	cocos2d::Action* createSeekerPendingAction(cocos2d::Node* node, cocos2d::Vec2 pos);
+	cocos2d::Action* createSeekerLandingAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> callback);
 	static ActionController* getInstance();
 
 	void pushAction(CKAction ckAction, bool isPending) const;

@@ -24,6 +24,8 @@ public:
 
 	static char getCellSize() { return cellSize; };
 	static void setCellSize(const char cs) { cellSize = cs; }
+	static int fallingTileCount;
+	static GameState gameState;
 
 	bool init() override;
 	void initControllersWithBoard() const;
@@ -41,6 +43,8 @@ public:
 	void onTouchCancelled(Touch* touch, Event* unused_event) override;
 
 	void releaseWaitingMatch(int matchId) const;
+
+	void addTile(char col, char row, MovingTileTypes type, TileColors tileColor);
 	//void BoardController::initWithData(BoardModel* boardData);
 
 protected:
@@ -50,10 +54,14 @@ protected:
 	void processLogic(float);
 
 	void initBoardElements();
+	void initBoardLayers();
+	BoardLayer* getBoardLayer(LayerId layerId);
+
 	void addBackgroundTile(char col, char row) const;
 	void initNode();
 	int canSwapTiles(Cell* selectedCell, Cell* targetCell, bool addToCrush=true);
-	Match* findMatch(Cell* startCell) const;
+	Match* findMatch(Cell* startCell);
+	void setDirtyCell(char col, char row);
 	void swapTilesInternal(Cell* selectedCell, Cell* targetCell) const;
 
 	void doSomethingPerMove();
@@ -61,12 +69,27 @@ protected:
 	int getMatchId() { return ++matchId; }
 
 	void crushPendingCells();
+	void crushNormalMatch(Match* match);
+	void crushBonusMatch(Match* match);
+	void crushRainbowMatch(Match* match);
 	void crushMatch(Match* match);
 	void fallTiles();
 	FallPath* findFallPath(Cell* cell);
 	void checkMatchesInBoard();
 
-	void crushCell(Cell* pCell) const;
+	Cell* findSeekerTarget();
+	void landingSeeker(AnimationShowObject* seekerShow, Cell* targetCell);
+
+	void crushCell(Cell* pCell);
+	void crushBombBreaker(Cell* cell);
+	void crushRowBreaker(Cell* cell);
+	void crushColumnBreaker(Cell* cell);
+	void crushXBreaker(Cell* cell);
+	void crushSeeker(Cell* cell);
+
+	void dualXCrush(Cell* cell);
+
+	void processPendingSeekers();
 
 	////////////////////
 
@@ -86,13 +109,24 @@ protected:
 
 	Level* currentLevel = nullptr;
 
-	BoardLayer* backgroundLayer = nullptr;
-	BoardLayer* borderLayer = nullptr;
-	BoardLayer* layeredMatchLayer = nullptr;
+	BoardLayer* backgroundLayer		= nullptr;
+	BoardLayer* borderLayer			= nullptr;
+	BoardLayer* underCoverLayer		= nullptr;
+	BoardLayer* coverLayer			= nullptr;
+	BoardLayer* pathConveyerLayer	= nullptr;
+	BoardLayer* waffleLayer			= nullptr;
+	BoardLayer* layeredMatchLayer	= nullptr;
+	BoardLayer* toppllerLayer		= nullptr;
+	BoardLayer* targetLayer			= nullptr;
+	BoardLayer* portalLayer			= nullptr;
+	BoardLayer* showObjectsLayer	= nullptr;
+
+	__Dictionary* layersDict = nullptr;
 
 	MovingTile* selectedTile = nullptr;
 	MovingTile* targetTile = nullptr;
 	__Array* pendingCrushCells;
+	__Array* pendingSeekers;
 
 	int moveCount = 0;
 	int matchId = 0;
@@ -101,5 +135,7 @@ protected:
 
 protected:
 	void update(float delta) override;
+
+public:
 };
 

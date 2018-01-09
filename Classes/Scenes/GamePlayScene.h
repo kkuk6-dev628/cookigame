@@ -20,6 +20,8 @@ public:
 	// implement the "static create()" method manually
 	CREATE_FUNC(GamePlayScene);
 
+	void restartCallback(Ref* pSender);
+
 private:
 	BoardController* boardController;
 };

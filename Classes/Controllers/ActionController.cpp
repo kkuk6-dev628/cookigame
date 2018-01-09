@@ -84,6 +84,42 @@ char ActionController::getRunningActionCount()
 	return runningActions->size();
 }
 
+char ActionController::getPendingActionCount()
+{
+	if (pendingActions == nullptr) return 0;
+	return pendingActions->size();
+}
+
+Action* ActionController::createSeekerPendingAction(Node* node, Vec2 pos)
+{
+	Sequence* seq = Sequence::create(
+		Spawn::create(
+			MoveTo::create(0.5f, pos),
+			ScaleTo::create(0.5f, 1.5f),
+			nullptr
+			),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::createSeekerLandingAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> callback)
+{
+	Sequence* seq = Sequence::create(
+		Spawn::create(
+			JumpTo::create(0.6f, pos, 2 * CellSize, 1),
+			ScaleTo::create(0.6f, 1.0f),
+			nullptr
+		),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+
 Action* ActionController::createScaleBouncingAction(Node* node)
 {
 	Sequence* seq = Sequence::create(
@@ -198,7 +234,7 @@ Action* ActionController::createMoveThroughAction(FallPath* path, std::function<
 
 cocos2d::Action* ActionController::createTileMoveAction(const cocos2d::Vec2& startPos, const cocos2d::Vec2& targetPos, std::function<void()> callback, Node* node) const
 {
-	auto tileMovingTime = calcTileMovingTime(startPos.distance(targetPos));
+	auto tileMovingTime = 0.15;
 	Sequence* seq = Sequence::create(
 		MoveTo::create(tileMovingTime, targetPos),
 		CallFunc::create(callback),
@@ -223,5 +259,5 @@ void ActionController::endAction(cocos2d::Node* node) const
 
 float ActionController::calcTileMovingTime(const float distance)
 {
-	return 0.2 + TileMovingTime * (distance / CellSize - 1);
+	return 0.15 + 0.7 * TileMovingTime * (distance / CellSize - 1);
 }

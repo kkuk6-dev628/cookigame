@@ -24,8 +24,10 @@ MovingTile* SpawnerObject::spawnMovingTile()
 	auto spawnedPos = Utils::Grid2BoardPos(gridPos);
 	spawnedPos.add(Vec2(0, (spawnedCount + 1) * fallDirection() * CellSize));
 	spawnedCount++;
+	spawnTile->initWithGrid(gridPos.Col, gridPos.Row);
 	spawnTile->setPosition(spawnedPos);
-	spawnTile->initTexture();
+	spawnTile->initWithType(spawnType._to_string(), spawnColor);
+	//spawnTile->setContentSize(Size(CellSize, CellSize));
 	return spawnTile;
 }
 

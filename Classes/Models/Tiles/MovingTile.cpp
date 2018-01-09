@@ -4,7 +4,9 @@
 #include "Controllers/SpawnController.h"
 #include "Models/BoardModels/FallPath.h"
 #include "Controllers/PoolController.h"
+#include "Controllers/BoardController.h"
 
+int BoardController::fallingTileCount;
 
 MovingTile::MovingTile()
 {
@@ -26,6 +28,7 @@ void MovingTile::showScaleBouncingAction() const
 
 void MovingTile::showDirectionalScaleAction(const AdjacentDirs dir) const
 {
+	if (this->textureSprite == nullptr) return;
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(this->textureSprite);
 	ckAction.action = actionController->createDirectionalScaleAction(ckAction.node, dir);
@@ -46,12 +49,15 @@ void MovingTile::showFallAction(FallPath* path)
 	ckAction.action = actionController->createMoveThroughAction(path, [this, showObj]()
 		{
 			this->setVisible(true);
+			this->setPosition(Utils::Grid2BoardPos(this->gridPos));
 			PoolController::getInstance()->recycleTileShowObject(showObj);
+			BoardController::fallingTileCount--;
 		}, 
 		ckAction.node);
 	setVisible(false);
 
 	actionController->pushAction(ckAction, true);
+	BoardController::fallingTileCount++;
 }
 
 bool MovingTile::isMovable() const
@@ -66,6 +72,7 @@ void MovingTile::showSwapAction(GridPos& gridPos, const std::function<void()> ca
 	ckAction.node = reinterpret_cast<Node*>(this);
 	ckAction.action = actionController->createTileMoveAction(getPosition(), targetPos, callback, ckAction.node);
 	actionController->pushAction(ckAction, false);
+
 }
 
 void MovingTile::initWithJson(rapidjson::Value& json)
@@ -84,10 +91,15 @@ void MovingTile::initTexture()
 		switch (movingTileType)
 		{
 		case MovingTileTypes::RainbowObject:
+			canMatch = false;
+			textureName = StringUtils::format("%s.png", type.c_str());
+			break;
 		case MovingTileTypes::DonutObject:
-			textureName = type;
+			canMatch = false;
+			textureName = StringUtils::format("%s.png", type.c_str());
 			break;
 		default:
+			canMatch = true;
 			if (TileColors::any == color._to_integral() || color._to_integral() == TileColors::random)
 			{
 				color = SpawnController::getInstance()->getSpawnColor();
@@ -96,6 +108,8 @@ void MovingTile::initTexture()
 			break;
 		}
 		TileBase::initTexture(textureName);
+		textureSprite->setContentSize(Size(MovingTileSize, MovingTileSize));
+		//textureSprite->setScale(1.1);
 	}
 
 }
@@ -105,6 +119,6 @@ void MovingTile::showCrushEffect()
 	auto animationShow = PoolController::getInstance()->getMatchCrushShow(color);
 	animationShow->setPosition(getPosition());
 	animationShow->setAnchorPoint(Vec2(0.5f, 0.5f));
-	animationShow->setScale(1.5);
+	//animationShow->setScale(1.5);
 	getParent()->addChild(animationShow, 500);
 }

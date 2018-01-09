@@ -12,7 +12,7 @@ public:
 	static GameController* getInstance();
 	void goMainMenu();
 	void goGamePlay();
-	BoardController* getBoardController();
+	BoardController* getBoardController(bool next = true);
 
 private:
 	GameController();

@@ -18,7 +18,7 @@ void ShowObject::setSpriteFrame(cocos2d::SpriteFrame* spriteFrame)
 	if(textureSprite == nullptr)
 	{
 		textureSprite = cocos2d::Sprite::createWithSpriteFrame(spriteFrame);
-		textureSprite->setContentSize(cocos2d::Size(CellSize, CellSize));
+		textureSprite->setContentSize(cocos2d::Size(MovingTileSize, MovingTileSize));
 		textureSprite->setPosition(CellSize / 2, CellSize / 2);
 		textureSprite->setAnchorPoint(cocos2d::Vec2(0.5, 0.5));
 		addChild(textureSprite);
@@ -26,5 +26,7 @@ void ShowObject::setSpriteFrame(cocos2d::SpriteFrame* spriteFrame)
 	else
 	{
 		textureSprite->setSpriteFrame(spriteFrame);
+		textureSprite->setContentSize(cocos2d::Size(MovingTileSize, MovingTileSize));
+
 	}
 }

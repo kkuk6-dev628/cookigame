@@ -20,9 +20,22 @@ void CookieTile::setCell(Cell* cell)
 	gridPos = pCell->gridPos;
 }
 
+MovingTileTypes CookieTile::getMovingTileType() const
+{
+	if(MovingTileTypes::_is_valid_nocase(type.c_str()))
+	{
+		return MovingTileTypes::_from_string(type.c_str());
+	}
+	else
+	{
+		return MovingTileTypes::FixTile;
+	}
+}
+
 void CookieTile::setCellPos()
 {
 	setPosition(Utils::Grid2BoardPos(gridPos));
+	setAnchorPoint(Vec2(0.5f, 0.5f));
 }
 
 void CookieTile::initWithJson(rapidjson::Value& json)
@@ -33,7 +46,11 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	auto itr = data.FindMember("layers");
 	if (itr != data.MemberEnd() && itr->value.IsInt())
 	{
-		this->layers = itr->value.GetInt();
+		layers = itr->value.GetInt();
+	}
+	else
+	{
+		layers = -1;
 	}
 
 	itr = data.FindMember("color");
@@ -209,4 +226,11 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 		this->power = itr->value.GetInt();
 	}
 
+}
+
+void CookieTile::initWithType(std::string typeName, TileColors color)
+{
+	type = typeName;
+	setTileColor(color);
+	initTexture();
 }

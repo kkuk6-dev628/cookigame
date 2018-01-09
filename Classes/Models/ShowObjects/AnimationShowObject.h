@@ -1,6 +1,7 @@
 #pragma once
 #include "2d/CCLayer.h"
 #include "cocostudio/ActionTimeline/CCActionTimeline.h"
+#include "Models/Tiles/Tile.h"
 
 //#include "base/allocator/CCAllocatorStrategyPool.h"
 class AnimationShowObject : public cocos2d::Layer
@@ -9,10 +10,12 @@ public:
 	AnimationShowObject();
 	~AnimationShowObject();
 
-	void initWithCSB(std::string csbFileName);
+	virtual void initWithCSB(std::string csbFileName);
 
-	void reuse(const std::function<void()> callback);
+	virtual void reuse(const std::function<void()> callback);
 	void recycle();
+
+	TileColors tileColor = TileColors::any;
 
 	//static cocos2d::allocator::AllocatorStrategyPool<AnimationShowObject> allocator;
 	//CC_USE_ALLOCATOR_POOL(AnimationShowObject, allocator)
@@ -32,8 +35,20 @@ public:
 		}
 	}
 
-private:
+protected:
 	Node* rootNode;
 	cocostudio::timeline::ActionTimeline* action;
 	std::string csbFileName;
+};
+
+
+class ParticleShowObject: public AnimationShowObject
+{
+public:
+	void initWithCSB(std::string csbFileName) override;
+	void reuse(const std::function<void()> callback) override;
+	std::function<void()> recycleCallback;
+	void scheduleToRecycle(float);
+	ParticleSystem* colorParticle;
+	ParticleSystem* normalParticle;
 };

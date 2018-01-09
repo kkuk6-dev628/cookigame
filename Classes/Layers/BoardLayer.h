@@ -5,6 +5,6 @@ class BoardLayer : public cocos2d::Layer
 {
 public:
 	CREATE_FUNC(BoardLayer);
-	void initWithGrid(char col, char row);
+	void initWithGrid(char col, char row, bool drawBorder = false);
 };
 

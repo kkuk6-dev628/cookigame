@@ -55,9 +55,10 @@ void GameController::goGamePlay()
 	Director::getInstance()->pushScene(TransitionFade::create(0.6f, GamePlayScene::createScene()));
 }
 
-BoardController* GameController::getBoardController()
+BoardController* GameController::getBoardController(bool next)
 {
-	currentBoardIndex++;
+	if(next) currentBoardIndex++;
+
 	assert(boardData->IsArray() && boardData->Size() > 0);
 	if (currentBoardIndex >= boardData->Size())
 	{
@@ -67,7 +68,8 @@ BoardController* GameController::getBoardController()
 	auto boardsArray = boardData->GetArray();
 	if (boardController != nullptr)
 	{
-		delete boardController;
+		boardController->removeFromParent();
+		CC_SAFE_RELEASE(boardController);
 	}
 	boardController = new BoardController();
 	boardController->initWithJson(boardsArray[currentBoardIndex]);

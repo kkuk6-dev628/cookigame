@@ -1,5 +1,6 @@
 #include "Utils.h"
 #include "Constants.h"
+#include "Models/BoardModels/Cell.h"
 
 
 Utils::Utils()
@@ -9,6 +10,16 @@ Utils::Utils()
 
 Utils::~Utils()
 {
+}
+
+bool Utils::containsCell(std::list<Cell*>* cellsList, Cell* cell)
+{
+	if(cellsList == nullptr || cellsList->size() == 0 || cell == nullptr)
+	{
+		return false;
+	}
+	auto itr = std::find(cellsList->begin(), cellsList->end(), cell);
+	return itr != cellsList->end();
 }
 
 GridSizeT Utils::StrToGridSize(std::string str, std::string delim)
@@ -177,4 +188,15 @@ AdjacentDirs Utils::inverseDir(AdjacentDirs dir)
 		break;
 	}
 	return AdjacentDirs::NoDir;
+}
+
+bool Utils::IsBonusTile(MovingTileTypes tileType)
+{
+	auto intType = tileType._to_integral();
+	return intType == MovingTileTypes::RainbowObject
+		|| intType == MovingTileTypes::ColumnBreakerObject
+		|| intType == MovingTileTypes::RowBreakerObject
+		|| intType == MovingTileTypes::XBreakerObject
+		|| intType == MovingTileTypes::BombBreakerObject
+		|| intType == MovingTileTypes::SeekerObject ;
 }
