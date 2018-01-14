@@ -17,6 +17,7 @@ public:
 	~BoardModel();
 	static TileColorsTable CreateColorsTableFromJson(const rapidjson::Value& json);
 	static std::list<CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
+	void initSpawners();
 	void initWithJson(rapidjson::Value& json);
 	void addLayerWithJson(rapidjson::Value& json, LayerId layerNumber);
 	BoardModel();

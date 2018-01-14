@@ -3,7 +3,7 @@
 #include "Controllers/GameController.h"
 #include "Controllers/BoardController.h"
 #include "cocostudio/ActionTimeline/CSLoader.h"
-#include "ui/UIButton.h"
+#include "ui/CocosGUI.h"
 
 
 GamePlayScene::GamePlayScene()
@@ -45,7 +45,8 @@ bool GamePlayScene::init()
 	rootNode->setContentSize(visibleSize);
 	addChild(rootNode);
 
-	std::string bgImageName = StringUtils::format("images/Game_%03d_BG.png", GameController::getInstance()->getEpisodeNumber());
+	//std::string bgImageName = StringUtils::format("images/Game_%03d_BG.png", GameController::getInstance()->getEpisodeNumber());
+	std::string bgImageName = StringUtils::format("images/Game_001_BG.png");
 	Size winSize = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
 	auto bg = Sprite::create(bgImageName);
 	float scale = winSize.height / bg->getContentSize().height;
@@ -53,7 +54,8 @@ bool GamePlayScene::init()
 	bg->setPosition(Point(winSize.width / 2, winSize.height / 2));
 	rootNode->addChild(bg);
 
-	rootNode->getChildByName("top_menu_area")->setLocalZOrder(1);
+	auto topMenuNode = rootNode->getChildByName("top_menu_area");
+	topMenuNode->setLocalZOrder(1);
 	auto bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
 	bottomMenuArea->setLocalZOrder(2);
 
@@ -61,7 +63,44 @@ bool GamePlayScene::init()
 	m_btn_settings->addClickEventListener(CC_CALLBACK_1(GamePlayScene::restartCallback, this));
 
 	boardController = GameController::getInstance()->getBoardController();
+
+	auto goal = boardController->getGoalType();
+	std::string goalNodeName = "FileNode_";
+	switch (goal)
+	{
+	case GoalTypes::PathObject:
+		goalNodeName += "3";
+		break;
+	case GoalTypes::HiderSegmentObject:
+		goalNodeName += "1";
+		break;
+	case GoalTypes::HopplingObject:
+		goalNodeName += "5";
+		break;
+	case GoalTypes::PopsicleObject:
+		goalNodeName += "4";
+		break;
+	case GoalTypes::TopplingObject:
+	case GoalTypes::thoppling:
+		goalNodeName += "2";
+		break;
+	default:
+		goalNodeName += "6";
+		break;
+	}
+
+	auto circleGroupNode = topMenuNode->getChildByName("top_menu_circle");
+	for (char i = 1; i <= 6; i++)
+	{
+		auto nodeName = StringUtils::format("FileNode_%d", i);
+		circleGroupNode->getChildByName(nodeName)->setVisible(false);
+	}
+
+	circleGroupNode->getChildByName(goalNodeName)->setVisible(true);
 	this->addChild(boardController);
+
+	auto levelTextNode = static_cast<ui::Text*>(topMenuNode->getChildByName("level"));
+	levelTextNode->setString(StringUtils::format("Lev %d", LevelController::getInstance()->getCurrentLevel()->getLevelNumber()));
 	return true;
 }
 void GamePlayScene::restartCallback(Ref* pSender)

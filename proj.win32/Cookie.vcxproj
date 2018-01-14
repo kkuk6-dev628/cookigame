@@ -72,7 +72,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EngineRoot);$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -114,7 +114,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EngineRoot);$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -153,12 +153,18 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controllers\PoolController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SoundController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SpawnController.cpp" />
+    <ClCompile Include="..\Classes\Ext\ActionEx.cpp" />
+    <ClCompile Include="..\Classes\Ext\Math.cpp" />
+    <ClCompile Include="..\Classes\Ext\Popup.cpp" />
+    <ClCompile Include="..\Classes\Ext\ProgressBar.cpp" />
     <ClCompile Include="..\Classes\General\Constants.cpp" />
     <ClCompile Include="..\Classes\General\Utils.cpp" />
     <ClCompile Include="..\Classes\Layers\BoardLayer.cpp" />
+    <ClCompile Include="..\Classes\Layers\Dialogs.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\BoardModel.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\Cell.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\FallPath.cpp" />
+    <ClCompile Include="..\Classes\Models\BoardModels\HolesQueue.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\Match.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\BoardLayerData.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\CustomSpawnTableItem.cpp" />
@@ -178,6 +184,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\Tiles\SpawnerObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\Tile.cpp" />
     <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp" />
+    <ClCompile Include="..\Classes\Scenes\LevelMapScene.cpp" />
     <ClCompile Include="..\Classes\Scenes\MainMenuScene.cpp" />
     <ClCompile Include="..\Classes\Scenes\StartScene.cpp" />
     <ClCompile Include="main.cpp" />
@@ -191,15 +198,23 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Controllers\PoolController.h" />
     <ClInclude Include="..\Classes\Controllers\SoundController.h" />
     <ClInclude Include="..\Classes\Controllers\SpawnController.h" />
+    <ClInclude Include="..\Classes\Ext\ActionEx.h" />
+    <ClInclude Include="..\Classes\Ext\List.h" />
+    <ClInclude Include="..\Classes\Ext\Math.h" />
+    <ClInclude Include="..\Classes\Ext\Popup.h" />
+    <ClInclude Include="..\Classes\Ext\ProgressBar.h" />
+    <ClInclude Include="..\Classes\Ext\Stack.h" />
     <ClInclude Include="..\Classes\General\Constants.h" />
     <ClInclude Include="..\Classes\General\enum.h" />
     <ClInclude Include="..\Classes\General\EnumTypes.h" />
     <ClInclude Include="..\Classes\General\TypeDefs.h" />
     <ClInclude Include="..\Classes\General\Utils.h" />
     <ClInclude Include="..\Classes\Layers\BoardLayer.h" />
+    <ClInclude Include="..\Classes\Layers\Dialogs.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\BoardModel.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\Cell.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\FallPath.h" />
+    <ClInclude Include="..\Classes\Models\BoardModels\HolesQueue.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\Match.h" />
     <ClInclude Include="..\Classes\Models\DataModels\BoardLayerData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\CustomSpawnTableItem.h" />
@@ -220,6 +235,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\SpawnerObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\Tile.h" />
     <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
+    <ClInclude Include="..\Classes\Scenes\LevelMapScene.h" />
     <ClInclude Include="..\Classes\Scenes\MainMenuScene.h" />
     <ClInclude Include="..\Classes\Scenes\StartScene.h" />
     <ClInclude Include="Macros.h" />

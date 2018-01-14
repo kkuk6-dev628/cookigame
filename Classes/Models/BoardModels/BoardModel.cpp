@@ -3,6 +3,7 @@
 #include "Controllers/SpawnController.h"
 #include "General/Utils.h"
 #include "Controllers/PoolController.h"
+#include "Models/Tiles/SpawnerObject.h"
 
 
 BoardModel::BoardModel()
@@ -164,8 +165,10 @@ Cell* BoardModel::getRandomCell()
 
 Vec2 BoardModel::getRandomBoardPosition()
 {
-	auto randX = rand_0_1() * (3.0f * CellSize) + 3.0f * CellSize;
-	auto randY = rand_0_1() * (3.0f * CellSize) + 3.0f * CellSize;
+	auto dx = width * CellSize * 0.3;
+	auto dy = height * CellSize * 0.3;
+	auto randX = rand_0_1() * dx + dx;
+	auto randY = rand_0_1() * dy + dy;
 	return Vec2(randX, randY);
 	//return Vec2(width * CellSize, height* CellSize);
 }
@@ -220,13 +223,6 @@ BoardModel::~BoardModel()
 
 }
 
-//BoardModel* BoardModel::create()
-//{
-//	BoardModel* boardData = new BoardModel();
-//	boardData->autorelease();
-//	return boardData;
-//}
-
 TileColorsTable BoardModel::CreateColorsTableFromJson(const rapidjson::Value& json)
 {
 	if (json.IsObject())
@@ -260,6 +256,26 @@ std::list<CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTablesListFromJson
 		return ret;
 	}
 	return nullptr;
+}
+
+void BoardModel::initSpawners()
+{
+	for(char j = 0; j < width; j++)
+	{
+		for(char i = height - 1; i >= 0; i--)
+		{
+			auto cell = cells[i][j];
+			if(!cell->isOutCell)
+			{
+				if(!cell->containsSpawner())
+				{
+					auto spawner = SpawnerObject::create();
+					cell->setTileToLayer(spawner, LayerId::Spawner);
+				}
+				break;
+			}
+		}
+	}
 }
 
 void BoardModel::initWithJson(rapidjson::Value& json)
@@ -359,7 +375,7 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 			}
 		}
 	}
-
+	initSpawners();
 }
 
 void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNumber)

@@ -40,6 +40,9 @@
     <Filter Include="src\Models\TilePools">
       <UniqueIdentifier>{c3cfeb34-c9ec-452c-8025-534fe622505f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Ext">
+      <UniqueIdentifier>{1eba3ce1-f918-484d-a356-740db91f84e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -149,6 +152,27 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Models\TilePools\NodePool.cpp">
       <Filter>src\Models\TilePools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Scenes\LevelMapScene.cpp">
+      <Filter>src\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Ext\ActionEx.cpp">
+      <Filter>src\Ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Ext\Math.cpp">
+      <Filter>src\Ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Ext\Popup.cpp">
+      <Filter>src\Ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Ext\ProgressBar.cpp">
+      <Filter>src\Ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Layers\Dialogs.cpp">
+      <Filter>src\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\BoardModels\HolesQueue.cpp">
+      <Filter>src\Models\BoardModels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -274,6 +298,33 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Models\TilePools\NodePool.h">
       <Filter>src\Models\TilePools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Scenes\LevelMapScene.h">
+      <Filter>src\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Ext\ActionEx.h">
+      <Filter>src\Ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Ext\List.h">
+      <Filter>src\Ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Ext\Math.h">
+      <Filter>src\Ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Ext\Popup.h">
+      <Filter>src\Ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Ext\ProgressBar.h">
+      <Filter>src\Ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Ext\Stack.h">
+      <Filter>src\Ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Layers\Dialogs.h">
+      <Filter>src\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\BoardModels\HolesQueue.h">
+      <Filter>src\Models\BoardModels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

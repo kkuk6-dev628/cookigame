@@ -27,6 +27,8 @@ PoolController::PoolController()
 	redSeekerShowPool = new NodePool<AnimationShowObject>;
 	yellowSeekerShowPool = new NodePool<AnimationShowObject>;
 
+	chocolateCrushPool = new NodePool<AnimationShowObject>;
+
 	RegisterTileClasses();
 }
 
@@ -50,6 +52,11 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(ColorPie3Object);
 	REGISTER_CLASS(SpawnerObject);
 	REGISTER_CLASS(CrackerObject);
+	REGISTER_CLASS(ChocolateObject);
+	REGISTER_CLASS(PathObject);
+	REGISTER_CLASS(PathFollowerObject);
+	REGISTER_CLASS(PathGoalObject);
+
 	REGISTER_CLASS(InvisibleBrickObject);
 	REGISTER_CLASS(EmptyObject);
 	REGISTER_CLASS(SeekerPriorityObject);
@@ -88,6 +95,7 @@ void PoolController::recycleCookieTile(CookieTile* cookieTile) const
 	}
 	else
 	{
+		cookieTile->removeFromParent();
 		CC_SAFE_RELEASE(cookieTile);
 	}
 
@@ -327,7 +335,7 @@ AnimationShowObject* PoolController::getBlueSeekerShow() const
 	else
 	{
 		show = new AnimationShowObject;
-		show->initWithCSB("res/Background_layer/bee_green_layer.csb");
+		show->initWithCSB("res/animation/bee_blue.csb");
 	}
 	show->reuse(nullptr);
 	return show;
@@ -349,7 +357,7 @@ AnimationShowObject* PoolController::getGreenSeekerShow() const
 	else
 	{
 		show = new AnimationShowObject;
-		show->initWithCSB("res/Background_layer/bee_green_layer.csb");
+		show->initWithCSB("res/animation/bee_green.csb");
 	}
 	show->reuse(nullptr);
 	return show;
@@ -371,7 +379,7 @@ AnimationShowObject* PoolController::getOrangeSeekerShow() const
 	else
 	{
 		show = new AnimationShowObject;
-		show->initWithCSB("res/Background_layer/bee_red_layer.csb");
+		show->initWithCSB("res/animation/bee_orange.csb");
 	}
 	show->reuse(nullptr);
 	return show;
@@ -393,7 +401,7 @@ AnimationShowObject* PoolController::getPurpleSeekerShow() const
 	else
 	{
 		show = new AnimationShowObject;
-		show->initWithCSB("res/Background_layer/bee_red_layer.csb");
+		show->initWithCSB("res/animation/bee_purple.csb");
 	}
 	show->reuse(nullptr);
 	return show;
@@ -415,7 +423,7 @@ AnimationShowObject* PoolController::getRedSeekerShow() const
 	else
 	{
 		show = new AnimationShowObject;
-		show->initWithCSB("res/Background_layer/bee_red_layer.csb");
+		show->initWithCSB("res/animation/bee_red.csb");
 	}
 	show->reuse(nullptr);
 	return show;
@@ -437,7 +445,7 @@ AnimationShowObject* PoolController::getYellowSeekerShow() const
 	else
 	{
 		show = new AnimationShowObject;
-		show->initWithCSB("res/Background_layer/bee_green_layer.csb");
+		show->initWithCSB("res/animation/bee_yellow.csb");
 	}
 	show->reuse(nullptr);
 	return show;
@@ -505,4 +513,29 @@ void PoolController::recycleSeekerShow(AnimationShowObject* show) const
 	default:
 		break;
 	}
+}
+
+AnimationShowObject* PoolController::getChocolateCrushShow() const
+{
+	AnimationShowObject* show;
+	if (chocolateCrushPool->size() > 0)
+	{
+		show = chocolateCrushPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/Chocolate_0.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleChocolateCrushShow(show);
+	});
+	return show;
+}
+
+void PoolController::recycleChocolateCrushShow(AnimationShowObject* anim) const
+{
+	anim->recycle();
+	chocolateCrushPool->recycleNode(anim);
 }

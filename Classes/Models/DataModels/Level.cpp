@@ -3,6 +3,8 @@
 #include "Controllers/LevelController.h"
 
 Level::Level()
+	:title("level")
+	,background("")
 {
 }
 

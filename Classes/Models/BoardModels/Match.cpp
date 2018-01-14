@@ -117,7 +117,7 @@ MovingTileTypes Match::getAvailableBonusType()
 	}
 	if (sMatchedCells->size() > 2)
 	{
-		if (bonusType._to_integral() == MovingTileTypes::LayeredMatchObject)
+		if (bonusType == +MovingTileTypes::LayeredMatchObject)
 		{
 			//cocos2d::log("%d, %d, %d", match->hMatchedCells->size(), match->vMatchedCells->size(), match->sMatchedCells->size());
 			bonusType = MovingTileTypes::SeekerObject;

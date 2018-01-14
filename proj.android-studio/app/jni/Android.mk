@@ -20,12 +20,18 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Controllers/PoolController.cpp \
 ../../../Classes/Controllers/SoundController.cpp \
 ../../../Classes/Controllers/SpawnController.cpp \
+../../../Classes/Ext/ActionEx.cpp \
+../../../Classes/Ext/Math.cpp \
+../../../Classes/Ext/Popup.cpp \
+../../../Classes/Ext/ProgressBar.cpp \
 ../../../Classes/General/Constants.cpp \
 ../../../Classes/General/Utils.cpp \
 ../../../Classes/Layers/BoardLayer.cpp \
+../../../Classes/Layers/Dialogs.cpp \
 ../../../Classes/Models/BoardModels/BoardModel.cpp \
 ../../../Classes/Models/BoardModels/Cell.cpp \
 ../../../Classes/Models/BoardModels/FallPath.cpp \
+../../../Classes/Models/BoardModels/HolesQueue.cpp \
 ../../../Classes/Models/BoardModels/Match.cpp \
 ../../../Classes/Models/DataModels/BoardLayerData.cpp \
 ../../../Classes/Models/DataModels/CustomSpawnTableItem.cpp \
@@ -49,8 +55,10 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/Tiles/SpawnerObject.cpp \
 ../../../Classes/Models/Tiles/Tile.cpp \
 ../../../Classes/Scenes/GamePlayScene.cpp \
+../../../Classes/Scenes/LevelMapScene.cpp \
 ../../../Classes/Scenes/MainMenuScene.cpp \
 ../../../Classes/Scenes/StartScene.cpp
+
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes
 

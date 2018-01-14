@@ -11,11 +11,22 @@ int BoardController::fallingTileCount;
 MovingTile::MovingTile()
 {
 	actionController = ActionController::getInstance();
+	receiveNearbyAffect = false;
 }
 
 
 MovingTile::~MovingTile()
 {
+}
+
+bool MovingTile::init()
+{
+	if(!Node::init())
+	{
+		return false;
+	}
+	actionController = ActionController::getInstance();
+	return true;
 }
 
 void MovingTile::showScaleBouncingAction() const
@@ -49,15 +60,23 @@ void MovingTile::showFallAction(FallPath* path)
 	ckAction.action = actionController->createMoveThroughAction(path, [this, showObj]()
 		{
 			this->setVisible(true);
+			this->isMoving = false;
+			this->movingDuration = 0.f;
 			this->setPosition(Utils::Grid2BoardPos(this->gridPos));
 			PoolController::getInstance()->recycleTileShowObject(showObj);
 			BoardController::fallingTileCount--;
 		}, 
 		ckAction.node);
 	setVisible(false);
-
+	isMoving = true;
+	movingDuration = static_cast<Sequence*>(ckAction.action)->getDuration();
 	actionController->pushAction(ckAction, true);
 	BoardController::fallingTileCount++;
+}
+
+bool MovingTile::crush(bool showEffect)
+{
+	return CookieTile::crush(showEffect);
 }
 
 bool MovingTile::isMovable() const
@@ -90,6 +109,9 @@ void MovingTile::initTexture()
 		std::string textureName;
 		switch (movingTileType)
 		{
+		case MovingTileTypes::ChocolateChipObject:
+			textureName = StringUtils::format("%s_%d.png", type.c_str(), layers);
+			break;
 		case MovingTileTypes::RainbowObject:
 			canMatch = false;
 			textureName = StringUtils::format("%s.png", type.c_str());
@@ -100,7 +122,7 @@ void MovingTile::initTexture()
 			break;
 		default:
 			canMatch = true;
-			if (TileColors::any == color._to_integral() || color._to_integral() == TileColors::random)
+			if (+TileColors::any == color || color == +TileColors::random)
 			{
 				color = SpawnController::getInstance()->getSpawnColor();
 			}
@@ -120,5 +142,5 @@ void MovingTile::showCrushEffect()
 	animationShow->setPosition(getPosition());
 	animationShow->setAnchorPoint(Vec2(0.5f, 0.5f));
 	//animationShow->setScale(1.5);
-	getParent()->addChild(animationShow, 500);
+	if(getParent() != nullptr) getParent()->addChild(animationShow, 500);
 }

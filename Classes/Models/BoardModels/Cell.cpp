@@ -18,19 +18,16 @@ Cell::~Cell()
 
 void Cell::setSourceTile(CookieTile* pTile)
 {
-	pSourceTile = pTile;
-	pTile->setCell(this);
-	layers->setObject(pTile, LayerId::Match);
+	setTileToLayer(pTile, LayerId::Match);
 	if(pTile->getParent() == nullptr)
 	{
 		boardLayer->addChild(pTile);
 	}
-	isEmpty = false;
 }
 
 CookieTile* Cell::getTileAtLayer(LayerId layer) const
 {
-	const auto tile = static_cast<CookieTile*>(layers->objectForKey(layer._to_integral()));
+	const auto tile = static_cast<CookieTile*>(layers->objectForKey(layer));
 	return tile;
 }
 
@@ -55,9 +52,14 @@ void Cell::countDownReserveCount()
 
 void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 {
-	if (layer._to_integral() == LayerId::Match)
+	if (layer == +LayerId::Match)
 	{
+		pSourceTile = pTile;
 		isEmpty = false;
+		if(pTile->getMovingTileType() == +MovingTileTypes::FixTile)
+		{
+			isFixed = true;
+		}
 	}
 	pTile->setCell(this);
 	layers->setObject(pTile, layer._to_integral());
@@ -66,29 +68,50 @@ void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 void Cell::clear()
 {
 	isEmpty = true;
+	isFixed = false;
 	pSourceTile = nullptr;
 	layers->removeObjectForKey(LayerId::Match);
 }
 
+void Cell::crushNearbyCells()
+{
+	if (upCell != nullptr) upCell->receiveNearbyAffect();
+	if (downCell != nullptr) downCell->receiveNearbyAffect();
+	if (leftCell != nullptr) leftCell->receiveNearbyAffect();
+	if (rightCell != nullptr) rightCell->receiveNearbyAffect();
+}
+
+void Cell::receiveNearbyAffect()
+{
+	if(getSourceTile() != nullptr && getSourceTile()->receiveNearbyAffect)
+	{
+		crushCell(true);
+	}
+}
+
+void Cell::afterTileCrushProc()
+{
+	if(getSourceTile() != nullptr && getSourceTile()->canMatch) crushNearbyCells();
+	clear();
+	dirty = false;
+}
+
 void Cell::crushCell(bool showCrushEffect)
 {
-	if(isEmpty || getSourceTile() == nullptr)
+	if(isOutCell || isEmpty || getSourceTile() == nullptr)
 	{
 		return;
 	}
-	if(showCrushEffect)
+	if(getSourceTile() != nullptr && getSourceTile()->crush(showCrushEffect))
 	{
-		getSourceTile()->showCrushEffect();
+		//afterTileCrushProc();
 	}
-	PoolController::getInstance()->recycleCookieTile(getSourceTile());
-	clear();
-	//if(reservedTile != nullptr)
-	//{
-	//	setSourceTile(reservedTile);
-	//	reservedTile = nullptr;
-	//}
-	dirty = false;
 }
+
+//SpawnerObject* Cell::getSpawnerObject()
+//{
+//	
+//}
 
 void Cell::spawnMatchTile()
 {

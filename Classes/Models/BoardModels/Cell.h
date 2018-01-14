@@ -34,6 +34,9 @@ public:
 
 	void setGridPos(const char col, const char row) { gridPos.Col = col; gridPos.Row = row; }
 	void clear();
+	void crushNearbyCells();
+	void receiveNearbyAffect();
+	void afterTileCrushProc();
 	void crushCell(bool showCrushEffect = true);
 
 	cocos2d::Vec2 getBoardPos(){ return Utils::Grid2BoardPos(gridPos); }

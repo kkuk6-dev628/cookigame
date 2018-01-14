@@ -60,6 +60,31 @@ void BoardController::initControllersWithBoard() const
 	//spawnController->setColorTable(boardModel->Colors);
 }
 
+GoalTypes BoardController::getGoalType()
+{
+	if(boardModel != nullptr)
+	{
+		return boardModel->getGoals()->front().GoalType;
+	}
+	else
+	{
+		return GoalTypes::WaffleObject;
+	}
+}
+
+void BoardController::initWithModel(BoardModel* model)
+{
+	if (this->boardModel != nullptr)
+	{
+		delete this->boardModel;
+	}
+	this->boardModel = model;
+
+	initControllersWithBoard();
+	initNode();
+	initBoardElements();
+}
+
 void BoardController::initWithJson(rapidjson::Value& data)
 {
 	if (this->boardModel != nullptr)
@@ -117,7 +142,7 @@ void BoardController::onTouchMoved(Touch* touch, Event* unused_event)
 	}
 
 	auto targetCell = getMatchCell(adjacentPos);
-	if (targetCell == nullptr || targetCell->isEmpty)
+	if (targetCell == nullptr || targetCell->isEmpty || targetCell->isFixed)
 	{
 		selectedTile->showDirectionalScaleAction(dir);
 	}
@@ -304,15 +329,15 @@ void BoardController::initBoardElements()
 			{
 				auto cellLayer = cell->getTileAtLayer(layerId);
 				if(cellLayer == nullptr) continue;
-				if (layerId._to_integral() == LayerId::Background || layerId._to_integral() == LayerId::Border) continue;
+				if (layerId == +LayerId::Background || layerId == +LayerId::Border) continue;
 				getBoardLayer(layerId)->addChild(cellLayer);
 			}
 
 		}
 	}
 
-	addTile(1, 1, MovingTileTypes::XBreakerObject, TileColors::blue);
-	addTile(2, 1, MovingTileTypes::ColumnBreakerObject, TileColors::red);
+	//addTile(1, 3, MovingTileTypes::RowBreakerObject, TileColors::blue);
+	//addTile(5, 2, MovingTileTypes::RowBreakerObject, TileColors::yellow);
 }
 
 void BoardController::addTile(char col, char row, MovingTileTypes type, TileColors tileColor)
@@ -330,6 +355,23 @@ void BoardController::addTile(char col, char row, MovingTileTypes type, TileColo
 			tile->initWithType(type._to_string(), tileColor);
 			cell->setSourceTile(tile);
 		}
+	}
+}
+
+void BoardController::addMovingTile(Cell* cell, MovingTileTypes type, TileColors tileColor)
+{
+	if (cell == nullptr) return;
+	if (cell->isOutCell) return;
+	if (!cell->isEmpty)
+	{
+		poolController->recycleCookieTile(cell->getSourceTile());
+	}
+	auto tile = poolController->getCookieTile(type._to_string());
+	if (tile != nullptr)
+	{
+		tile->initWithGrid(cell->gridPos.Col, cell->gridPos.Row);
+		tile->initWithType(type._to_string(), tileColor);
+		cell->setSourceTile(tile);
 	}
 }
 
@@ -433,7 +475,7 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 		pendingCrushCells->addObject(match);
 		return true;
 	}
-	if(selectedTileType._to_integral() == MovingTileTypes::RainbowObject)
+	if(selectedTileType == +MovingTileTypes::RainbowObject)
 	{
 		auto match = Match::create();
 		match->refCell = targetCell;
@@ -446,7 +488,7 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 		pendingCrushCells->addObject(match);
 		return true;
 	}
-	if (targetTileType._to_integral() == MovingTileTypes::RainbowObject)
+	if (targetTileType == +MovingTileTypes::RainbowObject)
 	{
 		auto match = Match::create();
 		match->refCell = selectedCell;
@@ -605,7 +647,7 @@ Match* BoardController::findMatch(Cell* startCell)
 		}
 	}
 
-	if (squareMatchedDir._to_integral() >= 0 && squareMatchedDir._to_integral() < 4)
+	if (squareMatchedDir >= 0 && squareMatchedDir < 4)
 	{
 		if (match == nullptr)
 		{
@@ -649,16 +691,27 @@ void BoardController::doSomethingPerMove()
 
 void BoardController::crushPendingCells()
 {
-	Ref* itr = nullptr;
-	CCARRAY_FOREACH(pendingCrushCells, itr)
+	if(pendingCrushCells == nullptr || pendingCrushCells->count() == 0)
 	{
-		const auto match = static_cast<Match*>(itr);
-		if (!match->isWaiting)
-		{
-			crushMatch(match);
-			pendingCrushCells->fastRemoveObject(match);
-		}
+		return;
 	}
+	auto match = static_cast<Match*>(pendingCrushCells->getObjectAtIndex(0));
+	if(!match->isWaiting)
+	{
+		crushMatch(match);
+		pendingCrushCells->removeObjectAtIndex(0);
+	}
+
+	//Ref* itr = nullptr;
+	//CCARRAY_FOREACH(pendingCrushCells, itr)
+	//{
+	//	const auto match = static_cast<Match*>(itr);
+	//	if (!match->isWaiting)
+	//	{
+	//		crushMatch(match);
+	//		pendingCrushCells->fastRemoveObject(match);
+	//	}
+	//}
 
 }
 
@@ -667,7 +720,7 @@ void BoardController::crushNormalMatch(Match* match)
 	auto bonusType = match->getAvailableBonusType();
 	if (match->refCell->getSourceTile() == nullptr)
 	{
-		if (bonusType._to_integral() != MovingTileTypes::LayeredMatchObject && !match->checkBonusCreated(bonusType))
+		if (bonusType != +MovingTileTypes::LayeredMatchObject && !match->checkBonusCreated(bonusType))
 		{
 			auto bonusTile = poolController->getCookieTile(bonusType._to_string());
 			bonusTile->initWithType(bonusType._to_string(), match->color);
@@ -693,7 +746,7 @@ void BoardController::crushNormalMatch(Match* match)
 
 	crushCell(match->refCell);
 
-	if (bonusType._to_integral() != MovingTileTypes::LayeredMatchObject)
+	if (bonusType != +MovingTileTypes::LayeredMatchObject)
 	{
 		auto bonusTile = poolController->getCookieTile(bonusType._to_string());
 		bonusTile->initWithType(bonusType._to_string(), color);
@@ -721,6 +774,7 @@ void BoardController::crushBonusMatch(Match* match)
 			dualXCrush(match->refCell);
 			break;
 		case MovingTileTypes::RainbowObject:
+			combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::SeekerObject:
 			break;
@@ -741,6 +795,7 @@ void BoardController::crushBonusMatch(Match* match)
 		case MovingTileTypes::BombBreakerObject:
 			break;
 		case MovingTileTypes::RainbowObject:
+			combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::SeekerObject:
 			break;
@@ -754,16 +809,15 @@ void BoardController::crushBonusMatch(Match* match)
 	case MovingTileTypes::RainbowObject:
 		switch (targetCellBonusType)
 		{
-		case MovingTileTypes::XBreakerObject:
-			break;
-		case MovingTileTypes::BombBreakerObject:
-			break;
 		case MovingTileTypes::RainbowObject:
+			//combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
+		case MovingTileTypes::XBreakerObject:
+		case MovingTileTypes::BombBreakerObject:
 		case MovingTileTypes::SeekerObject:
-			break;
 		case MovingTileTypes::ColumnBreakerObject:
 		case MovingTileTypes::RowBreakerObject:
+			combineRainbowAndBonus(match->refCell, match->bonusMatchCell);
 			break;
 		default:
 			break;
@@ -777,6 +831,7 @@ void BoardController::crushBonusMatch(Match* match)
 		case MovingTileTypes::BombBreakerObject:
 			break;
 		case MovingTileTypes::RainbowObject:
+			combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::SeekerObject:
 			break;
@@ -797,6 +852,7 @@ void BoardController::crushBonusMatch(Match* match)
 		case MovingTileTypes::BombBreakerObject:
 			break;
 		case MovingTileTypes::RainbowObject:
+			combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::SeekerObject:
 			break;
@@ -833,6 +889,33 @@ void BoardController::crushRainbowMatch(Match* match)
 	CC_SAFE_DELETE(sameColorCells);
 }
 
+void BoardController::combineRainbowAndBonus(Cell* rainbowCell, Cell* bonusCell)
+{
+	auto bonusType = bonusCell->getMovingTile()->getMovingTileType();
+	auto tileColor = bonusCell->getMovingTile()->getTileColor();
+	auto sameColorCells = boardModel->getSameColorCells(tileColor);
+	for (auto cell : *sameColorCells)
+	{
+		cell->crushCell(false);
+		addMovingTile(cell, bonusType, tileColor);
+		auto match = Match::create();
+		match->matchType = SingleCellMatch;
+		match->refCell = cell;
+		match->retain();
+		pendingCrushCells->addObject(match);
+	}
+}
+
+void BoardController::combineBombAndLine(Cell* refCell)
+{
+	crushColumnBreaker(refCell);
+	crushColumnBreaker(refCell->rightCell); 
+	crushColumnBreaker(refCell->leftCell);
+	crushRowBreaker(refCell);
+	crushRowBreaker(refCell->upCell);
+	crushRowBreaker(refCell->downCell);
+}
+
 void BoardController::crushMatch(Match* match)
 {
 	if(match != nullptr)
@@ -848,9 +931,82 @@ void BoardController::crushMatch(Match* match)
 		case RainbowMatch:
 			crushRainbowMatch(match);
 			break;
+		case SingleCellMatch:
+			crushCell(match->refCell);
+			break;
 		default:
 			break;
 		}
+	}
+}
+
+Cell* BoardController::fillCell(Cell* cell)
+{
+	auto fallPath = findFallPath(cell);
+	if (fallPath->startCell != nullptr)
+	{
+		Cell* movedCell = nullptr;
+		if (fallPath->startCell->isEmpty)
+		{
+			//if (fallPath->startCell->containsSpawner())
+			{
+				fallPath->startCell->spawnMatchTile();
+				if (Utils::IsSameGrid(fallPath->startCell->gridPos, cell->gridPos))
+				{
+					auto spawnner = static_cast<SpawnerObject*>(cell->getTileAtLayer(LayerId::Spawner));
+					if(spawnner != nullptr) spawnner->initSpawnedCount();
+				}
+			}
+		}
+		else
+		{
+			movedCell = fallPath->startCell;
+		}
+		if (!fallPath->startCell->isEmpty)
+		{
+			fallPath->showFallAction();
+			if (!Utils::IsSameGrid(fallPath->startCell->gridPos, cell->gridPos))
+			{
+				cell->setSourceTile(fallPath->startCell->getSourceTile());
+				fallPath->startCell->clear();
+			}
+			cell->getSourceTile()->setCellPos();
+		}
+		return movedCell;
+	}
+	else
+	{
+		
+	}
+	return nullptr;
+}
+
+//bool BoardController::isThereHoleInColumn(Cell* cell)
+//{
+//	
+//}
+
+bool BoardController::checkPastHole(Cell* cell, char refCol, char refRow, bool inWater)
+{
+	if(cell->getMovingTile() != nullptr && cell->getMovingTile()->isMoving)
+	{
+		return false;
+	}
+	if(cell->gridPos.Col < refCol)
+	{
+		return true;
+	}
+	if(cell->gridPos.Col > refCol)
+	{
+		return false;
+	}
+	if(inWater)
+	{
+		return cell->gridPos.Row > refRow;
+	}
+	else
+	{
+		return cell->gridPos.Row < refRow;
 	}
 }
 
@@ -860,41 +1016,33 @@ void BoardController::fallTiles()
 	{
 		return;
 	}
-	for(char j = 0; j < boardModel->getWidth(); j++)
+	std::list<Cell*> movedCells;
+
+	for (char i = boardModel->getCurrentLiquidLevel(); i < boardModel->getHeight(); i++)
 	{
-		for(char i = boardModel->getCurrentLiquidLevel(); i < boardModel->getHeight(); i++)
+		for (char j = 0; j < boardModel->getWidth(); j++)
 		{
 			auto cell = boardModel->getCell(j, i);
 			if(cell->isEmpty && cell->isFillable && !cell->isOutCell)
 			{
-				auto fallPath = findFallPath(cell);
-				if(fallPath->startCell != nullptr)
-				{
-					if(fallPath->startCell->isEmpty)
-					{
-						if(fallPath->startCell->containsSpawner())
-						{
-							fallPath->startCell->spawnMatchTile();
-							if(Utils::IsSameGrid(fallPath->startCell->gridPos, cell->gridPos))
-							{
-								static_cast<SpawnerObject*>(cell->getTileAtLayer(LayerId::Spawner))->initSpawnedCount();
-							}
-						}
-					}
-					if (!fallPath->startCell->isEmpty)
-					{
-						fallPath->showFallAction();
-						if(!Utils::IsSameGrid(fallPath->startCell->gridPos, cell->gridPos))
-						{
-							cell->setSourceTile(fallPath->startCell->getSourceTile());
-							fallPath->startCell->clear();
-						}
-						cell->getSourceTile()->setCellPos();
-
-					}
-				}
+				auto movedCell = fillCell(cell);
+				//if(movedCell != nullptr && movedCell->isEmpty && checkPastHole(movedCell, j, i))
+				//{
+				//	movedCells.push_back(movedCell);
+				//}
 			}
 		}
+
+		//while(movedCells.size() > 0)
+		//{
+		//	Cell* movedCell = movedCells.front();
+		//	movedCells.pop_front();
+		//	auto newMovedCell = fillCell(movedCell);
+		//	if (newMovedCell != nullptr && newMovedCell->isEmpty && checkPastHole(newMovedCell, j, boardModel->getHeight()))
+		//	{
+		//		movedCells.push_back(newMovedCell);
+		//	}
+		//}
 	}
 }
 
@@ -919,11 +1067,17 @@ FallPath* BoardController::findFallPath(Cell* cell)
 		targetCell = fallCell;
 		fallCell = targetCell->getFallCell();
 	}
+
+	if (fallCell != nullptr && fallCell->gridPos.Col != targetCell->gridPos.Col)
+	{
+		fallPath->pushGridPos(targetCell->gridPos);
+	}
+
 	if(fallCell != nullptr)
 	{
 		fallPath->startCell = fallCell;
 	}
-	else if(targetCell->containsSpawner())
+	else
 	{
 		fallPath->startCell = targetCell;
 	}
@@ -938,30 +1092,30 @@ void BoardController::crushCell(Cell* cell)
 		return;
 	}
 	
-		auto tile = cell->getSourceTile();
-		auto tileType = tile->getMovingTileType();
-		switch (tileType)
-		{
-		case MovingTileTypes::BombBreakerObject:
-			crushBombBreaker(cell);
-			break;
-		case MovingTileTypes::RowBreakerObject:
-			crushRowBreaker(cell);
-			break;
-		case MovingTileTypes::ColumnBreakerObject:
-			crushColumnBreaker(cell);
-			break;
-		case MovingTileTypes::XBreakerObject:
-			crushXBreaker(cell);
-			break;
-		case MovingTileTypes::RainbowObject:
-			break;
-		case MovingTileTypes::SeekerObject:
-			crushSeeker(cell);
-			break;
-		default:
-			break;
-		}
+	auto tile = cell->getSourceTile();
+	auto tileType = tile->getMovingTileType();
+	switch (tileType)
+	{
+	case MovingTileTypes::BombBreakerObject:
+		crushBombBreaker(cell);
+		break;
+	case MovingTileTypes::RowBreakerObject:
+		crushRowBreaker(cell);
+		break;
+	case MovingTileTypes::ColumnBreakerObject:
+		crushColumnBreaker(cell);
+		break;
+	case MovingTileTypes::XBreakerObject:
+		crushXBreaker(cell);
+		break;
+	case MovingTileTypes::RainbowObject:
+		break;
+	case MovingTileTypes::SeekerObject:
+		crushSeeker(cell);
+		break;
+	default:
+		break;
+	}
 	cell->crushCell();
 }
 
@@ -974,7 +1128,16 @@ void BoardController::crushBombBreaker(Cell* cell)
 		{
 			auto bombCell = getMatchCell(j, i);
 			if(bombCell == nullptr) continue;
-			if(std::abs(i - cell->gridPos.Row) == 2 && std::abs(j - cell->gridPos.Col) == 2) continue;
+			if ((std::abs(i - cell->gridPos.Row) == 2)) 
+			{ 
+				if(std::abs(j - cell->gridPos.Col) != 0)
+					continue; 
+			}
+			if ((std::abs(j - cell->gridPos.Col) == 2))
+			{
+				if (std::abs(i - cell->gridPos.Row) != 0)
+					continue;
+			}
 			crushCell(bombCell);
 		}
 	}
@@ -986,14 +1149,30 @@ void BoardController::crushRowBreaker(Cell* cell)
 	cell->crushCell();
 	while (leftCell != nullptr)
 	{
-		crushCell(leftCell);
+		if (!leftCell->isEmpty && leftCell->getMovingTile() != nullptr)
+		{
+			if (leftCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::RowBreakerObject)
+			{
+				leftCell->getMovingTile()->setMovingTileType(MovingTileTypes::ColumnBreakerObject);
+			}
+			crushCell(leftCell);
+
+		}		
 		leftCell = leftCell->leftCell;
 	}
 
 	auto rightCell = cell->rightCell;
 	while (rightCell != nullptr)
 	{
-		crushCell(rightCell);
+		if (!rightCell->isEmpty && rightCell->getMovingTile() != nullptr)
+		{
+			if (rightCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::RowBreakerObject)
+			{
+				rightCell->getMovingTile()->setMovingTileType(MovingTileTypes::ColumnBreakerObject);
+			}
+			crushCell(rightCell);
+
+		}		
 		rightCell = rightCell->rightCell;
 	}
 }
@@ -1004,14 +1183,29 @@ void BoardController::crushColumnBreaker(Cell* cell)
 	cell->crushCell();
 	while (upCell != nullptr)
 	{
-		crushCell(upCell);
+		if(!upCell->isEmpty && upCell->getMovingTile() != nullptr)
+		{
+			if(upCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::ColumnBreakerObject)
+			{
+				upCell->getMovingTile()->setMovingTileType(MovingTileTypes::RowBreakerObject);
+			}
+			crushCell(upCell);
+		}
 		upCell = upCell->upCell;
 	}
 
 	auto downCell = cell->downCell;
 	while (downCell != nullptr)
 	{
-		crushCell(downCell);
+		if (!downCell->isEmpty && downCell->getMovingTile() != nullptr)
+		{
+			if (downCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::ColumnBreakerObject)
+			{
+				downCell->getMovingTile()->setMovingTileType(MovingTileTypes::RowBreakerObject);
+			}
+			crushCell(downCell);
+
+		}	
 		downCell = downCell->downCell;
 	}
 }
@@ -1075,10 +1269,10 @@ void BoardController::processPendingSeekers()
 		auto targetCell = boardModel->getSeekerTarget();
 		if(targetCell == nullptr)
 		{
-			targetCell = findSeekerTarget();
+			targetCell = findSeekerTarget(&targetsList);
 			while(Utils::containsCell(&targetsList, targetCell))
 			{
-				targetCell = findSeekerTarget();
+				targetCell = findSeekerTarget(&targetsList);
 			}
 		}
 		if(targetCell == nullptr) continue;
@@ -1104,7 +1298,7 @@ void BoardController::landingSeeker(AnimationShowObject* seekerShow, Cell* targe
 	actionController->pushAction(ckAction, false);
 }
 
-Cell* BoardController::findSeekerTarget()
+Cell* BoardController::findSeekerTarget(std::list<Cell*>* targetsList)
 {
 	auto specialTiles = boardModel->getSpecialTiles();
 	auto breakers = static_cast<__Array*>(specialTiles->objectForKey("breakers"));
@@ -1113,15 +1307,27 @@ Cell* BoardController::findSeekerTarget()
 
 	if (liquids->count() > 0)
 	{
-		return static_cast<Cell*>(liquids->getRandomObject());
+		auto targetCell = static_cast<Cell*>(liquids->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
 	}
 	if (wafflePath->count() > 0)
 	{
-		return static_cast<Cell*>(wafflePath->getRandomObject());
+		auto targetCell = static_cast<Cell*>(wafflePath->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
 	}
 	if (breakers->count() > 0)
 	{
-		return static_cast<Cell*>(breakers->getRandomObject());
+		auto targetCell = static_cast<Cell*>(breakers->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
 	}
 	return boardModel->getRandomCell();
 }

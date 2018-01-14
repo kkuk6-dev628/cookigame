@@ -49,6 +49,9 @@ public:
 	AnimationShowObject* getSeekerShow(TileColors color) const;
 	void recycleSeekerShow(AnimationShowObject* show) const;
 
+	AnimationShowObject* getChocolateCrushShow() const;
+	void recycleChocolateCrushShow(AnimationShowObject* show) const;
+
 private:
 	PoolController();
 	static PoolController* instance;
@@ -69,5 +72,7 @@ private:
 	NodePool<AnimationShowObject>* purpleSeekerShowPool;
 	NodePool<AnimationShowObject>* redSeekerShowPool;
 	NodePool<AnimationShowObject>* yellowSeekerShowPool;
+
+	NodePool<AnimationShowObject>* chocolateCrushPool;
 };
 

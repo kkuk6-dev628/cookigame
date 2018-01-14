@@ -11,6 +11,9 @@ public:
 	MovingTile();
 	~MovingTile();
 
+	CREATE_FUNC(MovingTile);
+
+	bool init() override;
 	//void onEnterTransitionDidFinish() override;
 	//bool onTouchBegan(Touch* touch, Event* unused_event);
 
@@ -23,7 +26,11 @@ public:
 	void initWithJson(rapidjson::Value& json) override;
 	void initTexture() override;
 
+	bool crush(bool showEffect) override;
 	void showCrushEffect() override;
+
+	bool isMoving = false;
+	float movingDuration = 0.f;
 
 protected:
 	ActionController* actionController;

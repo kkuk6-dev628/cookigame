@@ -8,7 +8,7 @@ class FallPath
 public:
 	FallPath();
 	~FallPath();
-	void pushGridPos(GridPos gridPos) { fallPath.push_back(gridPos); }
+	void pushGridPos(GridPos gridPos) { fallPath.push_front(gridPos); }
 	void pushGridPos(char col, char row)
 	{
 		GridPos gridPos;

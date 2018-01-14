@@ -6,13 +6,14 @@ class CookieTile : public TileBase
 {
 public:
 	CookieTile();
-	~CookieTile();
+	//~CookieTile();
 	CREATE_FUNC(CookieTile)
 
 	Cell* getCell() const { return pCell; }
 	void setCell(Cell* cell);
 
 	MovingTileTypes getMovingTileType() const;
+	void setMovingTileType(MovingTileTypes tileType);
 
 	void setCellPos();
 	virtual void initWithJson(rapidjson::Value& json);
@@ -20,8 +21,11 @@ public:
 	virtual void showCrushEffect() {};
 	virtual void initTexture() {};
 
+	virtual bool crush(bool showEffect);
+
 	bool canMatch = true;
 	int matchId = 0;
+	bool receiveNearbyAffect = false;
 
 protected:
 	Cell* pCell;

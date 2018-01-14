@@ -61,16 +61,29 @@ void ParticleShowObject::initWithCSB(std::string csbFileName)
 	{
 		colorParticle = static_cast<ParticleSystem*>(rootNode->getChildren().at(0));
 		normalParticle = static_cast<ParticleSystem*>(rootNode->getChildren().at(1));
+		if(normalParticle != nullptr)
+		{
+			originSpeed = normalParticle->getSpeed();
+		}
 	}
 }
 
 void ParticleShowObject::reuse(const std::function<void()> callback)
 {
-	if (colorParticle != nullptr)	colorParticle->start();
-	if (normalParticle != nullptr)	normalParticle->start();
+	if (colorParticle != nullptr)
+	{
+		//colorParticle->setSpeed(colorParticle->getSpeed() * 2);
+		colorParticle->start();
+	}
+	if (normalParticle != nullptr)
+	{
+		//normalParticle->setTotalParticles(400);
+		//normalParticle->setSpeed(originSpeed * 3);
+		normalParticle->stop();
+	}
 
 	recycleCallback = callback;
-	scheduleOnce(schedule_selector(ParticleShowObject::scheduleToRecycle), 0.5);
+	scheduleOnce(schedule_selector(ParticleShowObject::scheduleToRecycle), 0.4);
 }
 
 void ParticleShowObject::scheduleToRecycle(float dt)

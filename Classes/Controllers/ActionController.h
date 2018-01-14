@@ -42,8 +42,8 @@ private:
 	ActionController();
 	static ActionController* instance;
 
-	std::map<cocos2d::Node*, CKAction>* pendingActions;
-	std::map<cocos2d::Node*, CKAction>* runningActions;
+	std::map<cocos2d::Node*, CKAction>* pendingActions = nullptr;
+	std::map<cocos2d::Node*, CKAction>* runningActions = nullptr;
 };
 
 

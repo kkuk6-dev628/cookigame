@@ -14,7 +14,7 @@ LayeredMatchObject::~LayeredMatchObject()
 void LayeredMatchObject::initWithJson(rapidjson::Value& json)
 {
 	CookieTile::initWithJson(json);
-	if (TileColors::any == color._to_integral() || color._to_integral() == TileColors::random)
+	if (+TileColors::any == color || color == +TileColors::random)
 	{
 		color = SpawnController::getInstance()->getSpawnColor();
 	}

@@ -8,7 +8,17 @@ enum GameState {
 
 enum MatchType
 {
-	NormalMatch, BonusMatch, RainbowMatch
+	NormalMatch, BonusMatch, RainbowMatch, SingleCellMatch
+};
+
+enum BoosterType
+{
+	BoosterHor,
+	BoosterVer,
+	BoosterCross,
+	BoosterBomb,
+	BoosterRainbow,
+	BoosterCount
 };
 
 BETTER_ENUM(GoalTypes, char, WaffleObject, PathObject, TopplingObject, PopsicleObject, HiderSegmentObject, HopplingObject, thoppling);

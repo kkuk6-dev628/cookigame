@@ -12,6 +12,8 @@ LevelController* LevelController::instance = nullptr;
 
 LevelController::LevelController()
 {
+	levelCount = 700;
+	//loadCurrentLevel();
 }
 
 
@@ -60,4 +62,16 @@ void LevelController::loadCurrentLevel()
 	}
 	this->currentLevel = new Level();
 	this->currentLevel->load(UserData::getInstance()->getTopLevel());
+}
+
+bool LevelController::setCurrentLevel(int level)
+{
+	currentLevelNumber = level;
+	if (this->currentLevel != nullptr)
+	{
+		delete this->currentLevel;
+	}
+	this->currentLevel = new Level();
+	this->currentLevel->load(currentLevelNumber);
+	return true;
 }

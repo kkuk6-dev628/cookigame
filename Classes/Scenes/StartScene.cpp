@@ -70,8 +70,8 @@ void StartScene::menuCloseCallback(Ref* pSender)
 	//auto currLevel = this->levelController->getCurrentLevel();
 	//auto board = static_cast<BoardModel*>(currLevel->Boards->getObjectAtIndex(0));
 	//auto layer = board->Layers->objectForKey("3");
-	//this->gameController->goMainMenu();
-	this->gameController->goGamePlay();
+	this->gameController->goMainMenu();
+	//this->gameController->goGamePlay();
 }
 
 void StartScene::initControllers()

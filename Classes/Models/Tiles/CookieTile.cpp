@@ -1,6 +1,7 @@
 #include "CookieTile.h"
 #include "General/Utils.h"
 #include "Models/BoardModels/Cell.h"
+#include "Controllers/PoolController.h"
 
 
 CookieTile::CookieTile()
@@ -10,9 +11,9 @@ CookieTile::CookieTile()
 }
 
 
-CookieTile::~CookieTile()
-{
-}
+//CookieTile::~CookieTile()
+//{
+//}
 
 void CookieTile::setCell(Cell* cell)
 {
@@ -30,6 +31,11 @@ MovingTileTypes CookieTile::getMovingTileType() const
 	{
 		return MovingTileTypes::FixTile;
 	}
+}
+
+void CookieTile::setMovingTileType(MovingTileTypes tileType)
+{
+	type = tileType._to_string();
 }
 
 void CookieTile::setCellPos()
@@ -233,4 +239,12 @@ void CookieTile::initWithType(std::string typeName, TileColors color)
 	type = typeName;
 	setTileColor(color);
 	initTexture();
+}
+
+bool CookieTile::crush(bool showEffect)
+{
+	if (showEffect) showCrushEffect();
+	pCell->afterTileCrushProc();
+	poolController->recycleCookieTile(this);
+	return true;
 }

@@ -7,6 +7,7 @@
 #include "Models/BoardModels/Cell.h"
 #include "Models/BoardModels/FallPath.h"
 #include "General/Utils.h"
+#include "Ext/Math.h"
 
 USING_NS_CC;
 
@@ -36,7 +37,7 @@ ActionController* ActionController::getInstance()
 
 void ActionController::pushAction(CKAction ckAction, const bool isPending) const
 {
-	if (runningActions->size() > 0)
+	if (runningActions != nullptr && runningActions->size() > 0)
 	{
 		auto itr = runningActions->find(ckAction.node);
 		if (itr != runningActions->end())
@@ -212,6 +213,11 @@ Action* ActionController::createMoveThroughAction(FallPath* path, std::function<
 	for (auto gridPos : path->fallPath)
 	{
 		auto boardPos = Utils::Grid2BoardPos(gridPos);
+		auto distance = pathPos.distance(boardPos);
+		if(distance < 50)
+		{
+			continue;
+		}
 		auto tileMovingTime = calcTileMovingTime(pathPos.distance(boardPos));
 		pathPos = boardPos;
 		actions.pushBack(MoveTo::create(tileMovingTime, boardPos));
@@ -259,5 +265,5 @@ void ActionController::endAction(cocos2d::Node* node) const
 
 float ActionController::calcTileMovingTime(const float distance)
 {
-	return 0.15 + 0.7 * TileMovingTime * (distance / CellSize - 1);
+	return 0.15 + TileMovingTime * (std::powf(distance / CellSize, 0.7) - 1);
 }

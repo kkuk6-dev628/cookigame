@@ -28,6 +28,10 @@ public:
 	static GameState gameState;
 
 	bool init() override;
+	void initWithModel(BoardModel* model);
+
+	GoalTypes getGoalType();
+
 	void initControllersWithBoard() const;
 	void initWithJson(rapidjson::Value& data);
 	CREATE_FUNC(BoardController);
@@ -45,6 +49,7 @@ public:
 	void releaseWaitingMatch(int matchId) const;
 
 	void addTile(char col, char row, MovingTileTypes type, TileColors tileColor);
+	void addMovingTile(Cell* cell, MovingTileTypes type, TileColors tileColor);
 	//void BoardController::initWithData(BoardModel* boardData);
 
 protected:
@@ -72,12 +77,17 @@ protected:
 	void crushNormalMatch(Match* match);
 	void crushBonusMatch(Match* match);
 	void crushRainbowMatch(Match* match);
+	void combineRainbowAndBonus(Cell* rainbowCell, Cell* bonusCell);
+	void combineBombAndLine(Cell* refCell);
 	void crushMatch(Match* match);
+
+	bool checkPastHole(Cell* cell, char refCol, char refRow, bool inWater = false);
+	Cell* fillCell(Cell* cell);
 	void fallTiles();
 	FallPath* findFallPath(Cell* cell);
 	void checkMatchesInBoard();
 
-	Cell* findSeekerTarget();
+	Cell* findSeekerTarget(std::list<Cell*>* targetsList);
 	void landingSeeker(AnimationShowObject* seekerShow, Cell* targetCell);
 
 	void crushCell(Cell* pCell);

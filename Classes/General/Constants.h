@@ -4,6 +4,22 @@
 #define CONSTANTS_H
 #include <string>
 
+// design
+#define SCREEN_X	720.f
+//768.f
+#define SCREEN_Y	1280.f
+//1356.f
+
+// level
+#define MAX_TARGET	4
+#define MAX_STAR	3
+#define MAX_COLOR	6
+// board
+#define MAX_ROW		9
+#define MAX_COL		9
+
+#define REWARDED_VIDEO_DEFAULT_TIME 900
+
 static const std::string EpisodeFilePrefix = "LevelsConfigEpisode";
 static const char MaxCol = 9;
 static const char MaxRow = 9;

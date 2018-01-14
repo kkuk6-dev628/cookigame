@@ -192,11 +192,10 @@ AdjacentDirs Utils::inverseDir(AdjacentDirs dir)
 
 bool Utils::IsBonusTile(MovingTileTypes tileType)
 {
-	auto intType = tileType._to_integral();
-	return intType == MovingTileTypes::RainbowObject
-		|| intType == MovingTileTypes::ColumnBreakerObject
-		|| intType == MovingTileTypes::RowBreakerObject
-		|| intType == MovingTileTypes::XBreakerObject
-		|| intType == MovingTileTypes::BombBreakerObject
-		|| intType == MovingTileTypes::SeekerObject ;
+	return tileType == +MovingTileTypes::RainbowObject
+		|| tileType == +MovingTileTypes::ColumnBreakerObject
+		|| tileType == +MovingTileTypes::RowBreakerObject
+		|| tileType == +MovingTileTypes::XBreakerObject
+		|| tileType == +MovingTileTypes::BombBreakerObject
+		|| tileType == +MovingTileTypes::SeekerObject ;
 }

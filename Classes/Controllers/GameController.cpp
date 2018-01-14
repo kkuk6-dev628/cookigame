@@ -1,6 +1,8 @@
 #include "GameController.h"
 #include "Scenes/MainMenuScene.h"
 #include "Scenes/GamePlayScene.h"
+#include "Scenes/LevelMapScene.h"
+#include "Models/BoardModels/BoardModel.h"
 
 USING_NS_CC;
 
@@ -43,13 +45,13 @@ void GameController::goMainMenu()
 	{
 		this->episodeNumber = this->levelController->getCurrentLevel()->getEpisode();
 	}
-	Director::getInstance()->replaceScene(TransitionFade::create(0.6f, MainMenuScene::createScene()));
+	Director::getInstance()->replaceScene(TransitionFade::create(0.6f, LevelMapScene::createScene()));
 }
 
-void GameController::goGamePlay()
+void GameController::goGamePlay(int levelNumber)
 {
 	loadGamePlayTextureAtlases();
-	levelController->loadCurrentLevel();
+	levelController->setCurrentLevel(levelNumber);
 	this->currentLevel = levelController->getCurrentLevel();
 	this->boardData = this->currentLevel->BoardsJson;
 	Director::getInstance()->pushScene(TransitionFade::create(0.6f, GamePlayScene::createScene()));
@@ -71,8 +73,11 @@ BoardController* GameController::getBoardController(bool next)
 		boardController->removeFromParent();
 		CC_SAFE_RELEASE(boardController);
 	}
+
+	auto boardModel = new BoardModel();
+	boardModel->initWithJson(boardsArray[currentBoardIndex]);
 	boardController = new BoardController();
-	boardController->initWithJson(boardsArray[currentBoardIndex]);
+	boardController->initWithModel(boardModel);
 	return boardController;
 }
 

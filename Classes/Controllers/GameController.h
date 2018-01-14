@@ -11,7 +11,7 @@ public:
 	~GameController();
 	static GameController* getInstance();
 	void goMainMenu();
-	void goGamePlay();
+	void goGamePlay(int levelNumber);
 	BoardController* getBoardController(bool next = true);
 
 private:

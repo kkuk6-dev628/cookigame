@@ -51,4 +51,5 @@ public:
 	void scheduleToRecycle(float);
 	ParticleSystem* colorParticle;
 	ParticleSystem* normalParticle;
+	float originSpeed;
 };
