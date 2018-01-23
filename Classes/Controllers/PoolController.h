@@ -4,6 +4,7 @@
 #include "Models/TilePools/TileShowObjectPool.h"
 #include "Models/TilePools/NodePool.h"
 #include "Models/ShowObjects/AnimationShowObject.h"
+#include "Models/Tiles/ChocolateChipObject.h"
 
 class PoolController
 {
@@ -14,6 +15,9 @@ public:
 
 	CookieTile* getCookieTile(std::string typeName);
 	void recycleCookieTile(CookieTile* cookieTile) const;
+
+	//ChocolateChipObject* getChocolateChip() const;
+	//void recycleChocolateChip(ChocolateChipObject* show) const;
 
 	TileShowObject* getTileShowObject() const;
 	void recycleTileShowObject(TileShowObject* showObj) const;
@@ -51,10 +55,23 @@ public:
 
 	AnimationShowObject* getChocolateCrushShow() const;
 	void recycleChocolateCrushShow(AnimationShowObject* show) const;
+	AnimationShowObject* getChocolateChipCrushShow() const;
+	void recycleChocolateChipCrushShow(AnimationShowObject* show) const;
+
+	AnimationShowObject* getDonutCrushShow() const;
+	void recycleDonutCrushShow(AnimationShowObject* show) const;
+
+	AnimationShowObject* getLineCrushShow() const;
+	void recycleLineCrushShow(AnimationShowObject* show) const;
+
+	AnimationShowObject* getBombAndLineCrushShow() const;
+	void recycleBombAndLineCrushShow(AnimationShowObject* show) const;
 
 private:
 	PoolController();
 	static PoolController* instance;
+
+#pragma region LayeredMatchObject
 
 	TilePool* tilesPool;
 	TileShowObjectPool* tileShowObjectPool;
@@ -66,6 +83,8 @@ private:
 	NodePool<AnimationShowObject>* redCrushShowPool;
 	NodePool<AnimationShowObject>* yellowCrushShowPool;
 
+#pragma endregion
+
 	NodePool<AnimationShowObject>* blueSeekerShowPool;
 	NodePool<AnimationShowObject>* greenSeekerShowPool;
 	NodePool<AnimationShowObject>* orangeSeekerShowPool;
@@ -73,6 +92,16 @@ private:
 	NodePool<AnimationShowObject>* redSeekerShowPool;
 	NodePool<AnimationShowObject>* yellowSeekerShowPool;
 
+	NodePool<AnimationShowObject>* lineCrushShowPool;
+	NodePool<AnimationShowObject>* bombAndLineCrushShowPool;
+
 	NodePool<AnimationShowObject>* chocolateCrushPool;
+
+	NodePool<ChocolateChipObject>* chocolateChipPool;
+	NodePool<AnimationShowObject>* chocolateChipCrushPool;
+
+	NodePool<DonutObject>* donutPool;
+	NodePool<AnimationShowObject>* donutCrushPool;
+
 };
 

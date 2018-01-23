@@ -11,7 +11,7 @@ class CKAction
 public:
 	cocos2d::Node* node;
 	cocos2d::Action* action;
-
+	char delayCount = 0;
 };
 
 class ActionController
@@ -21,6 +21,7 @@ public:
 	char getPendingActionCount();
 	cocos2d::Action* createSeekerPendingAction(cocos2d::Node* node, cocos2d::Vec2 pos);
 	cocos2d::Action* createSeekerLandingAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> callback);
+	cocos2d::Action* createShuffleMoveAction(cocos2d::Vec2 boardCenter, const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
 	static ActionController* getInstance();
 
 	void pushAction(CKAction ckAction, bool isPending) const;

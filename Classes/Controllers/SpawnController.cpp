@@ -37,7 +37,7 @@ void SpawnController::setColorTable(TileColorsTable ct) const
 
 TileColors SpawnController::getSpawnColor() const
 {
-	const auto rnd = static_cast<float>(rand() % 100) / 100.0f;
+	const auto rnd = cocos2d::rand_0_1();
 	for (auto pair : *colorTable)
 	{
 		if (rnd <= pair.second)
@@ -46,7 +46,7 @@ TileColors SpawnController::getSpawnColor() const
 		}
 	}
 
-	return TileColors::blue;
+	return TileColors::_from_integral(rnd * 6);
 }
 
 MovingTileTypes SpawnController::getSpawnType() const

@@ -19,6 +19,8 @@ public:
 	std::list<Cell*>* sMatchedCells;
 	Cell* bonusMatchCell = nullptr;
 
+	bool equal(Match* other);
+
 	int getHMatchCount() const { return hMatchedCells != nullptr ? hMatchedCells->size() : 0; }
 	int getVMatchCount() const { return vMatchedCells != nullptr ? vMatchedCells->size() : 0; }
 	int getSMatchCount() const { return sMatchedCells != nullptr ? sMatchedCells->size() : 0; }

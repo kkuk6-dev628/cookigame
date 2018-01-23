@@ -10,6 +10,7 @@ AnimationShowObject::AnimationShowObject()
 	rootNode = nullptr;
 	action = nullptr;
 	csbFileName = "";
+	customData = new std::map<std::string, std::string>;
 }
 
 
@@ -33,6 +34,20 @@ void AnimationShowObject::reuse(const std::function<void()> callback)
 		action->setLastFrameCallFunc(callback);
 	}
 	action->setTimeSpeed(1.5);
+	rootNode->runAction(action);
+}
+
+void AnimationShowObject::playAnimation()
+{
+	if (action == nullptr)
+	{
+		return;
+	}
+	action->gotoFrameAndPlay(0, false);
+	action->setLastFrameCallFunc([=]{
+		this->setVisible(false);
+	});
+	rootNode->stopAllActions();
 	rootNode->runAction(action);
 }
 

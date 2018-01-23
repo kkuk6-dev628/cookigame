@@ -30,7 +30,7 @@ private:
 	rapidjson::Value* boardData = nullptr;
 	char episodeNumber = 1;
 	Level* currentLevel = nullptr;
-	char currentBoardIndex = -1;
+	char currentBoardIndex = 0;
 
 public:
 	char getEpisodeNumber() const

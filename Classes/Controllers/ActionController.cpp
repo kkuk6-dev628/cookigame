@@ -55,8 +55,15 @@ void ActionController::pushAction(CKAction ckAction, const bool isPending) const
 		}
 	}
 
-	ckAction.node->runAction(ckAction.action);
-	(*runningActions)[ckAction.node] = ckAction;
+	if(ckAction.delayCount > 0)
+	{
+		(*pendingActions)[ckAction.node] = ckAction;
+	}
+	else
+	{
+		ckAction.node->runAction(ckAction.action);
+		(*runningActions)[ckAction.node] = ckAction;
+	}
 }
 
 void ActionController::runPendingActions() const
@@ -66,9 +73,16 @@ void ActionController::runPendingActions() const
 	{
 		if (runningActions->size() == 0 || runningActions->find(itr->first) == runningActions->end())
 		{
-			itr->first->runAction(itr->second.action);
-			(*runningActions)[itr->first] = itr->second;
-			deleteItr.push_back(itr);
+			if(itr->second.delayCount > 0)
+			{
+				itr->second.delayCount--;
+			}
+			else
+			{
+				itr->first->runAction(itr->second.action);
+				(*runningActions)[itr->first] = itr->second;
+				deleteItr.push_back(itr);
+			}
 		}
 	}
 
@@ -113,6 +127,21 @@ cocos2d::Action* ActionController::createSeekerLandingAction(cocos2d::Node* node
 			ScaleTo::create(0.6f, 1.0f),
 			nullptr
 		),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::createShuffleMoveAction(cocos2d::Vec2 boardCenter, const cocos2d::Vec2& targetPos, std::function<void()> callback, Node* node)
+{
+	Sequence* seq = Sequence::create(
+		JumpTo::create(0.4f, boardCenter, 2 * CellSize, 1),
+		Hide::create(),
+		DelayTime::create(0.8f),
+		Show::create(),
+		JumpTo::create(0.4f, targetPos, 2*CellSize, 1),
 		CallFunc::create(callback),
 		CallFunc::create([this, node]() { this->endAction(node); }),
 		nullptr);
@@ -210,17 +239,28 @@ Action* ActionController::createMoveThroughAction(FallPath* path, std::function<
 	auto pathPos = node->getPosition();
 	auto actions = Vector<FiniteTimeAction*>();
 	actions.pushBack(DelayTime::create(0.05f));
-	for (auto gridPos : path->fallPath)
+	for (auto cell : path->fallPath)
 	{
-		auto boardPos = Utils::Grid2BoardPos(gridPos);
-		auto distance = pathPos.distance(boardPos);
-		if(distance < 50)
+		if (cell->containsPortalOut())
 		{
-			continue;
+			actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize), Vec2(0, -CellSize)));
+			actions.pushBack(Hide::create());
+			actions.pushBack(Place::create(cell->boardPos + Vec2(0, CellSize)));
+			actions.pushBack(Show::create());
+			actions.pushBack(MoveTo::create(calcTileMovingTime(CellSize), cell->boardPos));
 		}
-		auto tileMovingTime = calcTileMovingTime(pathPos.distance(boardPos));
-		pathPos = boardPos;
-		actions.pushBack(MoveTo::create(tileMovingTime, boardPos));
+		else
+		{
+			auto boardPos = Utils::Grid2BoardPos(cell->gridPos);
+			auto distance = pathPos.distance(cell->boardPos);
+			if (distance < 50)
+			{
+				continue;
+			}
+			auto tileMovingTime = calcTileMovingTime(pathPos.distance(cell->boardPos));
+			actions.pushBack(MoveTo::create(tileMovingTime, cell->boardPos));
+		}
+		pathPos = cell->boardPos;
 	}
 	auto lastPos = path->endCell->getBoardPos();
 	auto t = calcTileMovingTime(pathPos.distance(lastPos));
@@ -265,5 +305,5 @@ void ActionController::endAction(cocos2d::Node* node) const
 
 float ActionController::calcTileMovingTime(const float distance)
 {
-	return 0.15 + TileMovingTime * (std::powf(distance / CellSize, 0.7) - 1);
+	return 0.15 + TileMovingTime * (std::pow(distance / CellSize, 0.7f) - 1);
 }

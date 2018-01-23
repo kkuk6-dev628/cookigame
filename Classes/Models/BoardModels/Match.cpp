@@ -1,6 +1,45 @@
 #include "Match.h"
 
 
+bool Match::equal(Match* other)
+{
+	if(matchType != other->matchType)
+	{
+		return false;
+	}
+	for(auto cell : *vMatchedCells)
+	{
+		if (cell != other->refCell) 
+		{
+			if (std::find(other->vMatchedCells->begin(), other->vMatchedCells->end(), cell) == other->vMatchedCells->end())
+			{
+				return false;
+			}
+		}
+	}
+	for (auto cell : *hMatchedCells)
+	{
+		if (cell != other->refCell)
+		{
+			if (std::find(other->hMatchedCells->begin(), other->hMatchedCells->end(), cell) == other->hMatchedCells->end())
+			{
+				return false;
+			}
+		}
+	}
+	for (auto cell : *sMatchedCells)
+	{
+		if (cell != other->refCell)
+		{
+			if (std::find(other->sMatchedCells->begin(), other->sMatchedCells->end(), cell) == other->sMatchedCells->end())
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 void Match::crushAllCells() const
 {
 	crushCell(refCell);

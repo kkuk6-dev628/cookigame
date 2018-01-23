@@ -3,6 +3,8 @@
 #include "General/Utils.h"
 #include "Models/Tiles/MovingTile.h"
 #include "Layers/BoardLayer.h"
+#include "Models/Tiles/FixTiles.h"
+#include "Models/Tiles/SpawnerObject.h"
 
 class CookieTile;
 
@@ -12,7 +14,8 @@ public:
 	Cell();
 	~Cell();
 
-	CookieTile* getSourceTile() const { return getTileAtLayer(LayerId::Match); }
+	CookieTile* getSourceTile() const { return pSourceTile; }
+	SpawnerObject* getSpawner() const { return static_cast<SpawnerObject*>(getTileAtLayer(LayerId::Spawner)); }
 	void setSourceTile(CookieTile* pTile);
 
 	CookieTile* getReservedTile() const { return reservedTile; }
@@ -22,34 +25,53 @@ public:
 	CookieTile* getTileAtLayer(LayerId layer) const;
 	void setTileToLayer(CookieTile* pTile, LayerId layer);
 
-	MovingTile* getMovingTile() const { return static_cast<MovingTile*>(getTileAtLayer(LayerId::Match)); }
+	MovingTile* getMovingTile() const { return static_cast<MovingTile*>(pSourceTile); }
 
 	void setBoardLayer(BoardLayer* bl) { boardLayer = bl; }
 	BoardLayer* getBoardLayer() { return boardLayer; }
 
-	Cell* getFallCell() const;
+	Cell* getFallCell(std::list<PortalInletObject*>* portalInData ) const;
 
 	bool containsSpawner() const { return layers->objectForKey(LayerId::Spawner) != nullptr; }
-	bool containsPortal() const { return layers->objectForKey(LayerId::Portal) != nullptr; }
+	bool containsPortalOut() const;
+	bool isReceiveNearbyAffect();
+	bool isNoShuffleCell();
+	bool canMatch() const
+	{
+		return !isOutCell && !isEmpty && getMovingTile() != nullptr && getMovingTile()->canMatch;
+	}
+	bool canMove() const
+	{
+		return !isOutCell && !isEmpty && getMovingTile() != nullptr && !isFixed;
+	}
 
-	void setGridPos(const char col, const char row) { gridPos.Col = col; gridPos.Row = row; }
+
+	Cell* findPortalInCell(std::list<PortalInletObject*>* portalInData) const;
+	PortalOutletObject* getPortalOut() const;
+
+	void setGridPos(const char col, const char row) { gridPos.Col = col; gridPos.Row = row; boardPos = Utils::Grid2BoardPos(gridPos); }
 	void clear();
 	void crushNearbyCells();
 	void receiveNearbyAffect();
 	void afterTileCrushProc();
-	void crushCell(bool showCrushEffect = true);
-
-	cocos2d::Vec2 getBoardPos(){ return Utils::Grid2BoardPos(gridPos); }
+	bool crushCell(bool showCrushEffect = true);
+	void createShuffleShow();
+	
+	cocos2d::Vec2 getBoardPos(){ return boardPos; }
 
 	void spawnMatchTile();
 
 	GridPos gridPos;
-	char fallDirection = 1; // top -> down, if -1 bottom -> up 
+	Vec2 boardPos;
+	Direction fallDirection = Direction::S; // top -> down, if N bottom -> up 
 	bool isOutCell = false;
 	bool isFixed = false;
 	bool isFillable = true;
 	bool isPass = false;
 	bool dirty = false;
+
+	TileShowObject* shuffleShowObject = nullptr;
+	Cell* shuffleResultCell = nullptr;
 
 	char reserveCount = 0;
 

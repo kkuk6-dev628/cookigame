@@ -30,7 +30,7 @@ void TileBase::initTexture(const std::string textureName)
 		textureSprite = Sprite::create();
 		addChild(textureSprite);
 	}
-	textureSprite->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(textureName));
+	textureSprite->setSpriteFrame(spriteFrame);
 	textureSprite->setContentSize(Size(CellSize, CellSize));
 	textureSprite->setAnchorPoint(Vec2(0.5, 0.5));
 	textureSprite->setPosition(CellSize / 2, CellSize / 2);

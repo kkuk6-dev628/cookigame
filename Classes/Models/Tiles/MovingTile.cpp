@@ -53,7 +53,10 @@ void MovingTile::showFallAction(FallPath* path)
 	showObj->setPosition(getPosition());
 	showObj->setAnchorPoint(Vec2(0.5, 0.5));
 
-	getParent()->addChild(showObj);
+	if(getParent() != nullptr && showObj->getParent() == nullptr)
+	{
+		getParent()->addChild(showObj);
+	}
 
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(showObj);
@@ -76,11 +79,30 @@ void MovingTile::showFallAction(FallPath* path)
 
 bool MovingTile::crush(bool showEffect)
 {
-	return CookieTile::crush(showEffect);
+	switch (modifierType)
+	{
+	case ModifierTypes::CageModifier:
+	case ModifierTypes::HoneyModifier:
+		if(modifierSprite != nullptr)
+		{
+			modifierSprite->setVisible(false);
+		}
+		modifierType = ModifierTypes::None;
+		if(pCell != nullptr) pCell->isFixed = false;
+		canMatch = true;
+		return false;
+	default:
+		return CookieTile::crush(showEffect);
+		break;
+	}
 }
 
-bool MovingTile::isMovable() const
+bool MovingTile::isMovable()
 {
+	if (modifierType == +ModifierTypes::CageModifier || modifierType == +ModifierTypes::HoneyModifier)
+	{
+		return false;
+	}
 	return true;
 }
 
@@ -105,10 +127,18 @@ void MovingTile::initTexture()
 	if (MovingTileTypes::_is_valid_nocase(type.c_str()))
 	{
 		movingTileType = MovingTileTypes::_from_string_nocase(type.c_str());
+		if (+TileColors::any == color || color == +TileColors::random)
+		{
+			color = SpawnController::getInstance()->getSpawnColor();
+		}
 
 		std::string textureName;
 		switch (movingTileType)
 		{
+		case MovingTileTypes::ChocolateCheesecakeObject:
+			canMatch = true;
+			textureName = StringUtils::format("%s_%s_%s.png", type.c_str(), color._to_string(), direction._to_string());
+			break;
 		case MovingTileTypes::ChocolateChipObject:
 			textureName = StringUtils::format("%s_%d.png", type.c_str(), layers);
 			break;
@@ -122,25 +152,50 @@ void MovingTile::initTexture()
 			break;
 		default:
 			canMatch = true;
-			if (+TileColors::any == color || color == +TileColors::random)
-			{
-				color = SpawnController::getInstance()->getSpawnColor();
-			}
 			textureName = StringUtils::format("%s_%s.png", type.c_str(), color._to_string());
 			break;
 		}
 		TileBase::initTexture(textureName);
-		textureSprite->setContentSize(Size(MovingTileSize, MovingTileSize));
-		//textureSprite->setScale(1.1);
+		if(textureSprite != nullptr) textureSprite->setContentSize(Size(MovingTileSize, MovingTileSize));
+		setModifierTexture();
 	}
 
+}
+
+void MovingTile::setModifierTexture()
+{
+	if(modifierType == +ModifierTypes::CageModifier || modifierType == +ModifierTypes::HoneyModifier)
+	{
+		auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(StringUtils::format("%s.png", modifierType._to_string()));
+		if (spriteFrame == nullptr)
+		{
+			return;
+		}
+		if (modifierSprite == nullptr)
+		{
+			modifierSprite = Sprite::create();
+			addChild(modifierSprite);
+		}
+		modifierSprite->setSpriteFrame(spriteFrame);
+		modifierSprite->setContentSize(Size(CellSize, CellSize));
+		modifierSprite->setAnchorPoint(Vec2(0.5, 0.5));
+		modifierSprite->setPosition(CellSize / 2, CellSize / 2);
+
+		if (modifierType == +ModifierTypes::HoneyModifier)
+		{
+			canMatch = false;
+		}
+	}
 }
 
 void MovingTile::showCrushEffect()
 {
 	auto animationShow = PoolController::getInstance()->getMatchCrushShow(color);
-	animationShow->setPosition(getPosition());
-	animationShow->setAnchorPoint(Vec2(0.5f, 0.5f));
-	//animationShow->setScale(1.5);
-	if(getParent() != nullptr) getParent()->addChild(animationShow, 500);
+	if(animationShow != nullptr)
+	{
+		animationShow->setPosition(getPosition());
+		animationShow->setAnchorPoint(Vec2(0.5f, 0.5f));
+		//animationShow->setScale(1.5);
+		if(getParent() != nullptr) getParent()->addChild(animationShow, 500);
+	}
 }

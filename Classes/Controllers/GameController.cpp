@@ -3,6 +3,13 @@
 #include "Scenes/GamePlayScene.h"
 #include "Scenes/LevelMapScene.h"
 #include "Models/BoardModels/BoardModel.h"
+#include "WaffleBoardController.h"
+#include "PathBoardController.h"
+#include "HiderBoardController.h"
+#include "HopplingBoardController.h"
+#include "PopsicleBoardController.h"
+#include "TopplingBoardController.h"
+#include "THopplingBoardController.h"
 
 USING_NS_CC;
 
@@ -59,7 +66,7 @@ void GameController::goGamePlay(int levelNumber)
 
 BoardController* GameController::getBoardController(bool next)
 {
-	if(next) currentBoardIndex++;
+	//if(next) currentBoardIndex++;
 
 	assert(boardData->IsArray() && boardData->Size() > 0);
 	if (currentBoardIndex >= boardData->Size())
@@ -76,8 +83,39 @@ BoardController* GameController::getBoardController(bool next)
 
 	auto boardModel = new BoardModel();
 	boardModel->initWithJson(boardsArray[currentBoardIndex]);
-	boardController = new BoardController();
+
+	auto goalType = boardModel->getGoals()->front().GoalType;
+	switch (goalType)
+	{
+	case GoalTypes::WaffleObject:
+		boardController = new WaffleBoardController();
+		break;
+	case GoalTypes::PathObject:
+		boardController = new PathBoardController();
+		break;
+	case GoalTypes::HiderSegmentObject:
+		boardController = new HiderBoardController();
+		break;
+	case GoalTypes::HopplingObject:
+		boardController = new HopplingBoardController();
+		break;
+	case GoalTypes::PopsicleObject:
+		boardController = new PopsicleBoardController();
+		break;
+	case GoalTypes::TopplingObject:
+		boardController = new TopplingBoardController();
+		break;
+	case GoalTypes::thoppling:
+		boardController = new THopplingBoardController();
+		break;
+	default:
+		boardController = new BoardController();
+		break;
+	}
+	
 	boardController->initWithModel(boardModel);
 	return boardController;
 }
+
+
 

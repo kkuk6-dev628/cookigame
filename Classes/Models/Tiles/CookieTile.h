@@ -21,6 +21,7 @@ public:
 	virtual void showCrushEffect() {};
 	virtual void initTexture() {};
 
+	virtual bool isMovable() { return true; }
 	virtual bool crush(bool showEffect);
 
 	bool canMatch = true;
@@ -33,12 +34,12 @@ protected:
 	std::string type;
 	char layers = 0;
 	TileColors color = TileColors::any;
-	std::string direction;
+	Direction direction = Direction::any;
 	std::string name;
 	char priority = 0;
 	bool createSpread = false;
 	bool mirror = false;
-	ModifierTypes modifierType = ModifierTypes::NoShuffleModifier;
+	ModifierTypes modifierType = ModifierTypes::None;
 	GridSizeT gridSize;
 	SetTypes tileSetType = SetTypes::set;
 	bool createJelly = false;
@@ -98,12 +99,12 @@ public:
 		this->color = color;
 	}
 
-	std::string getDirection() const
+	Direction getDirection() const
 	{
 		return direction;
 	}
 
-	void setDirection(const std::string& direction)
+	void setDirection(const Direction& direction)
 	{
 		this->direction = direction;
 	}

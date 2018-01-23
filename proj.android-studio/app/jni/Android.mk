@@ -16,10 +16,17 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Controllers/ActionController.cpp \
 ../../../Classes/Controllers/BoardController.cpp \
 ../../../Classes/Controllers/GameController.cpp \
+../../../Classes/Controllers/HiderBoardController.cpp \
+../../../Classes/Controllers/HopplingBoardController.cpp \
 ../../../Classes/Controllers/LevelController.cpp \
+../../../Classes/Controllers/PathBoardController.cpp \
 ../../../Classes/Controllers/PoolController.cpp \
+../../../Classes/Controllers/PopsicleBoardController.cpp \
 ../../../Classes/Controllers/SoundController.cpp \
 ../../../Classes/Controllers/SpawnController.cpp \
+../../../Classes/Controllers/THopplingBoardController.cpp \
+../../../Classes/Controllers/TopplingBoardController.cpp \
+../../../Classes/Controllers/WaffleBoardController.cpp \
 ../../../Classes/Ext/ActionEx.cpp \
 ../../../Classes/Ext/Math.cpp \
 ../../../Classes/Ext/Popup.cpp \
@@ -47,6 +54,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/TilePools/NodePool.cpp \
 ../../../Classes/Models/TilePools/TilePool.cpp \
 ../../../Classes/Models/TilePools/TileShowObjectPool.cpp \
+../../../Classes/Models/Tiles/ChocolateChipObject.cpp \
 ../../../Classes/Models/Tiles/CookieTile.cpp \
 ../../../Classes/Models/Tiles/FixTiles.cpp \
 ../../../Classes/Models/Tiles/LargeTile.cpp \

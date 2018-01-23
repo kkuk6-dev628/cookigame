@@ -3,6 +3,7 @@
 #include "2d/CCScene.h"
 #include "2d/CCLayer.h"
 #include "Controllers/BoardController.h"
+#include "Ext/Popup.h"
 
 USING_NS_CC; 
 
@@ -23,6 +24,14 @@ public:
 	void restartCallback(Ref* pSender);
 
 private:
-	BoardController* boardController;
+	BoardController* boardController = nullptr;
+	Node* rootNode = nullptr;
+
+	Popup* settingsDlg = nullptr;
+
+	void showSettingsDlg();
+	void showPopup(Popup* popup);
+	void restartGame();
+	void endGame();
 };
 

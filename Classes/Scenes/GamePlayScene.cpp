@@ -1,10 +1,20 @@
 #include "GamePlayScene.h"
-#include "2d/CCSprite.h"
 #include "Controllers/GameController.h"
 #include "Controllers/BoardController.h"
 #include "cocostudio/ActionTimeline/CSLoader.h"
 #include "ui/CocosGUI.h"
+#include "Layers/Dialogs.h"
+#include "LevelMapScene.h"
 
+//ZOrder
+enum
+{
+	kZBack,
+	kZBoard,
+	kZUI,
+	kZEffect,
+	kZPopup,
+};
 
 GamePlayScene::GamePlayScene()
 {
@@ -41,70 +51,95 @@ bool GamePlayScene::init()
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	auto rootNode = cocos2d::CSLoader::createNode("res/gamescene.csb");
+	rootNode = cocos2d::CSLoader::createNode("res/gamescene.csb");
 	rootNode->setContentSize(visibleSize);
 	addChild(rootNode);
 
-	//std::string bgImageName = StringUtils::format("images/Game_%03d_BG.png", GameController::getInstance()->getEpisodeNumber());
-	std::string bgImageName = StringUtils::format("images/Game_001_BG.png");
-	Size winSize = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
-	auto bg = Sprite::create(bgImageName);
-	float scale = winSize.height / bg->getContentSize().height;
-	bg->setScale(scale, scale);
-	bg->setPosition(Point(winSize.width / 2, winSize.height / 2));
-	rootNode->addChild(bg);
-
-	auto topMenuNode = rootNode->getChildByName("top_menu_area");
-	topMenuNode->setLocalZOrder(1);
-	auto bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
-	bottomMenuArea->setLocalZOrder(2);
-
-	ui::Button *m_btn_settings = static_cast<ui::Button*>(bottomMenuArea->getChildByName("setting_button"));
-	m_btn_settings->addClickEventListener(CC_CALLBACK_1(GamePlayScene::restartCallback, this));
 
 	boardController = GameController::getInstance()->getBoardController();
+	boardController->initWithNode(rootNode);
 
-	auto goal = boardController->getGoalType();
-	std::string goalNodeName = "FileNode_";
-	switch (goal)
-	{
-	case GoalTypes::PathObject:
-		goalNodeName += "3";
-		break;
-	case GoalTypes::HiderSegmentObject:
-		goalNodeName += "1";
-		break;
-	case GoalTypes::HopplingObject:
-		goalNodeName += "5";
-		break;
-	case GoalTypes::PopsicleObject:
-		goalNodeName += "4";
-		break;
-	case GoalTypes::TopplingObject:
-	case GoalTypes::thoppling:
-		goalNodeName += "2";
-		break;
-	default:
-		goalNodeName += "6";
-		break;
-	}
+	auto topMenuArea = rootNode->getChildByName("top_menu_area");
+	auto bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
 
-	auto circleGroupNode = topMenuNode->getChildByName("top_menu_circle");
-	for (char i = 1; i <= 6; i++)
-	{
-		auto nodeName = StringUtils::format("FileNode_%d", i);
-		circleGroupNode->getChildByName(nodeName)->setVisible(false);
-	}
+	ui::Button *m_btn_settings = static_cast<ui::Button*>(bottomMenuArea->getChildByName("setting_button"));
+	m_btn_settings->addClickEventListener([this](Ref*) {
+		this->showSettingsDlg();
+	});
+	ui::Button *m_btn_spoon = static_cast<ui::Button*>(bottomMenuArea->getChildByName("spoon_button"));
+	m_btn_spoon->addClickEventListener([this](Ref*) {
+		this->boardController->manualShuffle();
+	});
 
-	circleGroupNode->getChildByName(goalNodeName)->setVisible(true);
-	this->addChild(boardController);
+	rootNode->addChild(boardController, kZBoard);
+	topMenuArea->setLocalZOrder(kZUI);
+	bottomMenuArea->setLocalZOrder(kZUI);
 
-	auto levelTextNode = static_cast<ui::Text*>(topMenuNode->getChildByName("level"));
+	auto levelTextNode = static_cast<ui::Text*>(topMenuArea->getChildByName("level"));
 	levelTextNode->setString(StringUtils::format("Lev %d", LevelController::getInstance()->getCurrentLevel()->getLevelNumber()));
 	return true;
 }
 void GamePlayScene::restartCallback(Ref* pSender)
 {
+	boardController->removeFromParentAndCleanup(true);
 	boardController = GameController::getInstance()->getBoardController(false);
-	this->addChild(boardController);
+	rootNode->addChild(boardController, kZBoard);
+}
+
+void GamePlayScene::restartGame()
+{
+	boardController->removeFromParentAndCleanup(true);
+	boardController = GameController::getInstance()->getBoardController(false);
+	rootNode->addChild(boardController, kZBoard);
+}
+
+void GamePlayScene::endGame()
+{
+	LevelMapScene::getInstance()->refresh(true);
+	Director::getInstance()->popScene();
+}
+
+void GamePlayScene::showSettingsDlg()
+{
+	if (settingsDlg == nullptr)
+	{
+		auto dlg = SettingDialog::create();
+
+		dlg->btn_exit->addClickEventListener([this, dlg](Ref*) {
+			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
+			dlg->close();
+			this->endGame();
+		});
+		dlg->btn_continue->addClickEventListener([this, dlg](Ref*) {
+			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
+			dlg->close();
+			//resumeGame();
+		});
+		dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
+			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
+			dlg->close();
+			//resumeGame();
+		});
+		dlg->btn_retry->addClickEventListener([this, dlg](Ref*) {
+			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
+			dlg->close();
+			this->restartGame();
+		});
+		dlg->setOnCloseHandler([this, dlg]() {
+			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
+			//resumeGame();
+		});
+		settingsDlg = dlg;
+		settingsDlg->retain();
+	}
+	showPopup(settingsDlg);
+}
+
+void GamePlayScene::showPopup(Popup* popup)
+{
+	if (popup != nullptr)
+	{
+		//SoundController::playEffectSound(SoundController::SoundEffect::sound_game_window);
+		popup->show(this, kZPopup);
+	}
 }

@@ -14,6 +14,7 @@ public:
 
 	MovingTile* spawnMovingTile();
 	void initSpawnedCount() { spawnedCount = 0; }
+	void initSpawner() { direction = Direction::S; }
 
 private:
 	SpawnController* spawnController;

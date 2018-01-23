@@ -40,7 +40,7 @@ struct SpawnTable
 	float Percent;
 	char IntMin;
 	char IntMax;
-	std::string Type;
+	std::string* Type;
 	void initWithJson(rapidjson::Value& json)
 	{
 		if (json.IsObject())
@@ -55,9 +55,10 @@ struct SpawnTable
 			if (itr != json.MemberEnd() && itr->value.IsString())
 			{
 				this->Color = TileColors::_from_string(itr->value.GetString());
+				cocos2d::log("StawnTable Color field: %s", this->Color._to_string());
 			}
 
-			itr = json.FindMember("color");
+			itr = json.FindMember("percent");
 			if (itr != json.MemberEnd())
 			{
 				if (itr->value.IsFloat())
@@ -90,7 +91,8 @@ struct SpawnTable
 			itr = json.FindMember("type");
 			if (itr != json.MemberEnd() && itr->value.IsString())
 			{
-				this->Type = itr->value.GetString();
+				this->Type = new std::string(itr->value.GetString());
+				cocos2d::log("StawnTable Type field: %s", this->Type->c_str());
 			}
 		}
 	}

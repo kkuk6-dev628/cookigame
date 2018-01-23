@@ -10,6 +10,7 @@ public:
 
 	void initWithJson(rapidjson::Value& json) override;
 	void initTexture() override;
+	bool isMovable() override { return false; }
 };
 
 class CrackerObject : public FixTiles
@@ -24,6 +25,22 @@ public:
 	ChocolateObject():FixTiles() { receiveNearbyAffect = true; }
 	CREATE_FUNC(ChocolateObject);
 	void showCrushEffect() override;
+	bool crush(bool showEffect) override;
+	void initTexture() override;
+};
+
+class PortalInletObject : public FixTiles
+{
+public:
+	CREATE_FUNC(PortalInletObject);
+	void initTexture() override;
+};
+
+class PortalOutletObject : public FixTiles
+{
+public:
+	CREATE_FUNC(PortalOutletObject);
+	void initTexture() override;
 };
 
 class PathObject: public FixTiles
@@ -38,6 +55,8 @@ class PathFollowerObject: public FixTiles
 {
 public:
 	CREATE_FUNC(PathFollowerObject);
+
+	void initTexture() override;
 };
 
 class PathGoalObject: public FixTiles
@@ -49,7 +68,8 @@ public:
 class WaffleObject : public FixTiles
 {
 public:
-	CREATE_FUNC(WaffleObject)
+	CREATE_FUNC(WaffleObject);
+
 };
 
 class SeekerPriorityObject : public FixTiles
@@ -61,14 +81,13 @@ public:
 class InvisibleBrickObject: public FixTiles
 {
 public:
-	CREATE_FUNC(InvisibleBrickObject)
-
-		InvisibleBrickObject();
+	CREATE_FUNC(InvisibleBrickObject);
+	InvisibleBrickObject();
 };
 
 class EmptyObject: public FixTiles
 {
 public:
-	CREATE_FUNC(EmptyObject)
-		EmptyObject() { canMatch = false; }
+	CREATE_FUNC(EmptyObject);
+	EmptyObject() { canMatch = false; }
 };

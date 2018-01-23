@@ -15,7 +15,10 @@ public:
 	virtual void reuse(const std::function<void()> callback);
 	void recycle();
 
+	void playAnimation();
+
 	TileColors tileColor = TileColors::any;
+	std::map<std::string, std::string>* customData = nullptr;
 
 	//static cocos2d::allocator::AllocatorStrategyPool<AnimationShowObject> allocator;
 	//CC_USE_ALLOCATOR_POOL(AnimationShowObject, allocator)

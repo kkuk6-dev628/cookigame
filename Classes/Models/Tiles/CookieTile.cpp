@@ -75,7 +75,11 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	itr = data.FindMember("direction");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		this->direction = itr->value.GetString();
+		auto dirStr = itr->value.GetString();
+		if(Direction::_is_valid_nocase(dirStr))
+		{
+			direction = Direction::_from_string_nocase(dirStr);
+		}
 	}
 
 	itr = data.FindMember("name");
@@ -244,7 +248,7 @@ void CookieTile::initWithType(std::string typeName, TileColors color)
 bool CookieTile::crush(bool showEffect)
 {
 	if (showEffect) showCrushEffect();
-	pCell->afterTileCrushProc();
+	//pCell->afterTileCrushProc();
 	poolController->recycleCookieTile(this);
 	return true;
 }

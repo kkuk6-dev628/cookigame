@@ -22,7 +22,8 @@ MovingTile* SpawnerObject::spawnMovingTile()
 
 	spawnTile->setTileColor(spawnColor);
 	auto spawnedPos = Utils::Grid2BoardPos(gridPos);
-	spawnedPos.add(Vec2(0, (spawnedCount + 1) * fallDirection() * CellSize));
+	auto dir = direction == +Direction::S ? 1 : -1;
+	spawnedPos.add(Vec2(0, (spawnedCount + 1) * dir * CellSize));
 	spawnedCount++;
 	spawnTile->initWithGrid(gridPos.Col, gridPos.Row);
 	spawnTile->setPosition(spawnedPos);

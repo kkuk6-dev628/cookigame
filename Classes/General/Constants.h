@@ -20,6 +20,8 @@
 
 #define REWARDED_VIDEO_DEFAULT_TIME 900
 
+#define PORTALLETHEIGHT 23
+
 static const std::string EpisodeFilePrefix = "LevelsConfigEpisode";
 static const char MaxCol = 9;
 static const char MaxRow = 9;
@@ -36,4 +38,57 @@ static const char AdjacentIndents[4][2] = { // {row, col}
 		{-1, 0},	// down
 		{1, 0},		// up
 };
+
+#define AVAILABLE_MOVES_COUNT 16
+static const char AvailableMoves[AVAILABLE_MOVES_COUNT][4][2] = {
+	{
+		{0, 1}, {1, 2}, {0, 2}, {1, 2}
+	},
+	{
+		{ 0, 1 },{ -1, 2 },{ 0, 2 },{ -1, 2 }
+	},
+	{
+		{ 0, -1 },{ 1, -2 },{ 0, -2 },{ 1, -2 }
+	},
+	{
+		{ 0, -1 },{ -1, -2 },{ 0, -2 },{ -1, -2 }
+	},
+	{
+		{ 1, 0 },{ 2, 1 },{ 2, 0 },{ 2, 1 }
+	},
+	{
+		{ 1, 0 },{ 2, -1 },{ 2, 0 },{ 2, -1 }
+	},
+	{
+		{ -1, 0 },{ -2, 1 },{ -2, 0 },{ -2, 1 }
+	},
+	{
+		{ -1, 0 },{ -2, -1 },{ -2, 0 },{ -2, -1 }
+	},
+	{
+		{ 1, 1 },{ 1, -1 },{ 1, 0 },{ 0, 0 }
+	},
+	{
+		{ -1, 1 },{ -1, -1 },{ -1, 0 },{ 0, 0 }
+	},
+	{
+		{ 1, 1 },{ -1, 1 },{ 0, 1 },{ 0, 0 }
+	},
+	{
+		{ 1, -1 },{ -1, -1 },{ 0, -1 },{ 0, 0 }
+	},
+	{
+		{ 0, 1 },{ 0, -2 },{ 0, -1 },{ 0, -2 }
+	},
+	{
+		{ 0, -1 },{ 0, 2 },{ 0, 1 },{ 0, 2 }
+	},
+	{
+		{ 1, 0 },{ -2, 0 },{ -1, 0 },{ -2, 0 }
+	},
+	{
+		{ -1, 0 },{ 2, 0 },{ 1, 0 },{ 2, 0 }
+	},
+};
+
 #endif

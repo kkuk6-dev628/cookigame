@@ -3,7 +3,7 @@
 #include "cocos-ext.h"
 #include "ui/CocosGUI.h"
 #include "cocostudio/CocoStudio.h"
-#include "Classes/Ext/List.h"
+#include "Ext/List.h"
 #include "General/Constants.h"
 #include "Controllers/LevelController.h"
 

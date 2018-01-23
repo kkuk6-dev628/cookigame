@@ -37,6 +37,20 @@ public:
 	Cell* getRandomCell();
 	Vec2 getRandomBoardPosition();
 
+	bool isShuffleNeed();
+	void shuffle(BoardLayer* showObjectsLayer);
+	bool addAvailableMove();
+	bool checkAvailableMove(char col, char row);
+
+	bool inBoard(char col, char row) const { return col >= 0 && col < width && row >= 0 && row < height; }
+
+	std::list<PortalInletObject*>* portalInList = nullptr;
+	std::list<PortalOutletObject*>* portalOutList = nullptr;
+	std::list<Cell*>* findAvailableMoveCells();
+	std::list<Cell*>* availableMove = nullptr;
+
+	Vec2 getBoardCenterPos() const { return Vec2(CellSize * width / 2, CellSize * height / 2); }
+
 private:
 	cocos2d::__Dictionary* boardLayers;
 	int width;
@@ -48,13 +62,14 @@ private:
 	TileColorsTable colorsEasy;
 	std::list<Goal>* goals;
 	std::list<CustomSpawnTableItem>* customSpawnTable;
-	cocos2d::__Array* seekerPriorityList = nullptr;
+	std::list<SeekerPriorityObject*>* seekerPriorityList = nullptr;
 	SpawnTablesList liquidSpawnTable;
 	cocos2d::__Array* data;
-	LiquidSystem* liquidSystem;
+	LiquidSystem* liquidSystem = nullptr;
 
 	Cell*** cells;
 	float currentLiquidLevel = 0;
+	bool hasToAddSpawners = true;
 
 public:
 	rapidjson::Document LayersJson;

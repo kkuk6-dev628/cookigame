@@ -21,13 +21,26 @@ public:
 	void showDirectionalScaleAction(AdjacentDirs dir) const;
 	void showFallAction(FallPath* path);
 
-	bool isMovable() const;
+	bool isMovable() override;
 	void showSwapAction(GridPos& gridPos, std::function<void()> callback);
 	void initWithJson(rapidjson::Value& json) override;
 	void initTexture() override;
+	void setModifierTexture();
+	SpriteFrame* getMainSpriteFrame() const
+	{
+		if (textureSprite == nullptr) return nullptr;
+		return textureSprite->getSpriteFrame();
+	}
 
 	bool crush(bool showEffect) override;
 	void showCrushEffect() override;
+
+	bool isBonusTile() const
+	{ 
+		return movingTileType == +MovingTileTypes::BombBreakerObject || movingTileType == +MovingTileTypes::ColumnBreakerObject 
+		|| movingTileType == +MovingTileTypes::RowBreakerObject || movingTileType == +MovingTileTypes::XBreakerObject || movingTileType == +MovingTileTypes::SeekerObject
+		|| movingTileType == +MovingTileTypes::RainbowObject; 
+	}
 
 	bool isMoving = false;
 	float movingDuration = 0.f;
@@ -35,5 +48,6 @@ public:
 protected:
 	ActionController* actionController;
 	MovingTileTypes movingTileType = MovingTileTypes::LayeredMatchObject;
+	Sprite* modifierSprite = nullptr;
 };
 

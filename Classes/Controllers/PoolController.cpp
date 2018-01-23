@@ -3,6 +3,7 @@
 #include "Models/Tiles/LargeTile.h"
 #include "Models/Tiles/FixTiles.h"
 #include "Models/Tiles/SpawnerObject.h"
+#include "Models/Tiles/ChocolateChipObject.h"
 
 PoolController* PoolController::instance = nullptr;
 static factory TileClassFactory;
@@ -11,6 +12,7 @@ static factory TileClassFactory;
 PoolController::PoolController()
 {
 	tilesPool = new TilePool;
+
 	tileShowObjectPool = new TileShowObjectPool;
 
 	blueCrushShowPool = new NodePool<AnimationShowObject>;
@@ -28,6 +30,15 @@ PoolController::PoolController()
 	yellowSeekerShowPool = new NodePool<AnimationShowObject>;
 
 	chocolateCrushPool = new NodePool<AnimationShowObject>;
+
+	chocolateChipPool = new NodePool<ChocolateChipObject>;
+	chocolateChipCrushPool = new NodePool<AnimationShowObject>;
+
+	donutPool = new NodePool<DonutObject>;
+	donutCrushPool = new NodePool<AnimationShowObject>;
+
+	lineCrushShowPool = new NodePool<AnimationShowObject>;
+	bombAndLineCrushShowPool = new NodePool<AnimationShowObject>;
 
 	RegisterTileClasses();
 }
@@ -56,6 +67,8 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(PathObject);
 	REGISTER_CLASS(PathFollowerObject);
 	REGISTER_CLASS(PathGoalObject);
+	REGISTER_CLASS(PortalInletObject);
+	REGISTER_CLASS(PortalOutletObject);
 
 	REGISTER_CLASS(InvisibleBrickObject);
 	REGISTER_CLASS(EmptyObject);
@@ -67,13 +80,39 @@ CookieTile* PoolController::getCookieTile(std::string typeName)
 	CookieTile* cookieTile;
 	if (MovingTileTypes::_is_valid_nocase(typeName.c_str()))
 	{
-		if (tilesPool->size() > 0)
+		auto tileType = MovingTileTypes::_from_string(typeName.c_str());
+		switch(tileType)
 		{
-			cookieTile = tilesPool->getTile();
-		}
-		else
-		{
-			cookieTile = new MovingTile();
+		case MovingTileTypes::ChocolateChipObject:
+			if (chocolateChipPool->size() > 0)
+			{
+				cookieTile = chocolateChipPool->getNode();
+			}
+			else
+			{
+				cookieTile = new ChocolateChipObject();
+			}
+			break;
+		case MovingTileTypes::DonutObject:
+			if (donutPool->size() > 0)
+			{
+				cookieTile = donutPool->getNode();
+			}
+			else
+			{
+				cookieTile = new DonutObject();
+			}
+			break;
+		default:
+			if (tilesPool->size() > 0)
+			{
+				cookieTile = tilesPool->getTile();
+			}
+			else
+			{
+				cookieTile = new MovingTile();
+			}
+			break;
 		}
 	}
 	else
@@ -91,7 +130,19 @@ void PoolController::recycleCookieTile(CookieTile* cookieTile) const
 {
 	if (MovingTileTypes::_is_valid_nocase(cookieTile->getType().c_str()))
 	{
-		tilesPool->putTile(static_cast<MovingTile*>(cookieTile));
+		auto tileType = cookieTile->getMovingTileType();
+		switch(tileType)
+		{
+		case MovingTileTypes::ChocolateChipObject:
+			chocolateChipPool->recycleNode(static_cast<ChocolateChipObject*>(cookieTile));
+			break;
+		case MovingTileTypes::DonutObject:
+			donutPool->recycleNode(static_cast<DonutObject*>(cookieTile));
+			break;
+		default:
+			tilesPool->putTile(static_cast<MovingTile*>(cookieTile));
+			break;
+		}
 	}
 	else
 	{
@@ -100,6 +151,15 @@ void PoolController::recycleCookieTile(CookieTile* cookieTile) const
 	}
 
 }
+
+//ChocolateChipObject* PoolController::getChocolateChip() const
+//{
+//}
+//
+//void PoolController::recycleChocolateChip(ChocolateChipObject* show) const
+//{
+//
+//}
 
 TileShowObject* PoolController::getTileShowObject() const
 {
@@ -538,4 +598,104 @@ void PoolController::recycleChocolateCrushShow(AnimationShowObject* anim) const
 {
 	anim->recycle();
 	chocolateCrushPool->recycleNode(anim);
+}
+
+AnimationShowObject* PoolController::getChocolateChipCrushShow() const
+{
+	AnimationShowObject* show;
+	if (chocolateChipCrushPool->size() > 0)
+	{
+		show = chocolateChipCrushPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/ChocolateChip.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleChocolateChipCrushShow(show);
+	});
+	return show;
+}
+
+void PoolController::recycleChocolateChipCrushShow(AnimationShowObject* show) const
+{
+	show->recycle();
+	chocolateChipCrushPool->recycleNode(show);
+}
+
+AnimationShowObject* PoolController::getDonutCrushShow() const
+{
+	AnimationShowObject* show;
+	if (donutCrushPool->size() > 0)
+	{
+		show = donutCrushPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/Donut.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleDonutCrushShow(show);
+	});
+	return show;
+}
+
+void PoolController::recycleDonutCrushShow(AnimationShowObject* show) const
+{
+	show->recycle();
+	donutCrushPool->recycleNode(show);
+}
+
+AnimationShowObject* PoolController::getLineCrushShow() const
+{
+	AnimationShowObject* show;
+	if (lineCrushShowPool->size() > 0)
+	{
+		show = lineCrushShowPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/particle_light_2.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleLineCrushShow(show);
+	});
+	return show;
+}
+
+void PoolController::recycleLineCrushShow(AnimationShowObject* show) const
+{
+	show->recycle();
+	lineCrushShowPool->recycleNode(show);
+}
+
+AnimationShowObject* PoolController::getBombAndLineCrushShow() const
+{
+	AnimationShowObject* show;
+	if (bombAndLineCrushShowPool->size() > 0)
+	{
+		show = bombAndLineCrushShowPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/particle_light_3.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleBombAndLineCrushShow(show);
+	});
+	return show;
+}
+
+void PoolController::recycleBombAndLineCrushShow(AnimationShowObject* show) const
+{
+	show->recycle();
+	bombAndLineCrushShowPool->recycleNode(show);
 }

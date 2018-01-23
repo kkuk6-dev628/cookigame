@@ -343,18 +343,18 @@ SettingDialog::SettingDialog()
 {
 	Popup::initWithMask(true);
 
-	//auto dlg = CSLoader::getInstance()->createNode("res/SettingDlg.csb");
-	//addChild(dlg);
+	auto dlg = CSLoader::getInstance()->createNode("res/SettingDlg.csb");
+	addChild(dlg);
 
-	//auto rootNode = dlg->getChildByName("rootNode");
-	//btn_close = (Button*)rootNode->getChildByName("btn_close");
-	//btn_music = (Button*)rootNode->getChildByName("btn_music");
-	//btn_sound = (Button*)rootNode->getChildByName("btn_sound");
-	//btn_exit = (Button*)rootNode->getChildByName("btn_home");
-	//btn_retry = (Button*)rootNode->getChildByName("btn_restart");
-	//mute_music = (ImageView*)btn_music->getChildByName("ig_mute");
-	//mute_sound = (ImageView*)btn_sound->getChildByName("ig_mute");
-	//btn_continue = (Button*)rootNode->getChildByName("btn_continue");
+	auto rootNode = dlg->getChildByName("rootNode");
+	btn_close = (Button*)rootNode->getChildByName("btn_close");
+	btn_music = (Button*)rootNode->getChildByName("btn_music");
+	btn_sound = (Button*)rootNode->getChildByName("btn_sound");
+	btn_exit = (Button*)rootNode->getChildByName("btn_home");
+	btn_retry = (Button*)rootNode->getChildByName("btn_restart");
+	mute_music = (ImageView*)btn_music->getChildByName("ig_mute");
+	mute_sound = (ImageView*)btn_sound->getChildByName("ig_mute");
+	btn_continue = (Button*)rootNode->getChildByName("btn_continue");
 
 
 	//mute_music->setVisible(!SoundManager::isBgMusicOn());

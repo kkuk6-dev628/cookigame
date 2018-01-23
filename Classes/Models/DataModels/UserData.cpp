@@ -28,7 +28,7 @@ UserData::UserData()
 		nBoosterCount[i] = ((String*)arr->getObjectAtIndex(i))->intValue();
 	}
 
-	topLevel = userDefault->getIntegerForKey("top_level", 100);
+	topLevel = userDefault->getIntegerForKey("top_level", 400);
 	topLevel = MAX(topLevel, 1);
 
 	//topLevel = 1599;//test

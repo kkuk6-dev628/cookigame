@@ -11,7 +11,7 @@
 #include "Models/BoardModels/Match.h"
 #include "Models/BoardModels/FallPath.h"
 #include "Models/Tiles/SpawnerObject.h"
-#include <complex>
+#include "cocostudio/ActionTimeline/CSLoader.h"
 
 char BoardController::cellSize = 79;
 GameState BoardController::gameState;
@@ -29,7 +29,6 @@ BoardController::BoardController()
 	pendingSeekers->retain();
 	fallingTileCount = 0;
 	gameState = GameState::Idle;
-	schedule(schedule_selector(BoardController::processLogic));
 }
 
 BoardController::~BoardController()
@@ -50,15 +49,36 @@ void BoardController::processLogic(float)
 {
 	actionController->runPendingActions();
 	crushPendingCells();
-	fallTiles();
+	fallTilesLoop();
 	checkMatchesInBoard();
 	processPendingSeekers();
+	doShuffle();
 }
 
-void BoardController::initControllersWithBoard() const
+void BoardController::initWithNode(Node* node)
 {
-	//spawnController->setColorTable(boardModel->Colors);
+	rootNode = node;
+	topMenuArea = rootNode->getChildByName("top_menu_area");
+	bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
+
+	objectCountNode = static_cast<ui::Text*>(topMenuArea->getChildByName("text_1"));
+
+	auto circleGroupNode = topMenuArea->getChildByName("top_menu_circle");
+	for (char i = 1; i <= 6; i++)
+	{
+		auto nodeName = StringUtils::format("FileNode_%d", i);
+		circleGroupNode->getChildByName(nodeName)->setVisible(false);
+	}
+
+
+	auto const width = CellSize * boardModel->getWidth();
+	auto const height = CellSize * boardModel->getHeight();
+	setContentSize(Size(width, height));
+	const auto originX = CenterX - width / 2;
+	const auto originY = CenterY - height / 2;
+	setPosition(originX, originY);
 }
+
 
 GoalTypes BoardController::getGoalType()
 {
@@ -80,9 +100,9 @@ void BoardController::initWithModel(BoardModel* model)
 	}
 	this->boardModel = model;
 
-	initControllersWithBoard();
-	initNode();
 	initBoardElements();
+	initAnimations();
+	schedule(schedule_selector(BoardController::processLogic), 0.05);
 }
 
 void BoardController::initWithJson(rapidjson::Value& data)
@@ -94,10 +114,25 @@ void BoardController::initWithJson(rapidjson::Value& data)
 	this->boardModel = new BoardModel();
 	this->boardModel->initWithJson(data);
 
-	initControllersWithBoard();
-	initNode();
 	initBoardElements();
+	schedule(schedule_selector(BoardController::processLogic), 0.1);
 }
+
+void BoardController::initAnimations()
+{
+	if(shuffleAnimation != nullptr)
+	{
+		CC_SAFE_DELETE(shuffleAnimation);
+	}
+	shuffleAnimation = AnimationShowObject::create();
+	shuffleAnimation->initWithCSB("res/animation/box.csb");
+	//rootNode->setContentSize(Size(360, 640));
+	shuffleAnimation->setScale(0.5f);
+	shuffleAnimation->setPosition(Vec2(-50, -320));
+	showObjectsLayer->addChild(shuffleAnimation, 500);
+	shuffleAnimation->setVisible(false);
+}
+
 
 bool BoardController::onTouchBegan(Touch* touch, Event* unused_event)
 {
@@ -304,11 +339,27 @@ void BoardController::initBoardLayers()
 	targetLayer			= static_cast<BoardLayer*>(layersDict->objectForKey(LayerId::Target));
 	portalLayer			= static_cast<BoardLayer*>(layersDict->objectForKey(LayerId::Portal));
 	showObjectsLayer	= static_cast<BoardLayer*>(layersDict->objectForKey(LayerId::ShowLayer));
+
 }
 
 BoardLayer* BoardController::getBoardLayer(LayerId layerId)
 {
 	return static_cast<BoardLayer*>(layersDict->objectForKey(layerId));
+}
+
+void BoardController::addMask()
+{
+	maskNode = ClippingNode::create();
+	maskNode->setStencil(stencil);
+	maskNode->setInverted(true);
+	auto sprite = Sprite::create("images/background.png");
+	//sprite->setSpriteFrame("Game_001_BG.png");
+	sprite->setPosition(0, -320);
+	sprite->setAnchorPoint(Vec2(0, 0));
+	maskNode->setPosition(0, 0);
+	maskNode->setAnchorPoint(Vec2(0, 0));
+	maskNode->addChild(sprite);
+	addChild(maskNode, LayerId::Target);
 }
 
 void BoardController::initBoardElements()
@@ -319,25 +370,36 @@ void BoardController::initBoardElements()
 	{
 		for (char j = 0; j < boardModel->getWidth(); j++)
 		{
-			const auto cell = boardModel->getCell(j, i);
-			cell->setBoardLayer(layeredMatchLayer);
-
-			if (cell->isEmpty || cell->isOutCell) continue;
-
-			addBackgroundTile(j, i);
-			for (LayerId layerId : LayerId::_values())
-			{
-				auto cellLayer = cell->getTileAtLayer(layerId);
-				if(cellLayer == nullptr) continue;
-				if (layerId == +LayerId::Background || layerId == +LayerId::Border) continue;
-				getBoardLayer(layerId)->addChild(cellLayer);
-			}
-
+			addCellToBoard(j, i);
 		}
 	}
-
+	
+	addMask();
+	initLiquidLayer();
+	//addTile(1, 4, MovingTileTypes::BombBreakerObject, TileColors::red);
 	//addTile(1, 3, MovingTileTypes::RowBreakerObject, TileColors::blue);
-	//addTile(5, 2, MovingTileTypes::RowBreakerObject, TileColors::yellow);
+	//addTile(1, 2, MovingTileTypes::XBreakerObject, TileColors::yellow);
+}
+
+void BoardController::addCellToBoard(char col, char row)
+{
+	const auto cell = boardModel->getCell(col, row);
+	cell->setBoardLayer(layeredMatchLayer);
+
+	addBackgroundTile(col, row);
+	if (cell->isOutCell)
+	{
+		addTileToLiquidMask(cell->gridPos);
+		return;
+	}
+
+	for (LayerId layerId : LayerId::_values())
+	{
+		auto cellLayer = cell->getTileAtLayer(layerId);
+		if (cellLayer == nullptr) continue;
+		if (layerId == +LayerId::Background || layerId == +LayerId::Border) continue;
+		getBoardLayer(layerId)->addChild(cellLayer);
+	}
 }
 
 void BoardController::addTile(char col, char row, MovingTileTypes type, TileColors tileColor)
@@ -375,8 +437,104 @@ void BoardController::addMovingTile(Cell* cell, MovingTileTypes type, TileColors
 	}
 }
 
-void BoardController::addBackgroundTile(const char col, const char row) const
+void BoardController::addTileToMask(char col, char row)
 {
+	if (stencil == nullptr) {
+		stencil = DrawNode::create();
+	}
+
+	auto origin = Utils::Grid2BoardPos(col, row);
+	origin.x -= CellSize / 2 + 1;
+	origin.y -= CellSize / 2 + 1;
+	auto dest = origin + Vec2(CellSize + 2, CellSize + 2);
+	stencil->drawSolidRect(origin, dest, Color4F::GREEN);
+}
+
+void BoardController::addTileToLiquidMask(GridPos& gridPos)
+{
+	if(liquidStencil == nullptr)
+	{
+		liquidStencil = DrawNode::create();
+	}
+	auto origin = Utils::Grid2BoardPos(gridPos);
+	origin.x -= CellSize / 2;
+	origin.y -= CellSize / 2;
+	auto dest = origin + Vec2(CellSize, CellSize);
+	liquidStencil->drawSolidRect(origin, dest, Color4F::GREEN);
+}
+
+void BoardController::initLiquidLayer()
+{
+	auto liquidSys = boardModel->getLiquidSystem();
+	if(liquidSys != nullptr)
+	{
+		for(auto ignorePos : liquidSys->IgnoreGridPos)
+		{
+			addTileToLiquidMask(ignorePos);
+		}
+
+		for(auto ignorCol : liquidSys->IgnoreColumns)
+		{
+			auto origin = Utils::Grid2BoardPos(ignorCol, 0);
+			origin -= Vec2(CellSize / 2, CellSize / 2);
+			auto dest = origin + Vec2(CellSize, CellSize * boardModel->getHeight());
+			liquidStencil->drawSolidRect(origin, dest, Color4F::GREEN);
+		}
+		for(auto ignoreRow:liquidSys->IgnoreRows)
+		{
+			auto origin = Utils::Grid2BoardPos(0, ignoreRow);
+			origin -= Vec2(CellSize / 2, CellSize / 2);
+			auto dest = origin + Vec2(CellSize * boardModel->getWidth(), CellSize);
+			liquidStencil->drawSolidRect(origin, dest, Color4F::GREEN);
+		}
+		liquidMask = ClippingNode::create();
+		liquidMask->setStencil(liquidStencil);
+		liquidMask->setInverted(true);
+		liquidNode = CSLoader::createNode("res/animation/liquid.csb");
+
+		//sprite->setSpriteFrame("Game_001_BG.png");
+		liquidNode->setPosition(0, liquidSys->LevelStart * CellSize);
+		liquidMask->setPosition(0, 0);
+		liquidMask->setAnchorPoint(Vec2(0, 0));
+		liquidMask->addChild(liquidNode);
+		addChild(liquidMask, LayerId::Waffle);
+
+	}
+	
+}
+
+void BoardController::showLineCrushEffect(Cell* cell, float rotation)
+{
+	auto right = poolController->getLineCrushShow();
+	auto left = poolController->getLineCrushShow();
+	right->setPosition(cell->getBoardPos());
+	left->setPosition(cell->getBoardPos());
+	right->setRotation(rotation);
+	left->setRotation(rotation + 180);
+	showObjectsLayer->addChild(right);
+	showObjectsLayer->addChild(left);
+}
+
+void BoardController::showBombAndLineCrushEffect(Cell* cell)
+{
+	auto effect = poolController->getBombAndLineCrushShow();
+	effect->setPosition(cell->getBoardPos());
+	showObjectsLayer->addChild(effect);
+}
+
+void BoardController::addBackgroundTile(const char col, const char row)
+{
+	auto cell = getMatchCell(col, row);
+	auto tile = cell->getSourceTile();
+
+	if(tile != nullptr && (strcmp(tile->getType().c_str(), "EmptyObject") == 0 || strcmp(tile->getType().c_str(), "InvisibleBrickObject") == 0))
+	{
+		cell->isOutCell = cell->isEmpty = true;
+		return;
+	}
+
+	addTileToMask(col, row);
+
 	bool borders[4] = { false, false, false, false };
 	auto backgroundTile = TileBase::create();
 	backgroundTile->initWithGrid(col, row);
@@ -390,7 +548,6 @@ void BoardController::addBackgroundTile(const char col, const char row) const
 		const char adjRow = row + AdjacentIndents[k][0];
 		if (0 <= adjCol && adjCol < boardModel->getWidth()
 			&& 0 <= adjRow && adjRow < boardModel->getHeight()
-			&& !(boardModel->getCell(adjCol, adjRow)->isEmpty)
 			&& !(boardModel->getCell(adjCol, adjRow)->isOutCell))
 		{
 			borders[k] = false;
@@ -410,16 +567,6 @@ void BoardController::addBackgroundTile(const char col, const char row) const
 		borderLayer->addChild(borderTile);
 	}
 
-}
-
-void BoardController::initNode()
-{
-	auto const width = CellSize * boardModel->getWidth();
-	auto const height = CellSize * boardModel->getHeight();
-	setContentSize(Size(width, height));
-	const auto originX = CenterX - width / 2;
-	const auto originY = CenterY - height / 2;
-	setPosition(originX, originY);
 }
 
 void BoardController::checkMatchesInBoard()
@@ -450,9 +597,67 @@ void BoardController::checkMatchesInBoard()
 			match->matchId = getMatchId();
 			cell->getSourceTile()->matchId = match->matchId;
 			match->isWaiting = false;
-			pendingCrushCells->addObject(match);
+			if (findMatchInPendings(match) == nullptr) 
+			{
+				pendingCrushCells->addObject(match);
+			}
+			//else
+			//{
+			//	cocos2d::log("duplicated match: Col - %d, Row - %d", j, i);
+			//}
 		}
 	}
+}
+
+Match* BoardController::findMatchInPendings(Match* newMatch)
+{
+	Ref* itr;
+	CCARRAY_FOREACH(pendingCrushCells, itr)
+	{
+		auto match = static_cast<Match*>(itr);
+		if(match->equal(newMatch))
+		{
+			return match;
+		}
+	}
+	return nullptr;
+}
+
+void BoardController::doShuffle()
+{
+	if (fallingTileCount > 0 || gameState != Idle || pendingCrushCells->count() > 0)
+	{
+		return;
+	}
+
+	if(boardModel->isShuffleNeed())
+	{
+		gameState = GameState::Shuffling;
+		showShuffleAction();
+	}
+}
+
+void BoardController::manualShuffle()
+{
+	gameState = GameState::Shuffling;
+	showShuffleAction();
+}
+
+void BoardController::shuffle(float)
+{
+	boardModel->shuffle(showObjectsLayer);
+	if (boardModel->isShuffleNeed())
+	{
+		boardModel->addAvailableMove();
+	}
+}
+
+
+void BoardController::showShuffleAction()
+{
+	shuffleAnimation->setVisible(true);
+	shuffleAnimation->playAnimation();
+	scheduleOnce(schedule_selector(BoardController::shuffle), 0.5);
 }
 
 
@@ -691,7 +896,7 @@ void BoardController::doSomethingPerMove()
 
 void BoardController::crushPendingCells()
 {
-	if(pendingCrushCells == nullptr || pendingCrushCells->count() == 0)
+	if(pendingCrushCells == nullptr || pendingCrushCells->count() == 0 || gameState != GameState::Idle)
 	{
 		return;
 	}
@@ -768,19 +973,20 @@ void BoardController::crushBonusMatch(Match* match)
 		switch (targetCellBonusType)
 		{
 		case MovingTileTypes::XBreakerObject:
-			dualXCrush(match->refCell);
+			combineXAndLine(match->refCell, match->bonusMatchCell);
 			break;
 		case MovingTileTypes::BombBreakerObject:
-			dualXCrush(match->refCell);
+			combineXAndLine(match->refCell, match->bonusMatchCell);
 			break;
 		case MovingTileTypes::RainbowObject:
 			combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::SeekerObject:
+			combineSeekerAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::ColumnBreakerObject:
 		case MovingTileTypes::RowBreakerObject:
-			dualXCrush(match->refCell);
+			combineXAndLine(match->refCell, match->bonusMatchCell);
 			break;
 		default:
 			break;
@@ -790,7 +996,7 @@ void BoardController::crushBonusMatch(Match* match)
 		switch (targetCellBonusType)
 		{
 		case MovingTileTypes::XBreakerObject:
-			dualXCrush(match->refCell);
+			combineXAndLine(match->refCell, match->bonusMatchCell);
 			break;
 		case MovingTileTypes::BombBreakerObject:
 			break;
@@ -798,9 +1004,11 @@ void BoardController::crushBonusMatch(Match* match)
 			combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::SeekerObject:
+			combineSeekerAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::ColumnBreakerObject:
 		case MovingTileTypes::RowBreakerObject:
+			combineBombAndLine(match->refCell, match->bonusMatchCell);
 			break;
 		default:
 			break;
@@ -827,16 +1035,20 @@ void BoardController::crushBonusMatch(Match* match)
 		switch (targetCellBonusType)
 		{
 		case MovingTileTypes::XBreakerObject:
+			combineSeekerAndBonus(match->refCell, match->bonusMatchCell);
 			break;
 		case MovingTileTypes::BombBreakerObject:
+			combineSeekerAndBonus(match->refCell, match->bonusMatchCell);
 			break;
 		case MovingTileTypes::RainbowObject:
 			combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::SeekerObject:
+			combineSeekerAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::ColumnBreakerObject:
 		case MovingTileTypes::RowBreakerObject:
+			combineSeekerAndBonus(match->refCell, match->bonusMatchCell);
 			break;
 		default:
 			break;
@@ -847,19 +1059,20 @@ void BoardController::crushBonusMatch(Match* match)
 		switch (targetCellBonusType)
 		{
 		case MovingTileTypes::XBreakerObject:
-			dualXCrush(match->refCell);
+			combineXAndLine(match->refCell, match->bonusMatchCell);
 			break;
 		case MovingTileTypes::BombBreakerObject:
+			combineBombAndLine(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::RainbowObject:
 			combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::SeekerObject:
+			combineSeekerAndBonus(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::ColumnBreakerObject:
 		case MovingTileTypes::RowBreakerObject:
-			crushColumnBreaker(match->refCell);
-			crushRowBreaker(match->refCell);
+			combine2LineBreakers(match->refCell, match->bonusMatchCell);
 			break;
 		default:
 			break;
@@ -870,12 +1083,19 @@ void BoardController::crushBonusMatch(Match* match)
 	}
 }
 
-void BoardController::dualXCrush(Cell* cell)
+void BoardController::combine2LineBreakers(Cell* refCell, Cell* targetCell)
 {
-	crushColumnBreaker(cell);
-	crushRowBreaker(cell);
-	crushXBreaker(cell);
+	targetCell->crushCell();
+	crushColumnBreaker(refCell);
+	crushRowBreaker(refCell);
+}
 
+void BoardController::combineXAndLine(Cell* refCell, Cell* targetCell)
+{
+	targetCell->crushCell();
+	crushColumnBreaker(refCell);
+	crushRowBreaker(refCell);
+	crushXBreaker(refCell);
 }
 
 void BoardController::crushRainbowMatch(Match* match)
@@ -887,6 +1107,22 @@ void BoardController::crushRainbowMatch(Match* match)
 		crushCell(cell);
 	}
 	CC_SAFE_DELETE(sameColorCells);
+}
+
+void BoardController::combineSeekerAndBonus(Cell* seekerCell, Cell* bonusCell)
+{
+	if(bonusCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::SeekerObject)
+	{
+		crushSeeker(seekerCell);
+		crushSeeker(seekerCell);
+		crushSeeker(bonusCell);
+	}
+	else
+	{
+		crushSeeker(seekerCell, bonusCell->getMovingTile()->getMovingTileType());
+	}
+	seekerCell->crushCell(false);
+	bonusCell->crushCell(false);
 }
 
 void BoardController::combineRainbowAndBonus(Cell* rainbowCell, Cell* bonusCell)
@@ -906,14 +1142,16 @@ void BoardController::combineRainbowAndBonus(Cell* rainbowCell, Cell* bonusCell)
 	}
 }
 
-void BoardController::combineBombAndLine(Cell* refCell)
+void BoardController::combineBombAndLine(Cell* refCell, Cell* targetCell)
 {
+	targetCell->crushCell();
 	crushColumnBreaker(refCell);
 	crushColumnBreaker(refCell->rightCell); 
 	crushColumnBreaker(refCell->leftCell);
 	crushRowBreaker(refCell);
 	crushRowBreaker(refCell->upCell);
 	crushRowBreaker(refCell->downCell);
+	showBombAndLineCrushEffect(refCell);
 }
 
 void BoardController::crushMatch(Match* match)
@@ -948,17 +1186,17 @@ Cell* BoardController::fillCell(Cell* cell)
 		Cell* movedCell = nullptr;
 		if (fallPath->startCell->isEmpty)
 		{
-			//if (fallPath->startCell->containsSpawner())
+			if (fallPath->startCell->containsSpawner() && fallPath->startCell->fallDirection == fallPath->startCell->getSpawner()->getDirection())
 			{
 				fallPath->startCell->spawnMatchTile();
 				if (Utils::IsSameGrid(fallPath->startCell->gridPos, cell->gridPos))
 				{
-					auto spawnner = static_cast<SpawnerObject*>(cell->getTileAtLayer(LayerId::Spawner));
+					auto spawnner = cell->getSpawner();
 					if(spawnner != nullptr) spawnner->initSpawnedCount();
 				}
 			}
 		}
-		else
+		if(fallPath->containsPortal)
 		{
 			movedCell = fallPath->startCell;
 		}
@@ -981,74 +1219,92 @@ Cell* BoardController::fillCell(Cell* cell)
 	return nullptr;
 }
 
-//bool BoardController::isThereHoleInColumn(Cell* cell)
-//{
-//	
-//}
-
 bool BoardController::checkPastHole(Cell* cell, char refCol, char refRow, bool inWater)
 {
 	if(cell->getMovingTile() != nullptr && cell->getMovingTile()->isMoving)
 	{
 		return false;
 	}
-	if(cell->gridPos.Col < refCol)
-	{
-		return true;
-	}
-	if(cell->gridPos.Col > refCol)
-	{
-		return false;
-	}
 	if(inWater)
 	{
-		return cell->gridPos.Row > refRow;
+		if (cell->gridPos.Row > refRow)
+			return true;
+		if (cell->gridPos.Row < refRow)
+			return false;
 	}
 	else
 	{
-		return cell->gridPos.Row < refRow;
+		if (cell->gridPos.Row < refRow)
+			return true;
+		if (cell->gridPos.Row > refRow)
+			return false;
 	}
+	return cell->gridPos.Col < refCol;
 }
 
-void BoardController::fallTiles()
+bool BoardController::fallTiles()
 {
-	if(fallingTileCount > 0 || gameState != Idle)
-	{
-		return;
-	}
-	std::list<Cell*> movedCells;
+	auto portalPassed = false;
 
-	for (char i = boardModel->getCurrentLiquidLevel(); i < boardModel->getHeight(); i++)
+	/// out water search
+	for (char i = 0; i < boardModel->getHeight(); i++)
 	{
 		for (char j = 0; j < boardModel->getWidth(); j++)
 		{
 			auto cell = boardModel->getCell(j, i);
-			if(cell->isEmpty && cell->isFillable && !cell->isOutCell)
+			if(cell->isEmpty && cell->isFillable && !cell->isOutCell && !cell->inWater)
 			{
 				auto movedCell = fillCell(cell);
-				//if(movedCell != nullptr && movedCell->isEmpty && checkPastHole(movedCell, j, i))
-				//{
-				//	movedCells.push_back(movedCell);
-				//}
+				if(movedCell != nullptr && movedCell->isEmpty && checkPastHole(movedCell, j, i))
+				{
+					portalPassed = true;
+				}
 			}
 		}
-
-		//while(movedCells.size() > 0)
-		//{
-		//	Cell* movedCell = movedCells.front();
-		//	movedCells.pop_front();
-		//	auto newMovedCell = fillCell(movedCell);
-		//	if (newMovedCell != nullptr && newMovedCell->isEmpty && checkPastHole(newMovedCell, j, boardModel->getHeight()))
-		//	{
-		//		movedCells.push_back(newMovedCell);
-		//	}
-		//}
 	}
+
+	for (char i = boardModel->getHeight() - 1; i >= 0; i--)
+	{
+		for (char j = 0; j < boardModel->getWidth(); j++)
+		{
+			auto cell = boardModel->getCell(j, i);
+			if (cell->isEmpty && cell->isFillable && !cell->isOutCell && cell->inWater)
+			{
+				auto movedCell = fillCell(cell);
+				if (movedCell != nullptr && movedCell->isEmpty && checkPastHole(movedCell, j, i))
+				{
+					portalPassed = true;
+				}
+			}
+		}
+	}
+
+	/// in water search
+
+	return portalPassed;
+}
+
+void BoardController::fallTilesLoop()
+{
+	if (fallingTileCount > 0 || gameState != Idle)
+	{
+		return;
+	}
+	auto loopCount = 3;
+	while(loopCount-- > 0)
+	{
+		if(!fallTiles())
+		{
+			break;
+		}
+	}
+	//cocos2d::log("loop count: %d", loopCount);
 }
 
 FallPath* BoardController::findFallPath(Cell* cell)
 {
 	auto fallPath = new FallPath;
+	fallPath->inWater = cell->inWater;
 	fallPath->endCell = cell;
 	auto targetCell = cell;
 	if(cell->containsSpawner())
@@ -1056,21 +1312,21 @@ FallPath* BoardController::findFallPath(Cell* cell)
 		fallPath->startCell = cell;
 		return fallPath;
 	}
-	auto fallCell = targetCell->getFallCell();
+	auto fallCell = targetCell->getFallCell(boardModel->portalInList);
 	while(fallCell != nullptr && fallCell->isEmpty && !fallCell->containsSpawner())
 	{
 		if(fallCell->gridPos.Col != targetCell->gridPos.Col)
 		{
-			fallPath->pushGridPos(targetCell->gridPos);
-			fallPath->pushGridPos(fallCell->gridPos);
+			fallPath->pushCell(fallCell->gridPos.Row != targetCell->gridPos.Row ? targetCell:targetCell->downCell);
+			fallPath->pushCell(fallCell);
 		}
 		targetCell = fallCell;
-		fallCell = targetCell->getFallCell();
+		fallCell = targetCell->getFallCell(boardModel->portalInList);
 	}
 
 	if (fallCell != nullptr && fallCell->gridPos.Col != targetCell->gridPos.Col)
 	{
-		fallPath->pushGridPos(targetCell->gridPos);
+		fallPath->pushCell(targetCell);
 	}
 
 	if(fallCell != nullptr)
@@ -1080,20 +1336,43 @@ FallPath* BoardController::findFallPath(Cell* cell)
 	else
 	{
 		fallPath->startCell = targetCell;
+		//if(!targetCell->containsSpawner() && targetCell->downCell->isEmpty)
+		//{
+		//	
+		//}
 	}
 	
 	return fallPath;
 }
 
+void BoardController::crushNearbyCells(Cell* cell)
+{
+	if (cell->upCell != nullptr && cell->upCell->isReceiveNearbyAffect()) crushCell(cell->upCell);
+	if (cell->rightCell != nullptr && cell->rightCell->isReceiveNearbyAffect()) crushCell(cell->rightCell);
+	if (cell->downCell != nullptr && cell->downCell->isReceiveNearbyAffect()) crushCell(cell->downCell);
+	if (cell->leftCell != nullptr && cell->leftCell->isReceiveNearbyAffect()) crushCell(cell->leftCell);
+}
+
 void BoardController::crushCell(Cell* cell)
 {
-	if (cell == nullptr || cell->isEmpty || cell->getSourceTile() == nullptr)
+	if (cell == nullptr || cell->isEmpty || cell->getMovingTile() == nullptr)
 	{
 		return;
 	}
-	
-	auto tile = cell->getSourceTile();
+
+	auto tile = cell->getMovingTile();
 	auto tileType = tile->getMovingTileType();
+	auto canMatch = tile->canMatch;
+	if(!cell->crushCell())
+	{
+		return;
+	}
+
+	if(canMatch)
+	{
+		crushNearbyCells(cell);
+	}
+
 	switch (tileType)
 	{
 	case MovingTileTypes::BombBreakerObject:
@@ -1113,15 +1392,36 @@ void BoardController::crushCell(Cell* cell)
 	case MovingTileTypes::SeekerObject:
 		crushSeeker(cell);
 		break;
+	case MovingTileTypes::ChocolateCheesecakeObject:
+		crushDirectionalBreaker(cell, tile->getDirection());
+	case MovingTileTypes::LiquidDrainerMatchObject:
+		fillLiquid(true);
+		break;
+	case MovingTileTypes::LiquidFillerMatchObject:
+		fillLiquid();
+		break;
 	default:
 		break;
 	}
-	cell->crushCell();
+}
+
+void BoardController::fillLiquid(bool inverse)
+{
+	auto curretLiquidLevel = boardModel->getCurrentLiquidLevel();
+	if(!inverse) // fill
+	{
+		boardModel->setCurrentLiquidLevel(curretLiquidLevel + 1);
+	}
+	else // drain
+	{
+		boardModel->setCurrentLiquidLevel(curretLiquidLevel - 1);
+	}
+	
+	liquidNode->runAction(MoveTo::create(0.5, Vec2(0, boardModel->getCurrentLiquidLevel() * CellSize)));
 }
 
 void BoardController::crushBombBreaker(Cell* cell)
 {
-	cell->crushCell();
 	for(char i = cell->gridPos.Row - 2; i <= cell->gridPos.Row + 2; i++)
 	{
 		for(char j = cell->gridPos.Col - 2; j <= cell->gridPos.Col + 2; j++)
@@ -1141,6 +1441,131 @@ void BoardController::crushBombBreaker(Cell* cell)
 			crushCell(bombCell);
 		}
 	}
+}
+
+void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
+{
+	auto rot = 0.f;
+	switch(direction)
+	{
+		case Direction::N:
+		{
+			rot = -90;
+			auto upCell = cell->upCell;
+			while (upCell != nullptr)
+			{
+				if (!upCell->isEmpty && upCell->getMovingTile() != nullptr)
+				{
+					if (upCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::ColumnBreakerObject)
+					{
+						upCell->getMovingTile()->setMovingTileType(MovingTileTypes::RowBreakerObject);
+					}
+					crushCell(upCell);
+				}
+				upCell = upCell->upCell;
+			}
+			break;
+		}
+		case Direction::NE:
+		{
+			rot = -45;
+			Cell* upRightCell = cell;
+			while (upRightCell != nullptr && upRightCell->upCell != nullptr && upRightCell->upCell->rightCell != nullptr)
+			{
+				crushCell(upRightCell->upCell->rightCell);
+				upRightCell = upRightCell->upCell->rightCell;
+			}
+			break;
+		}
+		case Direction::E:
+		{
+			rot = 0;
+			auto rightCell = cell->upCell;
+			while (rightCell != nullptr)
+			{
+				if (!rightCell->isEmpty && rightCell->getMovingTile() != nullptr)
+				{
+					if (rightCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::RowBreakerObject)
+					{
+						rightCell->getMovingTile()->setMovingTileType(MovingTileTypes::ColumnBreakerObject);
+					}
+					crushCell(rightCell);
+				}
+				rightCell = rightCell->upCell;
+			}
+			break;
+		}
+		case Direction::SE:
+		{
+			rot = 45;
+			Cell* downRightCell = cell;
+			while (downRightCell != nullptr && downRightCell->downCell != nullptr && downRightCell->downCell->rightCell != nullptr)
+			{
+				crushCell(downRightCell->downCell->rightCell);
+				downRightCell = downRightCell->downCell->rightCell;
+			}
+			break;
+		}
+		case Direction::S:
+		{
+			rot = 90;
+			auto downCell = cell->upCell;
+			while (downCell != nullptr)
+			{
+				if (!downCell->isEmpty && downCell->getMovingTile() != nullptr)
+				{
+					if (downCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::ColumnBreakerObject)
+					{
+						downCell->getMovingTile()->setMovingTileType(MovingTileTypes::RowBreakerObject);
+					}
+					crushCell(downCell);
+				}
+				downCell = downCell->upCell;
+			}
+			break;
+		}
+		case Direction::SW:
+		{
+			rot = 135;
+			Cell* downLeftCell = cell;
+			while (downLeftCell != nullptr && downLeftCell->downCell != nullptr && downLeftCell->downCell->leftCell != nullptr)
+			{
+				crushCell(downLeftCell->downCell->leftCell);
+				downLeftCell = downLeftCell->downCell->leftCell;
+			}
+			break;
+		}
+		case Direction::W:
+		{
+			rot = 180;
+			auto leftCell = cell->upCell;
+			while (leftCell != nullptr)
+			{
+				if (!leftCell->isEmpty && leftCell->getMovingTile() != nullptr)
+				{
+					if (leftCell->getMovingTile()->getMovingTileType() == +MovingTileTypes::RowBreakerObject)
+					{
+						leftCell->getMovingTile()->setMovingTileType(MovingTileTypes::ColumnBreakerObject);
+					}
+					crushCell(leftCell);
+				}
+				leftCell = leftCell->upCell;
+			}
+			break;
+		}
+		case Direction::NW:
+		{
+			rot = 225;
+			Cell* upLeftCell = cell;
+			while (upLeftCell != nullptr && upLeftCell->upCell != nullptr && upLeftCell->upCell->leftCell != nullptr)
+			{
+				crushCell(upLeftCell->upCell->leftCell);
+				upLeftCell = upLeftCell->upCell->leftCell;
+			}
+			break;
+		}
+	}
+	showLineCrushEffect(cell, rot);
 }
 
 void BoardController::crushRowBreaker(Cell* cell)
@@ -1175,6 +1600,8 @@ void BoardController::crushRowBreaker(Cell* cell)
 		}		
 		rightCell = rightCell->rightCell;
 	}
+
+	showLineCrushEffect(cell, 0);
 }
 
 void BoardController::crushColumnBreaker(Cell* cell)
@@ -1208,6 +1635,7 @@ void BoardController::crushColumnBreaker(Cell* cell)
 		}	
 		downCell = downCell->downCell;
 	}
+	showLineCrushEffect(cell, 90);
 }
 
 void BoardController::crushXBreaker(Cell* cell)
@@ -1239,12 +1667,15 @@ void BoardController::crushXBreaker(Cell* cell)
 		if (xCell == nullptr) continue;
 		crushCell(xCell);
 	}
+	showLineCrushEffect(cell, 45);
+	showLineCrushEffect(cell, 135);
 }
 
-void BoardController::crushSeeker(Cell* cell)
+void BoardController::crushSeeker(Cell* cell, MovingTileTypes bonusType)
 {
 	auto randomPos = boardModel->getRandomBoardPosition();
-	auto seekerShow = poolController->getSeekerShow(cell->getSourceTile()->getTileColor());
+	auto seekerShow = poolController->getSeekerShow(cell->getSourceTile() == nullptr ? +TileColors::red : cell->getSourceTile()->getTileColor());
+	seekerShow->customData->insert(std::pair<std::string, std::string>("bonusType", bonusType._to_string()));
 	showObjectsLayer->addChild(seekerShow);
 	seekerShow->setPosition(cell->getBoardPos());
 	CKAction ckAction;
@@ -1275,8 +1706,8 @@ void BoardController::processPendingSeekers()
 				targetCell = findSeekerTarget(&targetsList);
 			}
 		}
-		if(targetCell == nullptr) continue;
-		if(targetCell->getSourceTile() == nullptr) continue;
+		//if(targetCell == nullptr) continue;
+		//if(targetCell->getSourceTile() == nullptr) continue;
 		targetsList.push_back(targetCell);
 		landingSeeker(seekerShow, targetCell);
 	}
@@ -1292,10 +1723,33 @@ void BoardController::landingSeeker(AnimationShowObject* seekerShow, Cell* targe
 	auto recycleSeeker = seekerShow;
 	ckAction.action = actionController->createSeekerLandingAction(ckAction.node, targetPos, [this, recycleSeeker, crushingCell]()
 	{
+		auto bonusString = recycleSeeker->customData->at("bonusType");
+		this->crushBonusManually(crushingCell, bonusString);
 		this->crushCell(crushingCell);
 		poolController->recycleSeekerShow(recycleSeeker);
 	});
 	actionController->pushAction(ckAction, false);
+}
+
+void BoardController::crushBonusManually(Cell* cell, std::string bonusString)
+{
+	auto bonusType = MovingTileTypes::_from_string(bonusString.c_str());
+	if (bonusType == +MovingTileTypes::BombBreakerObject)
+	{
+		crushBombBreaker(cell);
+	}
+	else if(bonusType == +MovingTileTypes::ColumnBreakerObject)
+	{
+		crushColumnBreaker(cell);
+	}
+	else if (bonusType == +MovingTileTypes::RowBreakerObject)
+	{
+		crushRowBreaker(cell);
+	}
+	else if (bonusType == +MovingTileTypes::XBreakerObject)
+	{
+		crushXBreaker(cell);
+	}
 }
 
 Cell* BoardController::findSeekerTarget(std::list<Cell*>* targetsList)

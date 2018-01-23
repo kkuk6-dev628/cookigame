@@ -174,6 +174,28 @@
     <ClCompile Include="..\Classes\Models\BoardModels\HolesQueue.cpp">
       <Filter>src\Models\BoardModels</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\ChocolateChipObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\WaffleBoardController.cpp" />
+    <ClCompile Include="..\Classes\Controllers\HiderBoardController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\HopplingBoardController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\PathBoardController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\PopsicleBoardController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\THopplingBoardController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\TopplingBoardController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -325,6 +347,28 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Models\BoardModels\HolesQueue.h">
       <Filter>src\Models\BoardModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\ChocolateChipObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\WaffleBoardController.h" />
+    <ClInclude Include="..\Classes\Controllers\HiderBoardController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\HopplingBoardController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\PathBoardController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\PopsicleBoardController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\THopplingBoardController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\TopplingBoardController.h">
+      <Filter>src\Controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,8 @@
 #include "General/Utils.h"
 #include "Controllers/PoolController.h"
 #include "Models/Tiles/SpawnerObject.h"
+#include "Controllers/ActionController.h"
+#include "Controllers/BoardController.h"
 
 
 BoardModel::BoardModel()
@@ -82,16 +84,31 @@ Cell* BoardModel::getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs input
 
 Cell* BoardModel::getSeekerTarget()
 {
-	if(seekerPriorityList == nullptr || seekerPriorityList->count() == 0)
+	if(seekerPriorityList == nullptr || seekerPriorityList->size() == 0)
 	{
 		return nullptr;
 	}
-	auto seekerTarget = static_cast<SeekerPriorityObject*>(seekerPriorityList->getRandomObject());
+	seekerPriorityList->sort([](SeekerPriorityObject* first, SeekerPriorityObject* second){
+		if(first->getPriority() < second->getPriority())
+		{
+			return true;
+		}
+		if(first->getPriority() > second->getPriority())
+		{
+			return false;
+		}
+		if(first->getLayers() > second->getLayers())
+		{
+			return true;
+		}
+		return false;
+	});
+	auto seekerTarget = seekerPriorityList->front();
 	seekerTarget->countDownLayer();
 	auto retCell = seekerTarget->getCell();
 	if(seekerTarget->getLayers() < 0)
 	{
-		seekerPriorityList->removeObject(seekerTarget);
+		seekerPriorityList->pop_front();
 		seekerTarget->release();
 	}
 	return retCell;
@@ -181,13 +198,19 @@ void BoardModel::setCurrentLiquidLevel(const float liquidLevel)
 		return;
 	}
 	currentLiquidLevel = liquidLevel;
-	for (char i = 0; i < currentLiquidLevel; i++)
+	for (char i = 0; i < height; i++)
 	{
 		for (char j = 0; j < width; j++)
 		{
-			if(!liquidSystem->containsIgnorePos(j, i) && !liquidSystem->containsIgnoreColumn(j) && !liquidSystem->containsIgnoreRow(i))
+			if(i < currentLiquidLevel && !liquidSystem->containsIgnorePos(j, i) && !liquidSystem->containsIgnoreColumn(j) && !liquidSystem->containsIgnoreRow(i))
 			{
 				cells[i][j]->inWater = true;
+				cells[i][j]->fallDirection = Direction::N;
+			}
+			else
+			{
+				cells[i][j]->inWater = false;
+				cells[i][j]->fallDirection = Direction::S;
 			}
 		}
 	}
@@ -270,6 +293,7 @@ void BoardModel::initSpawners()
 				if(!cell->containsSpawner())
 				{
 					auto spawner = SpawnerObject::create();
+					spawner->initSpawner();
 					cell->setTileToLayer(spawner, LayerId::Spawner);
 				}
 				break;
@@ -311,16 +335,22 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	{
 		if (itr->value.IsObject() && !itr->value.ObjectEmpty())
 		{
-			//auto boardLayer = BoardLayerModel::create(this->width, this->height);
-			//boardLayer->initWithJson(itr->value, cells);
 			const auto layerIndex = atoi(itr->name.GetString());
 			if (LayerId::_is_valid(layerIndex))
 			{
 				const auto layerId = LayerId::_from_integral(layerIndex);
 				addLayerWithJson(itr->value, layerId);
 			}
-			//this->boardLayers->setObject(boardLayer, layerIndex);
 		}
+		//else if(itr->name == "8")
+		//{
+		//	initSpawners();
+		//}
+	}
+
+	if(hasToAddSpawners)
+	{
+		initSpawners();
 	}
 
 	auto& data = json["data"];
@@ -333,7 +363,7 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 			{
 				const auto dataType = customData["type"].GetString();
 
-				if (dataType == "LiquidSystem")
+				if (strcmp(dataType, "LiquidSystem") == 0)
 				{
 					liquidSystem = new LiquidSystem();
 					liquidSystem->TurnTimer = customData["turn_timer"].GetInt();
@@ -371,11 +401,11 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 							liquidSystem->IgnoreGridPos.push_back(gPos);
 						}
 					}
+					setCurrentLiquidLevel(liquidSystem->LevelStart);
 				}
 			}
 		}
 	}
-	initSpawners();
 }
 
 void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNumber)
@@ -402,10 +432,9 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 					{
 						if(seekerPriorityList == nullptr)
 						{
-							seekerPriorityList = __Array::create();
-							seekerPriorityList->retain();
+							seekerPriorityList = new std::list<SeekerPriorityObject*>;
 						}
-						seekerPriorityList->addObject(tile);
+						seekerPriorityList->push_back(static_cast<SeekerPriorityObject*>(tile));
 					}
 					else if (strcmp(typeName, "EmptyObject") == 0)
 					{
@@ -415,6 +444,26 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 					{
 						cells[gridPos.Row][gridPos.Col]->isOutCell = true;
 					}
+					else if(strcmp(typeName, "PortalOutletObject") == 0)
+					{
+						if(portalOutList == nullptr)
+						{
+							portalOutList = new std::list<PortalOutletObject*>;
+						}
+						portalOutList->push_back(reinterpret_cast<PortalOutletObject* const&>(tile));
+					}
+					else if (strcmp(typeName, "PortalInletObject") == 0)
+					{
+						if (portalInList == nullptr)
+						{
+							portalInList = new std::list<PortalInletObject*>;
+						}
+						portalInList->push_back(reinterpret_cast<PortalInletObject* const&>(tile));
+					}
+					else if(strcmp(typeName, "SpawnerObject") == 0)
+					{
+						hasToAddSpawners = false;
+					}
 				}
 			}
 		}
@@ -422,3 +471,234 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 
 }
 
+std::list<Cell*>* BoardModel::findAvailableMoveCells()
+{
+	for (char i = 0; i < height; i++)
+	{
+		for (char j = 0; j < width; j++)
+		{
+			auto cell = cells[i][j];
+			if (cell == nullptr || cell->isOutCell || cell->isFixed)
+			{
+				continue;
+			}
+			if(!cell->isEmpty && cell->getMovingTile() != nullptr && cell->getMovingTile()->getMovingTileType() != +MovingTileTypes::LayeredMatchObject)
+			{
+				continue;
+			}
+			for(char k = 0; k < AVAILABLE_MOVES_COUNT; k++)
+			{
+				auto allMovable = true;
+				for(char l = 0; l < 4; l++)
+				{
+					auto cell1 = cells[i + AvailableMoves[k][l][0]][j + AvailableMoves[k][l][1]];
+					if (cell1 == nullptr || cell1->isOutCell || cell1->isFixed)
+					{
+						allMovable = false;
+					}
+					if (!cell1->isEmpty && cell1->getMovingTile() != nullptr && cell1->getMovingTile()->getMovingTileType() != +MovingTileTypes::LayeredMatchObject)
+					{
+						allMovable = false;
+					}
+				}
+
+				if(allMovable)
+				{
+					return new std::list<Cell*>{
+						cells[i][j],
+						cells[i + AvailableMoves[k][0][0]][j + AvailableMoves[k][0][1]],
+						cells[i + AvailableMoves[k][1][0]][j + AvailableMoves[k][1][1]]
+					};
+				}
+			}
+		}
+	}
+	return nullptr;
+}
+
+bool BoardModel::addAvailableMove()
+{
+	auto tileColor = SpawnController::getInstance()->getSpawnColor();
+	if(availableMove != nullptr)
+	{
+		CC_SAFE_DELETE(availableMove);
+	}
+
+	availableMove = findAvailableMoveCells();
+	if (availableMove == nullptr)
+	{
+		return false;
+	}
+	MovingTileTypes tileType = MovingTileTypes::LayeredMatchObject;
+	for (auto cell : *availableMove)
+	{
+		cell->getMovingTile()->initWithType(tileType._to_string(), tileColor);
+	}
+	return true;
+}
+
+bool BoardModel::checkAvailableMove(char col, char row)
+{
+	auto refCell = cells[row][col];
+	if (availableMove != nullptr) CC_SAFE_DELETE(availableMove);
+	if (refCell == nullptr || !refCell->canMatch())
+	{
+		return false;
+	}
+	auto refTile = refCell->getMovingTile();
+	if(refTile->isBonusTile() && !refCell->isFixed)
+	{
+		for(char i = 0; i < 4; i++)
+		{
+			auto aCol = col + AdjacentIndents[i][1];
+			auto aRow = row + AdjacentIndents[i][0];
+			if(!inBoard(aCol, aRow))
+			{
+				continue;
+			}
+			auto aCell = cells[aRow][aRow];
+			if(aCell != nullptr && aCell->canMatch())
+			{
+				if(refTile->getMovingTileType() == +MovingTileTypes::RainbowObject 
+					|| aCell->getMovingTile()->isBonusTile())
+				{
+					availableMove = new std::list<Cell*>{
+						refCell,
+						aCell
+					};
+					return true;
+				}
+			}
+		}
+	}
+	else
+	{
+		TileColors refColor = refCell->getMovingTile()->getTileColor();
+		for(char i = 0; i < AVAILABLE_MOVES_COUNT; i++)
+		{
+			std::list<Cell*> availableTiles;
+			char count = 0;
+			for(char j = 0; j < 2; j++)
+			{
+				auto aCol = col + AvailableMoves[i][j][1];
+				auto aRow = row + AvailableMoves[i][j][0];
+				if(!inBoard(aCol, aRow))
+				{
+					continue;
+				}
+				auto aCell = cells[aRow][aCol];
+				if(aCell != nullptr && aCell->canMatch())
+				{
+					if(aCell->getMovingTile()->getTileColor() == refColor)
+					{
+						count++;
+						availableTiles.push_back(aCell);
+					}
+				}
+			}
+
+			if(count >= 2)
+			{
+				auto bCol = col + AvailableMoves[i][2][1];
+				auto bRow = row + AvailableMoves[i][2][0];
+				if(!inBoard(bCol, bRow))
+				{
+					continue;
+				}
+				auto bCell = cells[bRow][bCol];
+				if (bCell != nullptr && bCell->canMatch())
+				{
+					availableMove = new std::list<Cell*>(availableTiles);
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+
+bool BoardModel::isShuffleNeed()
+{
+	for(char i = 0; i < height; i++)
+	{
+		for(char j = 0; j < width; j++)
+		{
+			if(checkAvailableMove(j, i))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void BoardModel::shuffle(BoardLayer* showObjectsLayer)
+{
+	MovingTile** shuffleTiles = new MovingTile*[height*width];
+	char shuffleTilesCount = 0;
+	for (char i = 0; i < height; i++)
+	{
+		for (char j = 0; j < width; j++)
+		{
+			if (cells[i][j] != nullptr && !cells[i][j]->isNoShuffleCell())
+			{
+				shuffleTiles[shuffleTilesCount] = cells[i][j]->getMovingTile();
+				shuffleTilesCount++;
+			}
+		}
+	}
+	auto shufflePos = static_cast<char>(rand_0_1() * shuffleTilesCount);
+
+	for(char i = 0; i < height; i++)
+	{
+		for(char j = 0; j < width; j++)
+		{
+			if(!cells[i][j]->isNoShuffleCell())
+			{
+				auto movingTile = shuffleTiles[shufflePos];
+				movingTile->setVisible(false);
+				auto showObj = PoolController::getInstance()->getTileShowObject();
+				showObj->setSpriteFrame(movingTile->getMainSpriteFrame());
+				showObj->setPosition(movingTile->getPosition());
+				showObj->setAnchorPoint(Vec2(0.5, 0.5));
+				if (showObj != nullptr && showObj->getParent() == nullptr)
+				{
+					showObjectsLayer->addChild(showObj);
+				}
+
+				auto actionController = ActionController::getInstance();
+				CKAction ckAction;
+				ckAction.node = reinterpret_cast<Node*>(showObj);
+
+				ckAction.action = ActionController::getInstance()->createShuffleMoveAction(
+					getBoardCenterPos(),
+					cells[i][j]->getBoardPos(),
+					[this, movingTile, showObj]()
+					{
+						movingTile->setVisible(true);
+						movingTile->isMoving = false;
+						PoolController::getInstance()->recycleTileShowObject(showObj);
+						BoardController::gameState = GameState::Idle;
+					}, ckAction.node);
+
+				//ckAction.delayCount = actionCount / 3;
+				movingTile->setVisible(false);
+				movingTile->isMoving = true;
+				actionController->pushAction(ckAction, true);
+
+				cells[i][j]->createShuffleShow();
+				shuffleTiles[shufflePos]->getCell()->shuffleResultCell = cells[i][j];
+				cells[i][j]->setSourceTile(shuffleTiles[shufflePos]);
+				cells[i][j]->getMovingTile()->setPosition(cells[i][j]->getBoardPos());
+				shufflePos++;
+				if(shufflePos >= shuffleTilesCount)
+				{
+					shufflePos = 0;
+				}
+			}
+		}
+	}
+	CC_SAFE_DELETE(shuffleTiles);
+}
