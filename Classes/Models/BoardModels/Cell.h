@@ -24,16 +24,26 @@ public:
 
 	CookieTile* getTileAtLayer(LayerId layer) const;
 	void setTileToLayer(CookieTile* pTile, LayerId layer);
+	void removeTileAtLayer(LayerId layer);
 
 	MovingTile* getMovingTile() const { return static_cast<MovingTile*>(pSourceTile); }
 
 	void setBoardLayer(BoardLayer* bl) { boardLayer = bl; }
 	BoardLayer* getBoardLayer() { return boardLayer; }
 
-	Cell* getFallCell(std::list<PortalInletObject*>* portalInData ) const;
+	//Cell* getFallCell(std::list<PortalInletObject*>* portalInData ) const;
+	//Cell* getDirectFallCell(std::list<PortalInletObject*>* portalInData);
+	//Cell* getInclinedFallCell(std::list<PortalInletObject*>* portalInData);
+	Cell* getFallDownCell() { return inWater ? upCell : downCell; }
+	Cell* getFallUpCell() { return inWater ? downCell : upCell; }
+
+	bool canFill() { return !isOutCell && !isFixed && isEmpty; }
+	bool canFall() { return !isOutCell && !isFixed && !isEmpty; }
 
 	bool containsSpawner() const { return layers->objectForKey(LayerId::Spawner) != nullptr; }
 	bool containsPortalOut() const;
+	bool containsPortalIn() const;
+	bool containsThoppler() const { return layers->objectForKey(LayerId::Toppling) != nullptr; }
 	bool isReceiveNearbyAffect();
 	bool isNoShuffleCell();
 	bool canMatch() const
@@ -44,7 +54,14 @@ public:
 	{
 		return !isOutCell && !isEmpty && getMovingTile() != nullptr && !isFixed;
 	}
-
+	bool canMoveCream() const
+	{
+		return !isOutCell && !isFixed;
+	}
+	bool isRainbowCell() const
+	{
+		return !isOutCell && !isEmpty && getMovingTile() != nullptr && getMovingTile()->getMovingTileType() == +MovingTileTypes::RainbowObject;
+	}
 
 	Cell* findPortalInCell(std::list<PortalInletObject*>* portalInData) const;
 	PortalOutletObject* getPortalOut() const;
@@ -55,6 +72,7 @@ public:
 	void receiveNearbyAffect();
 	void afterTileCrushProc();
 	bool crushCell(bool showCrushEffect = true);
+	bool crushUnderTiles(LayerId layerId);
 	void createShuffleShow();
 	
 	cocos2d::Vec2 getBoardPos(){ return boardPos; }
@@ -69,6 +87,9 @@ public:
 	bool isFillable = true;
 	bool isPass = false;
 	bool dirty = false;
+	bool noShuffleCell = false;
+
+	TileColors tileColor = TileColors::any;
 
 	TileShowObject* shuffleShowObject = nullptr;
 	Cell* shuffleResultCell = nullptr;

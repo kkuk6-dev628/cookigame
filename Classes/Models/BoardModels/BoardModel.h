@@ -15,9 +15,14 @@ class BoardModel : public cocos2d::Ref
 {
 public:
 	~BoardModel();
+	
 	static TileColorsTable CreateColorsTableFromJson(const rapidjson::Value& json);
 	static std::list<CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
+	
+	
+	void CreateSpawnTableFromJson(rapidjson::Value& json);
 	void initSpawners();
+	void setNoShuffleCells(rapidjson::Value& json);
 	void initWithJson(rapidjson::Value& json);
 	void addLayerWithJson(rapidjson::Value& json, LayerId layerNumber);
 	BoardModel();
@@ -40,6 +45,7 @@ public:
 	bool isShuffleNeed();
 	void shuffle(BoardLayer* showObjectsLayer);
 	bool addAvailableMove();
+	void clearAvailableMove();
 	bool checkAvailableMove(char col, char row);
 
 	bool inBoard(char col, char row) const { return col >= 0 && col < width && row >= 0 && row < height; }
@@ -48,6 +54,10 @@ public:
 	std::list<PortalOutletObject*>* portalOutList = nullptr;
 	std::list<Cell*>* findAvailableMoveCells();
 	std::list<Cell*>* availableMove = nullptr;
+
+	Cell* getDirectFallCell(Cell* cell);
+	Cell* getInclinedFallCell(Cell* cell);
+
 
 	Vec2 getBoardCenterPos() const { return Vec2(CellSize * width / 2, CellSize * height / 2); }
 

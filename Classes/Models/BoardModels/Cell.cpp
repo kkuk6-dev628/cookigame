@@ -2,6 +2,7 @@
 #include "Models/Tiles/CookieTile.h"
 #include "Models/Tiles/SpawnerObject.h"
 #include "Controllers/PoolController.h"
+#include "Models/Tiles/LayeredCrackerTile.h"
 
 Cell::Cell()
 {
@@ -57,9 +58,15 @@ void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 		pSourceTile = pTile;
 		isEmpty = false;
 		isFixed = !pTile->isMovable();
+		tileColor = pTile->getTileColor();
 	}
 	pTile->setCell(this);
 	layers->setObject(pTile, layer._to_integral());
+}
+
+void Cell::removeTileAtLayer(LayerId layer)
+{
+	layers->removeObjectForKey(layer);
 }
 
 void Cell::clear()
@@ -105,7 +112,8 @@ bool Cell::isNoShuffleCell()
 	{
 		return true;
 	}
-	return false;
+
+	return noShuffleCell;
 }
 
 void Cell::afterTileCrushProc()
@@ -137,6 +145,47 @@ bool Cell::crushCell(bool showCrushEffect)
 	return ret;
 }
 
+bool Cell::crushUnderTiles(LayerId layerId)
+{
+	auto underTile = getTileAtLayer(layerId);
+	if(underTile != nullptr)
+	{
+		switch(layerId)
+		{
+			case LayerId::Waffle:
+			{
+				auto waffleTile = static_cast<WaffleObject*>(underTile);
+				if(waffleTile != nullptr)
+				{
+					if(waffleTile->crush(true))
+					{
+						layers->removeObjectForKey(LayerId::Waffle);
+					}
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			case LayerId::Cover:
+			{
+				auto iceCoverTile = static_cast<IceCoverObject*>(underTile);
+				if(iceCoverTile != nullptr)
+				{
+					return iceCoverTile->crush(true);
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+
 void Cell::createShuffleShow()
 {
 	if(shuffleShowObject == nullptr)
@@ -163,86 +212,190 @@ void Cell::spawnMatchTile()
 	}
 }
 
-Cell* Cell::getFallCell(std::list<PortalInletObject*>* portalInData) const
-{
-	if (!inWater)
-	{
-		if(containsPortalOut())
-		{
-			return findPortalInCell(portalInData);
-		}
-		if(upCell == nullptr)
-		{
-			return nullptr;
-		}
+//Cell* Cell::getDirectFallCell(std::list<PortalInletObject*>* portalInData)
+//{
+//	if (!inWater)
+//	{
+//		if (containsPortalOut())
+//		{
+//			return findPortalInCell(portalInData);
+//		}
+//		if (containsSpawner()) 
+//		{
+//			return this;
+//		}
+//
+//		auto loopCell = upCell;
+//		auto prevCell = upCell;
+//
+//		while (loopCell != nullptr && loopCell->canFill())
+//		{
+//			if (loopCell->canFall())
+//			{
+//				return loopCell;
+//			}
+//			if (loopCell->containsPortalOut())
+//			{
+//				prevCell = loopCell;
+//				loopCell = loopCell->findPortalInCell(portalInData);
+//				continue;
+//			}
+//			if (loopCell->containsSpawner()) 
+//			{
+//				return loopCell;
+//			}
+//			
+//			prevCell = loopCell;
+//			loopCell = loopCell->upCell;
+//		}
+//
+//		return prevCell;
+//	}
+//	else
+//	{
+//		//if (containsPortalOut())
+//		//{
+//		//	return findPortalInCell(portalInData);
+//		//}
+//		if (containsSpawner())
+//		{
+//			return this;
+//		}
+//		auto loopCell = downCell;
+//		auto prevCell = downCell;
+//
+//		while (loopCell != nullptr && loopCell->canFill())
+//		{
+//			if (loopCell->canFall())
+//			{
+//				return loopCell;
+//			}
+//			if (loopCell->containsPortalOut())
+//			{
+//				prevCell = loopCell;
+//				return loopCell->findPortalInCell(portalInData);
+//			}
+//			if (loopCell->containsSpawner())
+//			{
+//				return loopCell;
+//			}
+//
+//			prevCell = loopCell;
+//			loopCell = loopCell->downCell;
+//		}
+//
+//		return prevCell;
+//	}
+//
+//}
 
-		if (!upCell->isFixed && !upCell->isOutCell && !upCell->inWater)
-		{
-			return upCell;
-		}
-		else
-		{
-			if(upCell->leftCell != nullptr && !upCell->leftCell->isFixed && !upCell->leftCell->isOutCell && !upCell->leftCell->inWater)
-			{
-				return upCell->leftCell;
-			}
-			else if(upCell->rightCell != nullptr && !upCell->rightCell->isFixed && !upCell->rightCell->isOutCell && !upCell->rightCell->inWater)
-			{
-				return upCell->rightCell;
-			}
-			else if (leftCell != nullptr && !leftCell->isFixed && !leftCell->isOutCell && !leftCell->isEmpty && !leftCell->inWater && downCell != nullptr && !downCell->isOutCell)
-			{
-				return leftCell;
-			}
-			else if (rightCell != nullptr && !rightCell->isFixed && !rightCell->isOutCell && !rightCell->isEmpty && !rightCell->inWater && downCell != nullptr && !downCell->isOutCell)
-			{
-				return rightCell;
-			}
-			{
-				return nullptr;
-			}
-		}
-	}
-	else
-	{
-		//if (containsPortalOut())
-		//{
-		//	return findPortalInCell(portalInData);
-		//}
-		if (downCell == nullptr)
-		{
-			return nullptr;
-		}
+//Cell* Cell::getInclinedFallCell(std::list<PortalInletObject*>* portalInData)
+//{
+//	if (!inWater) 
+//	{
+//		if (upCell != nullptr) 
+//		{
+//			if (upCell->leftCell != nullptr && upCell->leftCell->canFall())
+//			{
+//				return upCell->leftCell;
+//			}
+//			if (upCell->rightCell != nullptr && upCell->rightCell->canFall())
+//			{
+//				return upCell->rightCell;
+//			}
+//			if (upCell->leftCell != nullptr && upCell->leftCell->canFill())
+//			{
+//				return upCell->leftCell;
+//			}
+//			if (upCell->rightCell != nullptr && upCell->rightCell->canFill())
+//			{
+//				return upCell->rightCell;
+//			}
+//		}
+//	}
+//	return nullptr;
+//}
 
-		if (!downCell->isFixed && !downCell->isOutCell && downCell->inWater)
-		{
-			return downCell;
-		}
-		else
-		{
-			if (downCell->leftCell != nullptr && !downCell->leftCell->isFixed && !downCell->leftCell->isOutCell && downCell->leftCell->inWater)
-			{
-				return downCell->leftCell;
-			}
-			else if (downCell->rightCell != nullptr && !downCell->rightCell->isFixed && !downCell->rightCell->isOutCell && downCell->rightCell->inWater)
-			{
-				return downCell->rightCell;
-			}
-			else if (leftCell != nullptr && !leftCell->isFixed && !leftCell->isOutCell && !leftCell->isEmpty && leftCell->inWater && upCell != nullptr && !upCell->isOutCell)
-			{
-				return leftCell;
-			}
-			else if (rightCell != nullptr && !rightCell->isFixed && !rightCell->isOutCell && !rightCell->isEmpty && rightCell->inWater && upCell != nullptr && !upCell->isOutCell)
-			{
-				return rightCell;
-			}
-			{
-				return nullptr;
-			}
-		}
-	}
-	return nullptr;
-}
+//Cell* Cell::getFallCell(std::list<PortalInletObject*>* portalInData) const
+//{
+//	if (!inWater)
+//	{
+//		if(containsPortalOut())
+//		{
+//			return findPortalInCell(portalInData);
+//		}
+//		if(upCell == nullptr)
+//		{
+//			return nullptr;
+//		}
+//
+//		if (!upCell->isFixed && !upCell->isOutCell && !upCell->inWater)
+//		{
+//			return upCell;
+//		}
+//		else
+//		{
+//			if(upCell->leftCell != nullptr && !upCell->leftCell->isFixed && !upCell->leftCell->isOutCell && !upCell->leftCell->inWater)
+//			{
+//				return upCell->leftCell;
+//			}
+//			else if(upCell->rightCell != nullptr && !upCell->rightCell->isFixed && !upCell->rightCell->isOutCell && !upCell->rightCell->inWater)
+//			{
+//				return upCell->rightCell;
+//			}
+//			else if (leftCell != nullptr && !leftCell->isFixed && !leftCell->isOutCell && !leftCell->isEmpty && !leftCell->inWater && downCell != nullptr && !downCell->isOutCell)
+//			{
+//				return leftCell;
+//			}
+//			else if (rightCell != nullptr && !rightCell->isFixed && !rightCell->isOutCell && !rightCell->isEmpty && !rightCell->inWater && downCell != nullptr && !downCell->isOutCell)
+//			{
+//				return rightCell;
+//			}
+//			{
+//				return nullptr;
+//			}
+//		}
+//	}
+//	else
+//	{
+//		//if (containsPortalOut())
+//		//{
+//		//	return findPortalInCell(portalInData);
+//		//}
+//		if (downCell == nullptr)
+//		{
+//			return nullptr;
+//		}
+//
+//		if (!downCell->isFixed && !downCell->isOutCell && downCell->inWater)
+//		{
+//			return downCell;
+//		}
+//		else
+//		{
+//			if (downCell->leftCell != nullptr && !downCell->leftCell->isFixed && !downCell->leftCell->isOutCell && downCell->leftCell->inWater)
+//			{
+//				return downCell->leftCell;
+//			}
+//			else if (downCell->rightCell != nullptr && !downCell->rightCell->isFixed && !downCell->rightCell->isOutCell && downCell->rightCell->inWater)
+//			{
+//				return downCell->rightCell;
+//			}
+//			else if (leftCell != nullptr && !leftCell->isFixed && !leftCell->isOutCell && !leftCell->isEmpty && leftCell->inWater && upCell != nullptr && !upCell->isOutCell)
+//			{
+//				return leftCell;
+//			}
+//			else if (rightCell != nullptr && !rightCell->isFixed && !rightCell->isOutCell && !rightCell->isEmpty && rightCell->inWater && upCell != nullptr && !upCell->isOutCell)
+//			{
+//				return rightCell;
+//			}
+//			{
+//				return nullptr;
+//			}
+//		}
+//	}
+//	return nullptr;
+//}
 
 Cell* Cell::findPortalInCell(std::list<PortalInletObject*>* portalInData) const
 {
@@ -268,6 +421,16 @@ bool Cell::containsPortalOut() const
 	{
 		auto portal = static_cast<FixTiles*>(layers->objectForKey(LayerId::Portal));
 		return strcmp(portal->getType().c_str(), "PortalOutletObject") == 0;
+	}
+	return false;
+}
+
+bool Cell::containsPortalIn() const
+{
+	if (layers->objectForKey(LayerId::Portal) != nullptr)
+	{
+		auto portal = static_cast<FixTiles*>(layers->objectForKey(LayerId::Portal));
+		return strcmp(portal->getType().c_str(), "PortalInletObject") == 0;
 	}
 	return false;
 }

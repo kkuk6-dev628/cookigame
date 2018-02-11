@@ -4,6 +4,9 @@
 #include "Models/Tiles/FixTiles.h"
 #include "Models/Tiles/SpawnerObject.h"
 #include "Models/Tiles/ChocolateChipObject.h"
+#include "Models/Tiles/LayeredCrackerTile.h"
+#include "Models/Tiles/ThopplerTile.h"
+#include "Models/Tiles/PopsicleObject.h"
 
 PoolController* PoolController::instance = nullptr;
 static factory TileClassFactory;
@@ -40,6 +43,15 @@ PoolController::PoolController()
 	lineCrushShowPool = new NodePool<AnimationShowObject>;
 	bombAndLineCrushShowPool = new NodePool<AnimationShowObject>;
 
+	waffleShowPool = new NodePool<SpriteShowObject>;
+	powerShowPool = new NodePool<SpriteShowObject>;
+
+	lightLinePool = new NodePool<SpriteShowObject>;
+	lightCirclePool = new NodePool<SpriteShowObject>;
+
+	topplerShowPool = new NodePool<SpriteShowObject>;
+	hopplerShowPool = new NodePool<SpriteShowObject>;
+
 	RegisterTileClasses();
 }
 
@@ -69,6 +81,9 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(PathGoalObject);
 	REGISTER_CLASS(PortalInletObject);
 	REGISTER_CLASS(PortalOutletObject);
+	REGISTER_CLASS(TopplingObject);
+	REGISTER_CLASS(HopplingObject);
+	REGISTER_CLASS(PopsicleObject);
 
 	REGISTER_CLASS(InvisibleBrickObject);
 	REGISTER_CLASS(EmptyObject);
@@ -698,4 +713,130 @@ void PoolController::recycleBombAndLineCrushShow(AnimationShowObject* show) cons
 {
 	show->recycle();
 	bombAndLineCrushShowPool->recycleNode(show);
+}
+
+SpriteShowObject* PoolController::getWaffleShow() const
+{
+	SpriteShowObject* show;
+	if (waffleShowPool->size() > 0)
+	{
+		show = waffleShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("waffle.png");
+	}
+	return show;
+}
+
+void PoolController::recycleWaffleShow(SpriteShowObject* waffleShow) const
+{
+	waffleShowPool->recycleNode(waffleShow);
+}
+
+SpriteShowObject* PoolController::getPowerShow() const
+{
+	SpriteShowObject* show;
+	if (powerShowPool->size() > 0)
+	{
+		show = powerShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("power.png");
+	}
+	return show;
+}
+
+void PoolController::recyclePowerShow(SpriteShowObject* powerShow) const
+{
+	powerShowPool->recycleNode(powerShow);
+}
+
+SpriteShowObject* PoolController::getLightLine() const
+{
+	SpriteShowObject* show;
+	if (lightLinePool->size() > 0)
+	{
+		show = lightLinePool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("lightning.png");
+	}
+	return show;
+}
+
+void PoolController::recycleLightLine(SpriteShowObject* lightLine) const
+{
+	lightLinePool->recycleNode(lightLine);
+}
+
+SpriteShowObject* PoolController::getLightCircle() const
+{
+	SpriteShowObject* show;
+	if (lightCirclePool->size() > 0)
+	{
+		show = lightCirclePool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("lightCircle.png");
+	}
+	return show;
+}
+
+void PoolController::recycleLightCircle(SpriteShowObject* lightCircle) const
+{
+	lightCirclePool->recycleNode(lightCircle);
+}
+
+SpriteShowObject* PoolController::getHopplerShow() const
+{
+	SpriteShowObject* show;
+	if (hopplerShowPool->size() > 0)
+	{
+		show = hopplerShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("hoppler.png");
+	}
+	return show;
+}
+
+void PoolController::recycleHopplerShow(SpriteShowObject* hopplerShow) const
+{
+	hopplerShowPool->recycleNode(hopplerShow);
+}
+
+SpriteShowObject* PoolController::getTopplerShow() const
+{
+	SpriteShowObject* show;
+	if (topplerShowPool->size() > 0)
+	{
+		show = topplerShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("toppler.png");
+	}
+	return show;
+}
+
+void PoolController::recycleTopplerShow(SpriteShowObject* topplerShow) const
+{
+	topplerShowPool->recycleNode(topplerShow);
 }

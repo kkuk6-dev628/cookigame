@@ -6,6 +6,10 @@ class LargeTile : public CookieTile
 public:
 	LargeTile();
 	~LargeTile();
+
+protected:
+	char colspan = 1;
+	char rowspan = 1;
 };
 
 

@@ -10,6 +10,7 @@
 #include "Models/BoardModels/Match.h"
 #include "PoolController.h"
 #include "ui/UIText.h"
+#include "Models/BoardModels/BoardModel.h"
 
 class ActionController;
 class BoardModel;
@@ -33,7 +34,7 @@ public:
 	CREATE_FUNC(BoardController);
 
 	virtual void initWithModel(BoardModel* model);
-	virtual void initWithNode(Node* rootNode);
+	virtual void initWithNode(Node* rootNode, Node* effectNode);
 
 	GoalTypes getGoalType();
 
@@ -54,11 +55,18 @@ public:
 	void manualShuffle();
 	//void BoardController::initWithData(BoardModel* boardData);
 
+	float getBoardWidth() { return boardModel->getWidth(); }
+	float getBoardHeight() { return boardModel->getHeight(); }
+
+	void showGameWinDlg();
+
 protected:
 
 #pragma region protected functions
 
 	void processLogic(float);
+	virtual void processCustomLogic(float) {};
+	virtual void checkObjective() {};
 
 	void initBoardElements();
 	void initBoardLayers();
@@ -87,6 +95,7 @@ protected:
 	void crushNormalMatch(Match* match);
 	void crushBonusMatch(Match* match);
 	void crushRainbowMatch(Match* match);
+	void showRainbowLineEffect(Cell* refCell, Cell* targetCell);
 	void crushDirectionalBreaker(Cell* cell, Direction direction);
 
 	void combineSeekerAndBonus(Cell* seekerCell, Cell* bonusCell);
@@ -111,12 +120,13 @@ protected:
 	void doShuffle();
 	void showShuffleAction();
 	void shuffle(float);
+	void showHintAction();
 
 	Cell* findSeekerTarget(std::list<Cell*>* targetsList);
 	void landingSeeker(AnimationShowObject* seekerShow, Cell* targetCell);
 	void crushBonusManually(Cell* cell, std::string bonusString);
 
-	void crushCell(Cell* pCell);
+	virtual void crushCell(Cell* pCell);
 	void crushBombBreaker(Cell* cell);
 	void crushRowBreaker(Cell* cell);
 	void crushColumnBreaker(Cell* cell);
@@ -124,10 +134,17 @@ protected:
 	void crushSeeker(Cell* cell, MovingTileTypes bonusType=MovingTileTypes::LayeredMatchObject);
 
 	void crushNearbyCells(Cell* cell);
+	virtual void crushUnderCells(Cell* cell);
+
 	void processPendingSeekers();
 
+	void initHintAction();
+	void countDownMoveNumber();
 	void fillLiquid(bool inverse = false);
 
+	virtual void pathMoverCollected(Cell* cell){};
+
+	void endGame();
 	////////////////////
 
 #pragma endregion
@@ -139,12 +156,15 @@ protected:
 	PoolController* poolController;
 
 	Node* rootNode = nullptr;
+	Node* effectNode = nullptr;
 	Node* topMenuArea = nullptr;
 	Node* bottomMenuArea = nullptr;
 	ui::Text* moveCountNode = nullptr;
 	ui::Text* levelNumberNode = nullptr;
 	ui::Text* objectCountNode = nullptr;
 	ui::Text* scoreTextNode = nullptr;
+
+	Vec2 objectTargetPos;
 
 	static float centerX;
 	static float centerY;
@@ -184,6 +204,8 @@ protected:
 
 	int moveCount = 0;
 	int matchId = 0;
+
+	float hintTime = HINT_TIME;
 
 #pragma endregion
 

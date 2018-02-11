@@ -377,30 +377,30 @@ GameWinDialog::GameWinDialog()
 	Popup::initWithMask(true);
 	//TextureCache::sharedTextureCache()->addImage("particle/particle_yuanhua.png");
 
-	//auto dlg = CSLoader::getInstance()->createNode("res/GameWinDlg.csb");
-	//addChild(dlg); 
+	auto dlg = CSLoader::getInstance()->createNode("res/FinishDlg.csb");
+	addChild(dlg); 
 
-	//auto rootNode = dlg->getChildByName("rootNode");
-	//m_pUiNode = rootNode;
-	//btn_close = (Button*)rootNode->getChildByName("btn_close");
-	//btn_next = (Button*)rootNode->getChildByName("btn_play");
+	auto rootNode = dlg->getChildByName("com");
+	m_pUiNode = rootNode;
+	btn_close = (Button*)rootNode->getChildByName("Image_2");
+	btn_next = (Button*)rootNode->getChildByName("button_1");
 	//lbl_level = (Text*)rootNode->getChildByName("ig_title")->getChildByName("lbl_level");
-	//lbl_maxscore = (Text*)rootNode->getChildByName("lbl_highscore");
-	//lbl_maxscore_title = (Text*)rootNode->getChildByName("lbl_highscore_title");
-	//lbl_score = (Text*)rootNode->getChildByName("lbl_score");
-	//lbl_score_title = (Text*)rootNode->getChildByName("lbl_score_title");
+	lbl_maxscore = (Text*)rootNode->getChildByName("text_5");
+	lbl_maxscore_title = (Text*)rootNode->getChildByName("text_3");
+	lbl_score = (Text*)rootNode->getChildByName("text_4");
+	lbl_score_title = (Text*)rootNode->getChildByName("text_2");
 
 	//m_rewardedCoin = rootNode->getChildByName("ig_coin");
-	//
-	//
-	//star1 = (Sprite*)rootNode->getChildByName("ig_star")->getChildByName("star1");
-	//star2 = (Sprite*)rootNode->getChildByName("ig_star")->getChildByName("star2");
-	//star3 = (Sprite*)rootNode->getChildByName("ig_star")->getChildByName("star3");
+	
+	
+	star1 = (Sprite*)rootNode->getChildByName("image_13")->getChildByName("image_14");
+	star2 = (Sprite*)rootNode->getChildByName("image_11")->getChildByName("image_12");
+	star3 = (Sprite*)rootNode->getChildByName("image_15")->getChildByName("finish_star_3");
 
 
-	//star1->setScale(4); star1->setVisible(false);
-	//star2->setScale(4); star2->setVisible(false);
-	//star3->setScale(4); star3->setVisible(false);	
+	star1->setVisible(false);
+	star2->setVisible(false);
+	star3->setVisible(false);	
 }
 
 void GameWinDialog::setStar(int count)

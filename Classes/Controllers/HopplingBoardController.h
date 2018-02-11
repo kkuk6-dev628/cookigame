@@ -1,7 +1,8 @@
 #pragma once
 #include "BoardController.h"
+#include "THopplingBoardController.h"
 
-class HopplingBoardController : public BoardController
+class HopplingBoardController : public THopplingBoardController
 {
 public:
 	HopplingBoardController();
@@ -10,7 +11,7 @@ public:
 	CREATE_FUNC(HopplingBoardController);
 
 	void initWithModel(BoardModel* model) override;
-	void initWithNode(Node* rootNode) override;
+	void initWithNode(Node* rootNode, Node* effectNode) override;
 
 protected:
 	void addCellToBoard(char col, char row) override;

@@ -57,7 +57,8 @@ bool GamePlayScene::init()
 
 
 	boardController = GameController::getInstance()->getBoardController();
-	boardController->initWithNode(rootNode);
+	initEffectNode();
+	boardController->initWithNode(rootNode, effectNode);
 
 	auto topMenuArea = rootNode->getChildByName("top_menu_area");
 	auto bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
@@ -68,17 +69,31 @@ bool GamePlayScene::init()
 	});
 	ui::Button *m_btn_spoon = static_cast<ui::Button*>(bottomMenuArea->getChildByName("spoon_button"));
 	m_btn_spoon->addClickEventListener([this](Ref*) {
-		this->boardController->manualShuffle();
+		//this->boardController->manualShuffle();
+		this->boardController->showGameWinDlg();
 	});
 
 	rootNode->addChild(boardController, kZBoard);
 	topMenuArea->setLocalZOrder(kZUI);
 	bottomMenuArea->setLocalZOrder(kZUI);
 
-	auto levelTextNode = static_cast<ui::Text*>(topMenuArea->getChildByName("level"));
+	auto levelTextNode = static_cast<ui::Text*>(topMenuArea->getChildByName("level_number"));
 	levelTextNode->setString(StringUtils::format("Lev %d", LevelController::getInstance()->getCurrentLevel()->getLevelNumber()));
 	return true;
 }
+
+void GamePlayScene::initEffectNode()
+{
+	effectNode = Node::create();
+	rootNode->addChild(effectNode, kZEffect);
+	auto const width = CellSize * boardController->getBoardWidth();
+	auto const height = CellSize * boardController->getBoardHeight();
+	effectNode->setContentSize(Size(width, height));
+	const auto originX = CenterX - width / 2;
+	const auto originY = CenterY - height / 2;
+	effectNode->setPosition(originX, originY);
+}
+
 void GamePlayScene::restartCallback(Ref* pSender)
 {
 	boardController->removeFromParentAndCleanup(true);
@@ -88,13 +103,16 @@ void GamePlayScene::restartCallback(Ref* pSender)
 
 void GamePlayScene::restartGame()
 {
+	BoardController::gameState = Idle;
 	boardController->removeFromParentAndCleanup(true);
 	boardController = GameController::getInstance()->getBoardController(false);
+	boardController->initWithNode(rootNode, effectNode);
 	rootNode->addChild(boardController, kZBoard);
 }
 
 void GamePlayScene::endGame()
 {
+	BoardController::gameState = Idle;
 	LevelMapScene::getInstance()->refresh(true);
 	Director::getInstance()->popScene();
 }
@@ -113,12 +131,12 @@ void GamePlayScene::showSettingsDlg()
 		dlg->btn_continue->addClickEventListener([this, dlg](Ref*) {
 			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
 			dlg->close();
-			//resumeGame();
+			BoardController::gameState = Idle;
 		});
 		dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
 			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
 			dlg->close();
-			//resumeGame();
+			BoardController::gameState = Idle;
 		});
 		dlg->btn_retry->addClickEventListener([this, dlg](Ref*) {
 			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
@@ -127,11 +145,12 @@ void GamePlayScene::showSettingsDlg()
 		});
 		dlg->setOnCloseHandler([this, dlg]() {
 			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
-			//resumeGame();
+			BoardController::gameState = Idle;
 		});
 		settingsDlg = dlg;
 		settingsDlg->retain();
 	}
+	BoardController::gameState = Paused;
 	showPopup(settingsDlg);
 }
 

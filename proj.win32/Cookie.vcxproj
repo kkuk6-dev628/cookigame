@@ -187,9 +187,12 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\LayeredCrackerTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LayeredMatchObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\MovingTile.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\PopsicleObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\SpawnerObject.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\ThopplerTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\Tile.cpp" />
     <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp" />
     <ClCompile Include="..\Classes\Scenes\LevelMapScene.cpp" />
@@ -246,9 +249,12 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\LayeredCrackerTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LayeredMatchObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\MovingTile.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\PopsicleObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\SpawnerObject.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\ThopplerTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\Tile.h" />
     <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
     <ClInclude Include="..\Classes\Scenes\LevelMapScene.h" />

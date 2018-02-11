@@ -16,9 +16,9 @@ void HiderBoardController::initWithModel(BoardModel* model)
 	BoardController::initWithModel(model);
 }
 
-void HiderBoardController::initWithNode(Node* rootNode)
+void HiderBoardController::initWithNode(Node* rootNode, Node* effectNode)
 {
-	BoardController::initWithNode(rootNode);
+	BoardController::initWithNode(rootNode, effectNode);
 	initWaffleGame();
 }
 
@@ -33,15 +33,4 @@ void HiderBoardController::initWaffleGame()
 void HiderBoardController::addCellToBoard(char col, char row)
 {
 	BoardController::addCellToBoard(col, row);
-	//auto cell = getMatchCell(col, row);
-	//if(cell == nullptr || cell->isOutCell)
-	//{
-	//	return;
-	//}
-
-	//auto waffleTile = cell->getTileAtLayer(LayerId::Waffle);
-	//if(waffleTile != nullptr)
-	//{
-	//	totalWaffleCount += waffleTile->getLayers();
-	//}
 }

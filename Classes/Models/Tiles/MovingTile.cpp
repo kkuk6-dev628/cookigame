@@ -48,6 +48,7 @@ void MovingTile::showDirectionalScaleAction(const AdjacentDirs dir) const
 
 void MovingTile::showFallAction(FallPath* path)
 {
+	if (this->textureSprite == nullptr) return;
 	auto showObj = poolController->getTileShowObject();
 	showObj->setSpriteFrame(textureSprite->getSpriteFrame());
 	showObj->setPosition(getPosition());
@@ -57,6 +58,8 @@ void MovingTile::showFallAction(FallPath* path)
 	{
 		getParent()->addChild(showObj);
 	}
+
+	initMovingTile();
 
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(showObj);
@@ -70,6 +73,34 @@ void MovingTile::showFallAction(FallPath* path)
 			BoardController::fallingTileCount--;
 		}, 
 		ckAction.node);
+	setVisible(false);
+	isMoving = true;
+	movingDuration = static_cast<Sequence*>(ckAction.action)->getDuration();
+	actionController->pushAction(ckAction, true);
+	BoardController::fallingTileCount++;
+}
+
+void MovingTile::showMoveAction(Cell* cell)
+{
+	auto showObj = poolController->getTileShowObject();
+	showObj->setSpriteFrame(textureSprite->getSpriteFrame());
+	showObj->setPosition(getPosition());
+	showObj->setAnchorPoint(Vec2(0.5, 0.5));
+	if (getParent() != nullptr && showObj->getParent() == nullptr)
+	{
+		getParent()->addChild(showObj);
+	}
+	initMovingTile();
+	CKAction ckAction;
+	ckAction.node = reinterpret_cast<Node*>(showObj);
+	ckAction.action = actionController->createTileMoveAction(getPosition(), cell->getBoardPos(), [=] {
+		this->setVisible(true);
+		this->isMoving = false;
+		this->movingDuration = 0.f;
+		this->setPosition(Utils::Grid2BoardPos(this->gridPos));
+		PoolController::getInstance()->recycleTileShowObject(showObj);
+		BoardController::fallingTileCount--;
+	}, ckAction.node);
 	setVisible(false);
 	isMoving = true;
 	movingDuration = static_cast<Sequence*>(ckAction.action)->getDuration();
@@ -160,6 +191,12 @@ void MovingTile::initTexture()
 		setModifierTexture();
 	}
 
+}
+
+void MovingTile::initMovingTile()
+{
+	stopAllActionsByTag(HINT_ACTION);
+	setScale(1.0f);
 }
 
 void MovingTile::setModifierTexture()

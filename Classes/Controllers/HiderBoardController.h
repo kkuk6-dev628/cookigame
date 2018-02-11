@@ -10,7 +10,7 @@ public:
 	CREATE_FUNC(HiderBoardController);
 
 	void initWithModel(BoardModel* model) override;
-	void initWithNode(Node* rootNode) override;
+	void initWithNode(Node* rootNode, Node* effectNode) override;
 
 protected:
 	void addCellToBoard(char col, char row) override;

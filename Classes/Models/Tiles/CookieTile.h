@@ -21,6 +21,8 @@ public:
 	virtual void showCrushEffect() {};
 	virtual void initTexture() {};
 
+	virtual SpriteFrame* getSpriteFrame() { return textureSprite == nullptr ? nullptr : textureSprite->getSpriteFrame(); }
+
 	virtual bool isMovable() { return true; }
 	virtual bool crush(bool showEffect);
 
@@ -35,12 +37,13 @@ protected:
 	char layers = 0;
 	TileColors color = TileColors::any;
 	Direction direction = Direction::any;
+	std::string dirString;
 	std::string name;
 	char priority = 0;
 	bool createSpread = false;
 	bool mirror = false;
 	ModifierTypes modifierType = ModifierTypes::None;
-	GridSizeT gridSize;
+	std::string gridSize;
 	SetTypes tileSetType = SetTypes::set;
 	bool createJelly = false;
 	HiderSegmentPosition hiderSegPosition = HiderSegmentPosition::body;
@@ -109,6 +112,16 @@ public:
 		this->direction = direction;
 	}
 
+	std::string getDirectionString() const
+	{
+		return dirString;
+	}
+
+	void setDirectionString(const std::string& direction)
+	{
+		this->dirString = direction;
+	}
+
 	std::string getTileName() const
 	{
 		return name;
@@ -157,16 +170,6 @@ public:
 	void setModifierType(const ModifierTypes& modifier_type)
 	{
 		modifierType = modifier_type;
-	}
-
-	GridSizeT getGridSize() const
-	{
-		return gridSize;
-	}
-
-	void setGridSize(const GridSizeT& grid_size)
-	{
-		gridSize = grid_size;
 	}
 
 	bool getCreateJelly() const

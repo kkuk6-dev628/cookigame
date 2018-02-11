@@ -69,6 +69,14 @@ void AnimationShowObject::initWithCSB(std::string csbFileName)
 }
 
 
+void SpriteShowObject::initWithTextureName(std::string textureName)
+{
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(textureName);
+	setSpriteFrame(spriteFrame);
+	//setContentSize(Size(CellSize, CellSize));
+	setAnchorPoint(Vec2(0.5, 0.5));
+}
+
 void ParticleShowObject::initWithCSB(std::string csbFileName)
 {
 	AnimationShowObject::initWithCSB(csbFileName);

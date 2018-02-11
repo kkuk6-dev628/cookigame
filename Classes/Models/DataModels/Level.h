@@ -17,6 +17,8 @@ public:
 
 	rapidjson::Value* BoardsJson;
 
+	int getMoveCount() const { return limit->front().Value; }
+
 private:
 	int levelNumber;
 	char episode;

@@ -149,6 +149,41 @@ cocos2d::Action* ActionController::createShuffleMoveAction(cocos2d::Vec2 boardCe
 	return seq;
 }
 
+cocos2d::Action* ActionController::createJumpAction(cocos2d::Node* node, const cocos2d::Vec2& pos, float jumpHeight, std::function<void()> callback)
+{
+	Sequence* seq = Sequence::create(
+		Spawn::create(
+			JumpTo::create(0.6f, pos, jumpHeight, 1),
+			Sequence::create(
+				ScaleTo::create(0.3f, 1.2f),
+				ScaleTo::create(0.3f, 1.0f),
+				nullptr),
+			nullptr
+		),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::createFrontCrushAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> crushCallback, std::function<void()> lastCallback, char crushCount)
+{
+	auto originPos = node->getPosition();
+	auto actions = Vector<FiniteTimeAction*>();
+
+	for(char i = 0; i < crushCount; i++)
+	{
+		actions.pushBack(JumpTo::create(0.6f, pos, 2 * CellSize, 1));
+		actions.pushBack(CallFunc::create(crushCallback));
+		actions.pushBack(JumpTo::create(0.6f, originPos, CellSize / 2, 1));
+	}
+	actions.pushBack(CallFunc::create(lastCallback));
+	actions.pushBack(CallFunc::create([this, node]() { this->endAction(node); }));
+	Sequence* seq = Sequence::create(actions);
+	seq->retain();
+	return seq;
+}
 
 Action* ActionController::createScaleBouncingAction(Node* node)
 {
@@ -236,32 +271,47 @@ Action* ActionController::createDirectionalScaleAction(Node* node, const Adjacen
 
 Action* ActionController::createMoveThroughAction(FallPath* path, std::function<void()> callback, Node* node)
 {
-	auto pathPos = node->getPosition();
 	auto actions = Vector<FiniteTimeAction*>();
 	actions.pushBack(DelayTime::create(0.05f));
+	auto pathPos = node->getPosition();
+	//if (path->startCell->containsPortalIn())
+	//{
+	//	auto firstPath = path->fallPath.size() > 0 ? path->fallPath.front() : path->endCell;
+	//	actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
+	//	actions.pushBack(Hide::create());
+	//	actions.pushBack(Place::create(firstPath->boardPos + Vec2(0, CellSize)));
+	//	actions.pushBack(Show::create());
+	//	pathPos = firstPath->boardPos + Vec2(0, CellSize);
+	//}
 	for (auto cell : path->fallPath)
 	{
 		if (cell->containsPortalOut())
 		{
-			actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize), Vec2(0, -CellSize)));
+			actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
 			actions.pushBack(Hide::create());
 			actions.pushBack(Place::create(cell->boardPos + Vec2(0, CellSize)));
 			actions.pushBack(Show::create());
-			actions.pushBack(MoveTo::create(calcTileMovingTime(CellSize), cell->boardPos));
+			pathPos = cell->boardPos;
 		}
-		else
+		auto distance = pathPos.distance(cell->boardPos);
+		if (distance < 50)
 		{
-			auto boardPos = Utils::Grid2BoardPos(cell->gridPos);
-			auto distance = pathPos.distance(cell->boardPos);
-			if (distance < 50)
-			{
-				continue;
-			}
-			auto tileMovingTime = calcTileMovingTime(pathPos.distance(cell->boardPos));
-			actions.pushBack(MoveTo::create(tileMovingTime, cell->boardPos));
+			continue;
 		}
+		auto tileMovingTime = calcTileMovingTime(pathPos.distance(cell->boardPos));
+		actions.pushBack(MoveTo::create(tileMovingTime, cell->boardPos));
 		pathPos = cell->boardPos;
 	}
+
+	if (path->endCell->containsPortalOut())
+	{
+		pathPos = path->endCell->boardPos + Vec2(0, CellSize);
+		actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
+		actions.pushBack(Hide::create());
+		actions.pushBack(Place::create(pathPos));
+		actions.pushBack(Show::create());
+	}
+
 	auto lastPos = path->endCell->getBoardPos();
 	auto t = calcTileMovingTime(pathPos.distance(lastPos));
 	actions.pushBack(MoveTo::create(t, lastPos));
@@ -286,6 +336,37 @@ cocos2d::Action* ActionController::createTileMoveAction(const cocos2d::Vec2& sta
 		CallFunc::create(callback),
 		CallFunc::create([this, node]() { this->endAction(node); }),
 		nullptr);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::creatLightCircleShowAction(std::function<void()> callback, cocos2d::Node* node)
+{
+	Sequence* seq = Sequence::create(
+		FadeIn::create(0.1),
+		DelayTime::create(0.15),
+		FadeOut::create(0.1),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::createHopplerMoveAction(std::list<Cell*>* path, std::function<void()> callback, cocos2d::Node* node)
+{
+	auto actions = Vector<FiniteTimeAction*>();
+	auto pathPos = node->getPosition();
+	for(auto cell : *path)
+	{
+		auto distance = pathPos.distance(cell->boardPos);
+		auto movingTime = calcTileMovingTime(distance);
+		actions.pushBack(MoveTo::create(movingTime, cell->getBoardPos()));
+		pathPos = cell->getBoardPos();
+	}
+	actions.pushBack(CallFunc::create(callback));
+	actions.pushBack(CallFunc::create([this, node]() { this->endAction(node); }));
+	auto seq = Sequence::create(actions);
 	seq->retain();
 	return seq;
 }

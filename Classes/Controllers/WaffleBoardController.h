@@ -10,15 +10,22 @@ public:
 	CREATE_FUNC(WaffleBoardController);
 
 	void initWithModel(BoardModel* model) override;
-	void initWithNode(Node* rootNode) override;
+	void initWithNode(Node* rootNode, Node* effectNode) override;
 
 protected:
 	void addCellToBoard(char col, char row) override;
 
 	void initWaffleGame();
 
-private:
-	short totalWaffleCount = 0;
+	void crushUnderCells(Cell* cell) override;
+	void checkObjective() override;
 
+private:
+
+	void showWaffleCollectAction(Cell* cell);
+	void collectWaffle();
+	Vec2 waffleTargetPos;
+	short totalWaffleCount = 0;
+	short collectedWaffleCount = 0;
 };
 

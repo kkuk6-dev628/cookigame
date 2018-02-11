@@ -58,9 +58,11 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/Tiles/CookieTile.cpp \
 ../../../Classes/Models/Tiles/FixTiles.cpp \
 ../../../Classes/Models/Tiles/LargeTile.cpp \
+../../../Classes/Models/Tiles/LayeredCrackerTile.cpp \
 ../../../Classes/Models/Tiles/LayeredMatchObject.cpp \
 ../../../Classes/Models/Tiles/MovingTile.cpp \
 ../../../Classes/Models/Tiles/SpawnerObject.cpp \
+../../../Classes/Models/Tiles/ThopplerTile.cpp \
 ../../../Classes/Models/Tiles/Tile.cpp \
 ../../../Classes/Scenes/GamePlayScene.cpp \
 ../../../Classes/Scenes/LevelMapScene.cpp \

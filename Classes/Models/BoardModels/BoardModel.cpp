@@ -82,6 +82,81 @@ Cell* BoardModel::getTurnCell(LayerId layer, GridPos& refPos, AdjacentDirs input
 	}
 }
 
+Cell* BoardModel::getDirectFallCell(Cell* cell)
+{
+	//if (cell->containsPortalOut() && !cell->inWater)
+	//{
+	//	return cell->findPortalInCell(portalInList);
+	//}
+	if (cell->containsSpawner())
+	{
+		return cell;
+	}
+
+	auto loopCell = cell->getFallUpCell();
+	auto prevCell = cell;
+
+	while (loopCell != nullptr && loopCell->canFill())
+	{
+		if (loopCell->canFall())
+		{
+			return loopCell;
+		}
+		//if (loopCell->containsPortalOut())
+		//{
+		//	prevCell = loopCell;
+		//	loopCell = loopCell->findPortalInCell(portalInList);
+		//	continue;
+		//}
+		if (loopCell->containsSpawner())
+		{
+			return loopCell;
+		}
+
+		prevCell = loopCell;
+		loopCell = loopCell->getFallUpCell();
+	}
+
+	if (loopCell != nullptr && loopCell->canFall()) 
+	{
+		return loopCell;
+	}
+	return prevCell;
+}
+
+Cell* BoardModel::getInclinedFallCell(Cell* cell) 
+{
+	char inWater = cell->inWater ? -1 : 1;
+	auto col = cell->gridPos.Col;
+	auto row = cell->gridPos.Row + inWater;
+
+	if (row < 0 || row >= height) 
+	{
+		return nullptr;
+	}
+
+	auto leftCell = col - 1 >= 0 ?  cells[row][col - 1] : nullptr;
+	auto rightCell = col + 1 < width ? cells[row][col + 1] : nullptr;
+
+	if (leftCell != nullptr && leftCell->canFall())
+	{
+		return leftCell;
+	}
+	if (rightCell != nullptr && rightCell->canFall())
+	{
+		return rightCell;
+	}
+	if (leftCell != nullptr && leftCell->canFill())
+	{
+		return leftCell;
+	}
+	if (rightCell != nullptr && rightCell->canFill())
+	{
+		return rightCell;
+	}
+	return nullptr;
+}
+
 Cell* BoardModel::getSeekerTarget()
 {
 	if(seekerPriorityList == nullptr || seekerPriorityList->size() == 0)
@@ -121,7 +196,8 @@ std::list<Cell*>* BoardModel::getSameColorCells(TileColors tileColor)
 	{
 		for (char j = 0; j < width; j++)
 		{
-			if(cells[i][j] != nullptr && !cells[i][j]->isOutCell && !cells[i][j]->isEmpty && cells[i][j]->getMovingTile()->getTileColor() == tileColor)
+			if(cells[i][j] != nullptr && !cells[i][j]->isOutCell && !cells[i][j]->isEmpty && cells[i][j]->getMovingTile()->getTileColor() == tileColor 
+				&& cells[i][j]->getMovingTile()->getMovingTileType() != +MovingTileTypes::RainbowObject)
 			{
 				ret->push_back(cells[i][j]);
 			}
@@ -281,6 +357,12 @@ std::list<CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTablesListFromJson
 	return nullptr;
 }
 
+void BoardModel::CreateSpawnTableFromJson(rapidjson::Value& json)
+{
+	spawnTable = CustomSpawnTableItem::CreateSpawnTablesFromJson(json);
+	SpawnController::getInstance()->setSpawnTable(spawnTable);
+}
+
 void BoardModel::initSpawners()
 {
 	for(char j = 0; j < width; j++)
@@ -290,10 +372,25 @@ void BoardModel::initSpawners()
 			auto cell = cells[i][j];
 			if(!cell->isOutCell)
 			{
-				if(!cell->containsSpawner())
+				if(!cell->containsSpawner() && !cell->inWater)
 				{
 					auto spawner = SpawnerObject::create();
 					spawner->initSpawner();
+					cell->setTileToLayer(spawner, LayerId::Spawner);
+				}
+				break;
+			}
+		}
+		for (char i = 0; i <= height; i++)
+		{
+			auto cell = cells[i][j];
+			if (!cell->isOutCell)
+			{
+				if (!cell->containsSpawner() && cell->inWater)
+				{
+					auto spawner = SpawnerObject::create();
+					spawner->initSpawner();
+					spawner->setDirection(Direction::N);
 					cell->setTileToLayer(spawner, LayerId::Spawner);
 				}
 				break;
@@ -329,6 +426,7 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	}
 
 	this->customSpawnTable = CreateCustomSpawnTablesListFromJson(json["custom_spawn_table"]);
+	CreateSpawnTableFromJson(json["spawn_table"]);
 
 	auto& layersJson = json["layers"];
 	for (auto itr = layersJson.MemberBegin(); itr != layersJson.MemberEnd(); ++itr)
@@ -348,10 +446,6 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 		//}
 	}
 
-	if(hasToAddSpawners)
-	{
-		initSpawners();
-	}
 
 	auto& data = json["data"];
 	if (data.IsArray() && data.Size() > 0)
@@ -406,6 +500,26 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 			}
 		}
 	}
+	if(hasToAddSpawners)
+	{
+		initSpawners();
+	}
+
+	setNoShuffleCells(json["noReshuffle"]);
+}
+
+void BoardModel::setNoShuffleCells(rapidjson::Value& json)
+{
+	for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
+	{
+		if (itr->value.IsBool())
+		{
+			auto gridPos = Utils::StrToGridPos(itr->name.GetString(), "_");
+			assert(this->width > gridPos.Col && this->height > gridPos.Row);
+			cells[gridPos.Row][gridPos.Col]->noShuffleCell = itr->value.GetBool();
+		}
+	}
+
 }
 
 void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNumber)
@@ -460,10 +574,10 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 						}
 						portalInList->push_back(reinterpret_cast<PortalInletObject* const&>(tile));
 					}
-					else if(strcmp(typeName, "SpawnerObject") == 0)
-					{
-						hasToAddSpawners = false;
-					}
+					//else if(strcmp(typeName, "SpawnerObject") == 0)
+					//{
+					//	hasToAddSpawners = false;
+					//}
 				}
 			}
 		}
@@ -478,7 +592,7 @@ std::list<Cell*>* BoardModel::findAvailableMoveCells()
 		for (char j = 0; j < width; j++)
 		{
 			auto cell = cells[i][j];
-			if (cell == nullptr || cell->isOutCell || cell->isFixed)
+			if (cell == nullptr || cell->isOutCell || cell->isFixed || cell->isEmpty)
 			{
 				continue;
 			}
@@ -491,14 +605,23 @@ std::list<Cell*>* BoardModel::findAvailableMoveCells()
 				auto allMovable = true;
 				for(char l = 0; l < 4; l++)
 				{
-					auto cell1 = cells[i + AvailableMoves[k][l][0]][j + AvailableMoves[k][l][1]];
-					if (cell1 == nullptr || cell1->isOutCell || cell1->isFixed)
+					auto aCol = j + AvailableMoves[k][l][1];
+					auto aRow = i + AvailableMoves[k][l][0];
+					if(aCol < 0 || aCol >= width || aRow < 0 || aRow >= height)
 					{
 						allMovable = false;
+						break;
 					}
-					if (!cell1->isEmpty && cell1->getMovingTile() != nullptr && cell1->getMovingTile()->getMovingTileType() != +MovingTileTypes::LayeredMatchObject)
+					auto cell1 = cells[aRow][aCol];
+					if (cell1 == nullptr || cell1->isOutCell || cell1->isFixed || cell->isEmpty)
 					{
 						allMovable = false;
+						break;
+					}
+					if (cell1->getMovingTile() == nullptr || cell1->getMovingTile()->getMovingTileType() != +MovingTileTypes::LayeredMatchObject)
+					{
+						allMovable = false;
+						break;
 					}
 				}
 
@@ -537,11 +660,26 @@ bool BoardModel::addAvailableMove()
 	return true;
 }
 
+void BoardModel::clearAvailableMove()
+{
+	if(availableMove != nullptr)
+	{
+		for(auto cell : *availableMove)
+		{
+			if(!cell->isEmpty && cell->getMovingTile() != nullptr)
+			{
+				cell->getMovingTile()->initMovingTile();
+			}
+		}
+		CC_SAFE_DELETE(availableMove);
+	}
+}
+
 bool BoardModel::checkAvailableMove(char col, char row)
 {
 	auto refCell = cells[row][col];
 	if (availableMove != nullptr) CC_SAFE_DELETE(availableMove);
-	if (refCell == nullptr || !refCell->canMatch())
+	if (refCell == nullptr || (!refCell->canMatch() && !refCell->isRainbowCell()))
 	{
 		return false;
 	}
@@ -556,7 +694,7 @@ bool BoardModel::checkAvailableMove(char col, char row)
 			{
 				continue;
 			}
-			auto aCell = cells[aRow][aRow];
+			auto aCell = cells[aRow][aCol];
 			if(aCell != nullptr && aCell->canMatch())
 			{
 				if(refTile->getMovingTileType() == +MovingTileTypes::RainbowObject 
@@ -601,14 +739,18 @@ bool BoardModel::checkAvailableMove(char col, char row)
 			{
 				auto bCol = col + AvailableMoves[i][2][1];
 				auto bRow = row + AvailableMoves[i][2][0];
-				if(!inBoard(bCol, bRow))
+				auto cCol = col + AvailableMoves[i][3][1];
+				auto cRow = row + AvailableMoves[i][3][0];
+				if(!inBoard(bCol, bRow) || !inBoard(bCol, bRow))
 				{
 					continue;
 				}
 				auto bCell = cells[bRow][bCol];
-				if (bCell != nullptr && bCell->canMatch())
+				auto cCell = cells[cRow][cCol];
+				if (bCell != nullptr && bCell->canMove() && cCell != nullptr && cCell->canMove())
 				{
 					availableMove = new std::list<Cell*>(availableTiles);
+					availableMove->push_back(refCell);
 					return true;
 				}
 			}

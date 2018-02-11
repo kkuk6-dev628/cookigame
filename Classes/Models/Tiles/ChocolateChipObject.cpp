@@ -10,13 +10,14 @@ ChocolateChipObject::ChocolateChipObject()
 {
 	canMatch = false;
 	receiveNearbyAffect = true;
+	layers = 1;
 }
 
 bool ChocolateChipObject::crush(bool showEffect)
 {
 	layers--;
 	if (showEffect) showCrushEffect();
-	if (layers == 0)
+	if (layers <= 0)
 	{
 		//pCell->afterTileCrushProc();
 		poolController->recycleCookieTile(this);

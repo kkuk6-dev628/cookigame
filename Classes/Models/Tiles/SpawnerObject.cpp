@@ -16,6 +16,7 @@ SpawnerObject::~SpawnerObject()
 
 MovingTile* SpawnerObject::spawnMovingTile()
 {
+	spawnController->countSpawnedTiles();
 	auto spawnColor = spawnController->getSpawnColor();
 	auto spawnType = spawnController->getSpawnType();
 	auto spawnTile = static_cast<MovingTile*>(poolController->getCookieTile(spawnType._to_string()));

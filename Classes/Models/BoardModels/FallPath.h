@@ -16,6 +16,20 @@ public:
 			containsPortal = true;
 		}
 	}
+
+	void addPath(FallPath* path) 
+	{
+		fallPath.push_front(path->endCell);
+		for (auto itr = path->fallPath.rbegin(); itr != path->fallPath.rend(); ++itr)
+		{
+			fallPath.push_front(*itr);
+		}
+		startCell = path->startCell;
+		if(path->containsPortal)
+		{
+			containsPortal = true;
+		}
+	}
 	/*void pushGridPos(char col, char row)
 	{
 		GridPos gridPos;

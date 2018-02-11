@@ -16,13 +16,13 @@ void PopsicleBoardController::initWithModel(BoardModel* model)
 	BoardController::initWithModel(model);
 }
 
-void PopsicleBoardController::initWithNode(Node* rootNode)
+void PopsicleBoardController::initWithNode(Node* rootNode, Node* effectNode)
 {
-	BoardController::initWithNode(rootNode);
-	initWaffleGame();
+	BoardController::initWithNode(rootNode, effectNode);
+	initPopsicleGame();
 }
 
-void PopsicleBoardController::initWaffleGame()
+void PopsicleBoardController::initPopsicleGame()
 {
 	auto circleGroupNode = topMenuArea->getChildByName("top_menu_circle");
 	circleGroupNode->getChildByName("FileNode_4")->setVisible(true);

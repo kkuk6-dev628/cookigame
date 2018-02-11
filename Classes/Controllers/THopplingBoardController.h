@@ -10,15 +10,30 @@ public:
 	CREATE_FUNC(THopplingBoardController);
 
 	void initWithModel(BoardModel* model) override;
-	void initWithNode(Node* rootNode) override;
+	void initWithNode(Node* rootNode, Node* effectNode) override;
 
 protected:
 	void addCellToBoard(char col, char row) override;
 
-	void initWaffleGame();
+	void initThopplingGame();
+
+	void crushCell(Cell* cell) override;
+	Cell* findThopplerTarget();
+	std::list<Cell*>* findHopplingTarget(Cell* cell);
+	Cell* findNextCrackerCell(Cell* cell, char* inIndent, char** indent);
+
+	void processCustomLogic(float dt) override;
+	void checkObjective() override;
+
+	virtual void movePendingThopplers();
+	void showHopplerMoveEffect(Cell* startCell);
+	void showTopplerMoveEffect(Cell* cell);
+	void showThopplerCollectingEffect(Cell* );
 
 private:
-	short totalWaffleCount = 0;
-
+	char totalThopplerCount = 0;
+	std::vector<Cell*>* crackerCells = nullptr;
+	std::vector<Cell*>* pendingThopplers = nullptr;
+	char collectedThopplerCount = 0;
 };
 

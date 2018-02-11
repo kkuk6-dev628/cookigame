@@ -177,7 +177,6 @@
     <ClCompile Include="..\Classes\Models\Tiles\ChocolateChipObject.cpp">
       <Filter>src\Models\Tiles</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Controllers\WaffleBoardController.cpp" />
     <ClCompile Include="..\Classes\Controllers\HiderBoardController.cpp">
       <Filter>src\Controllers</Filter>
     </ClCompile>
@@ -195,6 +194,18 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Controllers\TopplingBoardController.cpp">
       <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\WaffleBoardController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\LayeredCrackerTile.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\ThopplerTile.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\PopsicleObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -351,7 +362,6 @@
     <ClInclude Include="..\Classes\Models\Tiles\ChocolateChipObject.h">
       <Filter>src\Models\Tiles</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Controllers\WaffleBoardController.h" />
     <ClInclude Include="..\Classes\Controllers\HiderBoardController.h">
       <Filter>src\Controllers</Filter>
     </ClInclude>
@@ -369,6 +379,18 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Controllers\TopplingBoardController.h">
       <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\WaffleBoardController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\LayeredCrackerTile.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\ThopplerTile.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\PopsicleObject.h">
+      <Filter>src\Models\Tiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

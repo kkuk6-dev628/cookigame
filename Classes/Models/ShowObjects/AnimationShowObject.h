@@ -44,6 +44,17 @@ protected:
 	std::string csbFileName;
 };
 
+class SpriteShowObject: public Sprite
+{
+public:
+	SpriteShowObject(){};
+	~SpriteShowObject(){};
+
+	CREATE_FUNC(SpriteShowObject);
+
+	void initWithTextureName(std::string textureName);
+	void recycle() { removeFromParent(); }
+};
 
 class ParticleShowObject: public AnimationShowObject
 {

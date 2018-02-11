@@ -20,11 +20,14 @@ public:
 	void showScaleBouncingAction() const;
 	void showDirectionalScaleAction(AdjacentDirs dir) const;
 	void showFallAction(FallPath* path);
+	void showMoveAction(Cell* cell);
 
 	bool isMovable() override;
 	void showSwapAction(GridPos& gridPos, std::function<void()> callback);
 	void initWithJson(rapidjson::Value& json) override;
 	void initTexture() override;
+	void initMovingTile();
+
 	void setModifierTexture();
 	SpriteFrame* getMainSpriteFrame() const
 	{

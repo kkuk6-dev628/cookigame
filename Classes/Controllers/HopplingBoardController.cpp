@@ -1,7 +1,6 @@
 #include "HopplingBoardController.h"
 
 
-
 HopplingBoardController::HopplingBoardController()
 {
 }
@@ -13,27 +12,18 @@ HopplingBoardController::~HopplingBoardController()
 
 void HopplingBoardController::initWithModel(BoardModel* model)
 {
-	BoardController::initWithModel(model);
+	THopplingBoardController::initWithModel(model);
 }
 
-void HopplingBoardController::initWithNode(Node* rootNode)
+void HopplingBoardController::initWithNode(Node* rootNode, Node* effectNode)
 {
-	BoardController::initWithNode(rootNode);
-	initWaffleGame();
-}
-
-void HopplingBoardController::initWaffleGame()
-{
-	auto circleGroupNode = topMenuArea->getChildByName("top_menu_circle");
-	circleGroupNode->getChildByName("FileNode_5")->setVisible(true);
-	//objectCountNode->setString(StringUtils::toString(totalWaffleCount));
+	THopplingBoardController::initWithNode(rootNode, effectNode);
 }
 
 
 void HopplingBoardController::addCellToBoard(char col, char row)
 {
-	BoardController::addCellToBoard(col, row);
-	auto cell = getMatchCell(col, row);
+	THopplingBoardController::addCellToBoard(col, row);
 	//if(cell == nullptr || cell->isOutCell)
 	//{
 	//	return;

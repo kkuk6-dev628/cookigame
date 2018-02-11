@@ -3,7 +3,7 @@
 #include "enum.h"
 
 enum GameState {
-	Idle, SwappingTile, Shuffling
+	Idle, SwappingTile, Shuffling, Completed, Failed, Paused
 };
 
 enum MatchType
@@ -20,6 +20,8 @@ enum BoosterType
 	BoosterRainbow,
 	BoosterCount
 };
+
+BETTER_ENUM(PopsicleType, char, normal, line, bomb, rainbow);
 
 BETTER_ENUM(GoalTypes, char, WaffleObject, PathObject, TopplingObject, PopsicleObject, HiderSegmentObject, HopplingObject, thoppling);
 

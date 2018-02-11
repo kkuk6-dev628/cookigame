@@ -80,6 +80,7 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 		{
 			direction = Direction::_from_string_nocase(dirStr);
 		}
+		dirString = dirStr;
 	}
 
 	itr = data.FindMember("name");
@@ -122,8 +123,7 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	itr = data.FindMember("gridSize");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		auto gridSizeString = itr->value.GetString();
-		this->gridSize = Utils::StrToGridSize(gridSizeString, "x");
+		gridSize = itr->value.GetString();
 	}
 
 	itr = data.FindMember("setType");

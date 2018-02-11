@@ -1,6 +1,7 @@
 #include "Utils.h"
 #include "Constants.h"
 #include "Models/BoardModels/Cell.h"
+#include "Ext/Math.h"
 
 
 Utils::Utils()
@@ -24,14 +25,23 @@ bool Utils::containsCell(std::list<Cell*>* cellsList, Cell* cell)
 
 GridSizeT Utils::StrToGridSize(std::string str, std::string delim)
 {
-	auto end = str.find(delim);
-	assert(end != std::string::npos);
-	auto strCol = str.substr(0, end);
-	auto strRow = str.substr(end, str.length() - end - delim.length());
+	auto tokens = splitString(str, delim[0]);
 	GridSizeT gridSize;
-	gridSize.Width = atoi(strCol.c_str());
-	gridSize.Height = atoi(strRow.c_str());
+	gridSize.Width = atoi(tokens.at(0).c_str());
+	gridSize.Height = atoi(tokens.at(1).c_str());
 	return gridSize;
+}
+
+std::vector<std::string> Utils::splitString(std::string str, char delimiter)
+{
+	std::vector<std::string> tokens;
+	std::string token;
+	std::istringstream tokenStream(str);
+	while (std::getline(tokenStream, token, delimiter))
+	{
+		tokens.push_back(token);
+	}
+	return tokens;
 }
 
 GridPos Utils::StrToGridPos(std::string str, std::string delim)
@@ -198,4 +208,25 @@ bool Utils::IsBonusTile(MovingTileTypes tileType)
 		|| tileType == +MovingTileTypes::XBreakerObject
 		|| tileType == +MovingTileTypes::BombBreakerObject
 		|| tileType == +MovingTileTypes::SeekerObject ;
+}
+
+Vec2 Utils::convertPos(Node* fromNode, Node* toNode)
+{
+	auto worldPos = fromNode->getParent()->convertToWorldSpace(fromNode->getPosition());
+	auto nodePos = toNode->convertToNodeSpace(worldPos);
+	return nodePos;
+}
+
+bool Utils::checkSpawn(int spawnedTilesCount, float spawnPercent)
+{
+	float products = spawnedTilesCount * spawnPercent;
+	float reminder = products - static_cast<int>(products);
+	return reminder < spawnPercent;
+}
+
+float Utils::calcAngle(Vec2 startPos, Vec2 endPos)
+{
+	auto vector = endPos;
+	vector.subtract(startPos);
+	return vector.getAngle() * 180 / Math::PI;
 }

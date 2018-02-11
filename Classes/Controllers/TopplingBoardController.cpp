@@ -13,26 +13,18 @@ TopplingBoardController::~TopplingBoardController()
 
 void TopplingBoardController::initWithModel(BoardModel* model)
 {
-	BoardController::initWithModel(model);
+	THopplingBoardController::initWithModel(model);
 }
 
-void TopplingBoardController::initWithNode(Node* rootNode)
+void TopplingBoardController::initWithNode(Node* rootNode, Node* effectNode)
 {
-	BoardController::initWithNode(rootNode);
-	initWaffleGame();
-}
-
-void TopplingBoardController::initWaffleGame()
-{
-	auto circleGroupNode = topMenuArea->getChildByName("top_menu_circle");
-	circleGroupNode->getChildByName("FileNode_2")->setVisible(true);
-	//objectCountNode->setString(StringUtils::toString(totalWaffleCount));
+	THopplingBoardController::initWithNode(rootNode, effectNode);
 }
 
 
 void TopplingBoardController::addCellToBoard(char col, char row)
 {
-	BoardController::addCellToBoard(col, row);
+	THopplingBoardController::addCellToBoard(col, row);
 	//auto cell = getMatchCell(col, row);
 	//if(cell == nullptr || cell->isOutCell)
 	//{

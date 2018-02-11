@@ -10,12 +10,12 @@ public:
 	CREATE_FUNC(PopsicleBoardController);
 
 	void initWithModel(BoardModel* model) override;
-	void initWithNode(Node* rootNode) override;
+	void initWithNode(Node* rootNode, Node* effectNode) override;
 
 protected:
 	void addCellToBoard(char col, char row) override;
 
-	void initWaffleGame();
+	void initPopsicleGame();
 
 private:
 	short totalWaffleCount = 0;

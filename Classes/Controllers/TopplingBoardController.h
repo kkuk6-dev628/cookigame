@@ -1,7 +1,8 @@
 #pragma once
 #include "BoardController.h"
+#include "THopplingBoardController.h"
 
-class TopplingBoardController : public BoardController
+class TopplingBoardController : public THopplingBoardController
 {
 public:
 	TopplingBoardController();
@@ -10,12 +11,12 @@ public:
 	CREATE_FUNC(TopplingBoardController);
 
 	void initWithModel(BoardModel* model) override;
-	void initWithNode(Node* rootNode) override;
+	void initWithNode(Node* rootNode, Node* effectNode) override;
 
 protected:
 	void addCellToBoard(char col, char row) override;
 
-	void initWaffleGame();
+	//void initWaffleGame();
 
 private:
 	short totalWaffleCount = 0;

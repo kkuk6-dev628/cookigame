@@ -35,29 +35,26 @@ void FixTiles::initTexture()
 void PathObject::initTexture()
 {
 	std::string textureName;
-	//if (!direction.empty())
-	//{
-		auto tempDirStr = direction;
-		if(direction == +Direction::right)
-		{
-			tempDirStr = Direction::left;
-		}
-		else if(direction == +Direction::up)
-		{
-			tempDirStr = Direction::down;
-		}
-		textureName = StringUtils::format("%s_%s.png", type.c_str(), tempDirStr._to_string());
-	//}
-	//else
-	//{
-	//	textureName = StringUtils::format("%s.png", type.c_str());
-	//}
+	auto tempDirStr = direction._to_string();
+	if(direction == +Direction::right)
+	{
+		tempDirStr = ((Direction)Direction::left)._to_string();
+	}
+	else if(direction == +Direction::up)
+	{
+		tempDirStr = ((Direction)Direction::down)._to_string();
+	}
+	if(direction == +Direction::any)
+	{
+		tempDirStr = dirString.c_str();
+	}
+	textureName = StringUtils::format("%s_%s.png", type.c_str(), tempDirStr);
 	TileBase::initTexture(textureName);
 }
 
 void PathFollowerObject::initTexture()
 {
-	auto rootNode = cocos2d::CSLoader::createNode("res/skeletal/SpinePatherIceCream.csb");
+	rootNode = cocos2d::CSLoader::createNode("res/skeletal/SpinePatherIceCream.csb");
 	//rootNode->setAnchorPoint(Vec2(0.5f, 0.5f));
 	rootNode->setContentSize(Size(CellSize, CellSize));
 	rootNode->setScale(0.5f);
@@ -75,39 +72,6 @@ InvisibleBrickObject::InvisibleBrickObject()
 	receiveNearbyAffect = false;
 }
 
-void ChocolateObject::showCrushEffect()
-{
-	auto animationShow = poolController->getChocolateCrushShow();
-	animationShow->setPosition(getPosition());
-	animationShow->setAnchorPoint(Vec2(0.5f, 0.5f));
-	//animationShow->setScale(1.5);
-	if (getParent() != nullptr) getParent()->addChild(animationShow, 500);
-}
-
-bool ChocolateObject::crush(bool showEffect)
-{
-	if(showEffect) showCrushEffect();
-	layers--;
-	if(layers > 0)
-	{
-		initTexture();
-		return false;
-	}
-	else
-	{
-		return CookieTile::crush(showEffect);
-	}
-}
-
-void ChocolateObject::initTexture()
-{
-	if (layers > 0)
-	{
-		auto textureName = StringUtils::format("%s_%d.png", type.c_str(), layers);
-		TileBase::initTexture(textureName);
-	}
-}
-
 void PortalInletObject::initTexture()
 {
 	auto textureName = StringUtils::format("%s_%s.png", type.c_str(), color._to_string());
@@ -123,3 +87,4 @@ void PortalOutletObject::initTexture()
 	textureSprite->setContentSize(Size(CellSize, PORTALLETHEIGHT));
 	textureSprite->setPosition(Vec2(CellSize / 2, CellSize + PORTALLETHEIGHT / 2.f));
 }
+

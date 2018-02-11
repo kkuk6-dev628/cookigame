@@ -67,6 +67,24 @@ public:
 	AnimationShowObject* getBombAndLineCrushShow() const;
 	void recycleBombAndLineCrushShow(AnimationShowObject* show) const;
 
+	SpriteShowObject* getWaffleShow() const;
+	void recycleWaffleShow(SpriteShowObject* waffleShow) const;
+
+	SpriteShowObject* getPowerShow() const;
+	void recyclePowerShow(SpriteShowObject* powerShow) const;
+
+	SpriteShowObject* getLightLine() const;
+	void recycleLightLine(SpriteShowObject* lightLine) const;
+
+	SpriteShowObject* getLightCircle() const;
+	void recycleLightCircle(SpriteShowObject* lightCircle) const;
+
+	SpriteShowObject* getHopplerShow() const;
+	void recycleHopplerShow(SpriteShowObject* hopplerShow) const;
+
+	SpriteShowObject* getTopplerShow() const;
+	void recycleTopplerShow(SpriteShowObject* topplerShow) const;
+
 private:
 	PoolController();
 	static PoolController* instance;
@@ -103,5 +121,11 @@ private:
 	NodePool<DonutObject>* donutPool;
 	NodePool<AnimationShowObject>* donutCrushPool;
 
+	NodePool<SpriteShowObject>* waffleShowPool;
+	NodePool<SpriteShowObject>* powerShowPool;
+	NodePool<SpriteShowObject>* lightLinePool;
+	NodePool<SpriteShowObject>* lightCirclePool;
+	NodePool<SpriteShowObject>* hopplerShowPool;
+	NodePool<SpriteShowObject>* topplerShowPool;
 };
 

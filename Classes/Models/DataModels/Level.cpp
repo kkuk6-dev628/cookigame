@@ -1,6 +1,7 @@
 #include "Level.h"
 #include "General/Constants.h"
 #include "Controllers/LevelController.h"
+#include "spine/Json.h"
 
 Level::Level()
 	:title("level")
@@ -52,6 +53,18 @@ void Level::initWithJson(rapidjson::Value& json)
 
 	//auto& boardsArray = json["boards"].GetArray();
 	this->BoardsJson = &(json["boards"]);
+	limit = new std::list<Limit>;
+	if(json["limit"].IsArray())
+	{
+		auto limitArray = json["limit"].GetArray();
+		for(auto& item : limitArray)
+		{
+			Limit lim;
+			lim.Type = item["type"].GetString();
+			lim.Value = item["value"].GetInt();
+			limit->push_back(lim);
+		}
+	}
 }
 
 
