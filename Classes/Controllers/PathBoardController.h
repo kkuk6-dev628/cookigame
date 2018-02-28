@@ -13,6 +13,9 @@ public:
 	void initWithNode(Node* rootNode, Node* effectNode) override;
 
 protected:
+
+	void checkObjective() override {};
+
 	void addCellToBoard(char col, char row) override;
 	void processCustomLogic(float) override;
 	std::list<Cell*>* findPath();

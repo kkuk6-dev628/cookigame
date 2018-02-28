@@ -37,13 +37,15 @@ public:
 	Cell* getFallDownCell() { return inWater ? upCell : downCell; }
 	Cell* getFallUpCell() { return inWater ? downCell : upCell; }
 
-	bool canFill() { return !isOutCell && !isFixed && isEmpty; }
-	bool canFall() { return !isOutCell && !isFixed && !isEmpty; }
+	bool canFill() const { return !isOutCell && !isFixed && isEmpty; }
+	bool canFall() const { return !isOutCell && !isFixed && !isEmpty; }
 
 	bool containsSpawner() const { return layers->objectForKey(LayerId::Spawner) != nullptr; }
 	bool containsPortalOut() const;
 	bool containsPortalIn() const;
 	bool containsThoppler() const { return layers->objectForKey(LayerId::Toppling) != nullptr; }
+	bool containsPopsicle() const { return layers->objectForKey(LayerId::UnderCover) != nullptr; }
+	bool containsIceCover() const { return layers->objectForKey(LayerId::Cover) != nullptr; }
 	bool isReceiveNearbyAffect();
 	bool isNoShuffleCell();
 	bool canMatch() const
@@ -95,6 +97,8 @@ public:
 	Cell* shuffleResultCell = nullptr;
 
 	char reserveCount = 0;
+
+	bool hiderSearch = false;
 
 public:
 	Cell* upCell = nullptr;

@@ -34,7 +34,7 @@ void THopplingBoardController::initThopplingGame()
 	{
 		circleGroupNode->getChildByName("FileNode_5")->setVisible(true);
 	}
-	objectCountNode->setString(StringUtils::toString(totalThopplerCount));
+	objectCountNode->setString(StringUtils::toString(totalObjectCount));
 }
 
 
@@ -58,7 +58,7 @@ void THopplingBoardController::addCellToBoard(char col, char row)
 		auto thopplerTile = cell->getTileAtLayer(LayerId::Toppling);
 		if(thopplerTile != nullptr)
 		{
-			totalThopplerCount ++;
+			totalObjectCount ++;
 		}
 		else
 		{
@@ -232,8 +232,7 @@ void THopplingBoardController::showThopplerCollectingEffect(Cell* startCell)
 	ckAction.node = reinterpret_cast<Node*>(topplerShow);
 	ckAction.action = actionController->createJumpAction(ckAction.node, objectTargetPos, 2 * CellSize, [=] {
 		this->poolController->recycleTopplerShow(topplerShow);
-		this->collectedThopplerCount++;
-		this->objectCountNode->setString(StringUtils::toString(totalThopplerCount - collectedThopplerCount));
+		this->increaseObjectCount();
 	});
 	actionController->pushAction(ckAction, true);
 }
@@ -277,13 +276,3 @@ Cell* THopplingBoardController::findNextCrackerCell(Cell* cell, char* inIndent, 
 	return nullptr;
 }
 
-
-void THopplingBoardController::checkObjective()
-{
-	if (gameState != GameState::Idle) return;
-	if(totalThopplerCount == collectedThopplerCount)
-	{
-		gameState = GameState::Completed;
-		showGameWinDlg();
-	}
-}

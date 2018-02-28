@@ -18,14 +18,9 @@ protected:
 	void initWaffleGame();
 
 	void crushUnderCells(Cell* cell) override;
-	void checkObjective() override;
 
 private:
 
 	void showWaffleCollectAction(Cell* cell);
-	void collectWaffle();
-	Vec2 waffleTargetPos;
-	short totalWaffleCount = 0;
-	short collectedWaffleCount = 0;
 };
 

@@ -85,6 +85,15 @@ public:
 	SpriteShowObject* getTopplerShow() const;
 	void recycleTopplerShow(SpriteShowObject* topplerShow) const;
 
+	SpriteShowObject* getPopsicleShow() const;
+	void recyclePopsicleShow(SpriteShowObject* popsicleShow) const;
+	SpriteShowObject* getPopLineShow() const;
+	void recyclePopLineShow(SpriteShowObject* popLineShow) const;
+	SpriteShowObject* getPopBombShow() const;
+	void recyclePopBombShow(SpriteShowObject* popBombShow) const;
+	SpriteShowObject* getPopRainbowShow() const;
+	void recyclePopRainbowShow(SpriteShowObject* popRainbowShow) const;
+
 private:
 	PoolController();
 	static PoolController* instance;
@@ -127,5 +136,9 @@ private:
 	NodePool<SpriteShowObject>* lightCirclePool;
 	NodePool<SpriteShowObject>* hopplerShowPool;
 	NodePool<SpriteShowObject>* topplerShowPool;
+	NodePool<SpriteShowObject>* popsicleShowPool;
+	NodePool<SpriteShowObject>* popLineShowPool;
+	NodePool<SpriteShowObject>* popBombShowPool;
+	NodePool<SpriteShowObject>* popRainbowShowPool;
 };
 

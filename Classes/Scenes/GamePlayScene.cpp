@@ -66,6 +66,7 @@ bool GamePlayScene::init()
 	ui::Button *m_btn_settings = static_cast<ui::Button*>(bottomMenuArea->getChildByName("setting_button"));
 	m_btn_settings->addClickEventListener([this](Ref*) {
 		this->showSettingsDlg();
+		//this->showGameWinDlg();
 	});
 	ui::Button *m_btn_spoon = static_cast<ui::Button*>(bottomMenuArea->getChildByName("spoon_button"));
 	m_btn_spoon->addClickEventListener([this](Ref*) {
@@ -152,6 +153,26 @@ void GamePlayScene::showSettingsDlg()
 	}
 	BoardController::gameState = Paused;
 	showPopup(settingsDlg);
+}
+
+void GamePlayScene::showGameWinDlg()
+{
+	auto dlg = GameWinDialog::create();
+
+	dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
+		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
+		dlg->close();
+		this->endGame();
+	});
+	dlg->btn_next->addClickEventListener([this, dlg](Ref*) {
+		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
+		dlg->close();
+		BoardController::gameState = Idle;
+		//GameController::getInstance()->goGamePlay(currentLevel->getLevelNumber() + 1);
+	});
+	dlg->retain();
+	dlg->show(this, LayerId::ShowLayer);
+
 }
 
 void GamePlayScene::showPopup(Popup* popup)

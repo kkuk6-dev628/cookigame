@@ -35,5 +35,6 @@ private:
 	void showPopup(Popup* popup);
 	void restartGame();
 	void endGame();
+	void showGameWinDlg();
 };
 

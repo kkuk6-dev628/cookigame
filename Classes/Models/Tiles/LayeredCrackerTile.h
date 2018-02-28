@@ -30,3 +30,10 @@ public:
 	CREATE_FUNC(WaffleObject);
 
 };
+
+class IceCoverObject : public LayeredCrackerTile
+{
+public:
+	IceCoverObject() : LayeredCrackerTile() { receiveNearbyAffect = false; }
+	CREATE_FUNC(IceCoverObject);
+};

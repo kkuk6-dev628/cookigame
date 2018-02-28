@@ -219,7 +219,8 @@ __Dictionary* BoardModel::getSpecialTiles()
 		{
 			if(cells[i][j] == nullptr || cells[i][j]->isEmpty) continue;
 
-			auto tile = cells[i][j]->getSourceTile();
+			auto cell = cells[i][j];
+			auto tile = cell->getSourceTile();
 			if(tile == nullptr) continue;
 
 			if(tile->getType() == "BombBreakerObject" || tile->getType() == "ColumnBreakerObject" || tile->getType() == "RowBreakerObject" || 
@@ -227,7 +228,8 @@ __Dictionary* BoardModel::getSpecialTiles()
 			{
 				breakers->addObject(tile->getCell());
 			}
-			if (tile->getType() == "WaffleObject" || tile->getType() == "PathMoverMatchObject")
+			if (tile->getType() == "WaffleObject" || tile->getType() == "PathMoverMatchObject"
+				|| cell->containsThoppler())
 			{
 				wafflesAndPathMovers->addObject(tile->getCell());
 			}
@@ -381,7 +383,7 @@ void BoardModel::initSpawners()
 				break;
 			}
 		}
-		for (char i = 0; i <= height; i++)
+		for (char i = 0; i < height; i++)
 		{
 			auto cell = cells[i][j];
 			if (!cell->isOutCell)

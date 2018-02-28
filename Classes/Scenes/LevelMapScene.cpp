@@ -6,7 +6,7 @@
 #include "GamePlayScene.h"
 #include "Layers/Dialogs.h"
 
-bool g_bDebugMode = false;
+bool g_bDebugMode = true;
 
 #define TARGET_LEVEL 10
 
@@ -218,7 +218,7 @@ LevelMapScene::LevelMapScene()
 	_maplock = (ImageView*)nd->getChildByName("maplock");
 	_maplock->removeFromParent();
 	_scrollView->addChild(_maplock);
-	_maplock->setZOrder(2001);
+	_maplock->setLocalZOrder(2001);
 
 
 	mHeader = Sprite::create("res/texture/Map/level_indicator.png");
@@ -670,7 +670,7 @@ void LevelMapScene::updateVideoAdsTime(float ca) {
 void LevelMapScene::refreshVideoAdsTime() {
 	long dt = UserData::getInstance()->getVideoAdsTimes();
 	mTextVideoAdsTime->setString(__String::createWithFormat("%02d:%02d",
-		int((dt % 3600) / 60), dt % 60)->getCString());
+		int((dt % 3600) / 60), static_cast<int>(dt % 60))->getCString());
 }
 void LevelMapScene::setDailyState() {
 	UserData::getInstance()->calDaily();
@@ -704,7 +704,7 @@ void LevelMapScene::setGoldLabel()
 void LevelMapScene::refreshDailyTime() {
 	long dt = UserData::getInstance()->getDailyTime();
 	mTextDailyTime->setString(__String::createWithFormat("%02d:%02d:%02d",
-		int(dt / 3600), int((dt % 3600) / 60), dt % 60)->getCString());
+		int(dt / 3600), int((dt % 3600) / 60), int(dt % 60))->getCString());
 }
 
 

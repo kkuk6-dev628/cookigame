@@ -66,7 +66,7 @@ protected:
 
 	void processLogic(float);
 	virtual void processCustomLogic(float) {};
-	virtual void checkObjective() {};
+	virtual void checkObjective();
 
 	void initBoardElements();
 	void initBoardLayers();
@@ -122,14 +122,14 @@ protected:
 	void shuffle(float);
 	void showHintAction();
 
-	Cell* findSeekerTarget(std::list<Cell*>* targetsList);
+	virtual Cell* findSeekerTarget(std::list<Cell*>* targetsList) const;
 	void landingSeeker(AnimationShowObject* seekerShow, Cell* targetCell);
 	void crushBonusManually(Cell* cell, std::string bonusString);
 
 	virtual void crushCell(Cell* pCell);
 	void crushBombBreaker(Cell* cell);
-	void crushRowBreaker(Cell* cell);
-	void crushColumnBreaker(Cell* cell);
+	void crushRowBreaker(Cell* cell, bool showEffect = true);
+	void crushColumnBreaker(Cell* cell, bool showEffect = true);
 	void crushXBreaker(Cell* cell);
 	void crushSeeker(Cell* cell, MovingTileTypes bonusType=MovingTileTypes::LayeredMatchObject);
 
@@ -143,6 +143,8 @@ protected:
 	void fillLiquid(bool inverse = false);
 
 	virtual void pathMoverCollected(Cell* cell){};
+
+	void increaseObjectCount();
 
 	void endGame();
 	////////////////////
@@ -165,6 +167,7 @@ protected:
 	ui::Text* scoreTextNode = nullptr;
 
 	Vec2 objectTargetPos;
+	Vec2 centerPos;
 
 	static float centerX;
 	static float centerY;
@@ -206,6 +209,9 @@ protected:
 	int matchId = 0;
 
 	float hintTime = HINT_TIME;
+
+	float totalObjectCount = 0;
+	float collectedObjectCount = 0;
 
 #pragma endregion
 

@@ -7,6 +7,7 @@
 #include "Models/Tiles/LayeredCrackerTile.h"
 #include "Models/Tiles/ThopplerTile.h"
 #include "Models/Tiles/PopsicleObject.h"
+#include "Models/Tiles/HiderSegmentObject.h"
 
 PoolController* PoolController::instance = nullptr;
 static factory TileClassFactory;
@@ -52,6 +53,11 @@ PoolController::PoolController()
 	topplerShowPool = new NodePool<SpriteShowObject>;
 	hopplerShowPool = new NodePool<SpriteShowObject>;
 
+	popsicleShowPool = new NodePool<SpriteShowObject>;
+	popLineShowPool = new NodePool<SpriteShowObject>;
+	popBombShowPool = new NodePool<SpriteShowObject>;
+	popRainbowShowPool = new NodePool<SpriteShowObject>;
+
 	RegisterTileClasses();
 }
 
@@ -84,6 +90,8 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(TopplingObject);
 	REGISTER_CLASS(HopplingObject);
 	REGISTER_CLASS(PopsicleObject);
+	REGISTER_CLASS(IceCoverObject);
+	REGISTER_CLASS(HiderSegmentObject);
 
 	REGISTER_CLASS(InvisibleBrickObject);
 	REGISTER_CLASS(EmptyObject);
@@ -839,4 +847,88 @@ SpriteShowObject* PoolController::getTopplerShow() const
 void PoolController::recycleTopplerShow(SpriteShowObject* topplerShow) const
 {
 	topplerShowPool->recycleNode(topplerShow);
+}
+
+SpriteShowObject* PoolController::getPopsicleShow() const
+{
+	SpriteShowObject* show;
+	if (popsicleShowPool->size() > 0)
+	{
+		show = popsicleShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("PopsicleObject_v.png");
+	}
+	return show;
+}
+
+void PoolController::recyclePopsicleShow(SpriteShowObject* popsicleShow) const
+{
+	popsicleShowPool->recycleNode(popsicleShow);
+}
+
+SpriteShowObject* PoolController::getPopLineShow() const
+{
+	SpriteShowObject* show;
+	if (popLineShowPool->size() > 0)
+	{
+		show = popLineShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("PopsicleObject_line_N.png");
+	}
+	return show;
+}
+
+void PoolController::recyclePopLineShow(SpriteShowObject* popLineShow) const
+{
+	popLineShowPool->recycleNode(popLineShow);
+}
+
+SpriteShowObject* PoolController::getPopBombShow() const
+{
+	SpriteShowObject* show;
+	if (popBombShowPool->size() > 0)
+	{
+		show = popBombShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("PopsicleObject_bomb.png");
+	}
+	return show;
+}
+
+void PoolController::recyclePopBombShow(SpriteShowObject* popBombShow) const
+{
+	popBombShowPool->recycleNode(popBombShow);
+}
+
+SpriteShowObject* PoolController::getPopRainbowShow() const
+{
+	SpriteShowObject* show;
+	if (popRainbowShowPool->size() > 0)
+	{
+		show = popRainbowShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("PopsicleObject_rainbow.png");
+	}
+	return show;
+}
+
+void PoolController::recyclePopRainbowShow(SpriteShowObject* popRainbowShow) const
+{
+	popRainbowShowPool->recycleNode(popRainbowShow);
 }

@@ -105,3 +105,29 @@ void PopsicleObject::initTexture()
 	textureSprite->setPosition(0, CellSize);
 
 }
+
+Vec2 PopsicleObject::getLineTarget(float boardWidth, float boardHeight) const
+{
+	if(colspan > rowspan)
+	{
+		if(isMirror)
+		{
+			return Vec2(0, pCell->getBoardPos().y);
+		}
+		else
+		{
+			return Vec2(boardWidth, pCell->getBoardPos().y);
+		}
+	}
+	else
+	{
+		if(isMirror)
+		{
+			return Vec2(pCell->getBoardPos().x, 0);
+		}
+		else
+		{
+			return Vec2(pCell->getBoardPos().x, boardHeight);
+		}
+	}
+}

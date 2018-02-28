@@ -23,7 +23,6 @@ protected:
 	Cell* findNextCrackerCell(Cell* cell, char* inIndent, char** indent);
 
 	void processCustomLogic(float dt) override;
-	void checkObjective() override;
 
 	virtual void movePendingThopplers();
 	void showHopplerMoveEffect(Cell* startCell);
@@ -31,9 +30,7 @@ protected:
 	void showThopplerCollectingEffect(Cell* );
 
 private:
-	char totalThopplerCount = 0;
 	std::vector<Cell*>* crackerCells = nullptr;
 	std::vector<Cell*>* pendingThopplers = nullptr;
-	char collectedThopplerCount = 0;
 };
 

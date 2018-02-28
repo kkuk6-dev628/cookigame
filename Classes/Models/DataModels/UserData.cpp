@@ -21,18 +21,18 @@ UserData::UserData()
 	userDefault = cocos2d::UserDefault::getInstance();
 	_nGold = userDefault->getIntegerForKey("gold", 0);
 
-	std::string strTmp = UserDefault::getInstance()->getStringForKey("BoosterCount", "3,3,3,3,3");
-	Array *arr = componentsSeparatedByString(String::create(strTmp), ",");
+	auto strTmp = UserDefault::getInstance()->getStringForKey("BoosterCount", "3,3,3,3,3");
+	auto *arr = componentsSeparatedByString(__String::create(strTmp), ",");
 	for (int i = 0; i < arr->count(); i++)
 	{
-		nBoosterCount[i] = ((String*)arr->getObjectAtIndex(i))->intValue();
+		nBoosterCount[i] = static_cast<__String*>(arr->getObjectAtIndex(i))->intValue();
 	}
 
-	topLevel = userDefault->getIntegerForKey("top_level", 101);
+	topLevel = userDefault->getIntegerForKey("top_level", 1);
 	topLevel = MAX(topLevel, 1);
 
 	//topLevel = 1599;//test
-	if (g_bDebugMode) topLevel = 700;
+	if (g_bDebugMode) topLevel = 38;
 #ifdef TEST_UserDataClearOnInit
 	clear();
 #endif
@@ -77,29 +77,29 @@ void UserData::onLevelPass(int level, int score, int star)
 
 int UserData::getLevelStar(int level)
 {
-	return userDefault->getIntegerForKey(String::createWithFormat("star%d", level)->getCString(), 0);
+	return userDefault->getIntegerForKey(__String::createWithFormat("star%d", level)->getCString(), 0);
 }
 
 void UserData::setLevelStar(int level, int count)
 {
 	if (count < 0) count = 0;
 	else if (count > MAX_STAR) count = MAX_STAR;
-	userDefault->setIntegerForKey(String::createWithFormat("star%d", level)->getCString(), count);
+	userDefault->setIntegerForKey(__String::createWithFormat("star%d", level)->getCString(), count);
 }
 
 int UserData::getLevelMaxScore(int level)
 {
-	return userDefault->getIntegerForKey(String::createWithFormat("score%d", level)->getCString(), 0);
+	return userDefault->getIntegerForKey(__String::createWithFormat("score%d", level)->getCString(), 0);
 }
 
 void UserData::setLevelMaxScore(int level, int score)
 {
-	userDefault->setIntegerForKey(String::createWithFormat("score%d", level)->getCString(), score);
+	userDefault->setIntegerForKey(__String::createWithFormat("score%d", level)->getCString(), score);
 }
 
 int UserData::setAndGetLevelMaxScore(int level, int score)
 {
-	const char* key = String::createWithFormat("score%d", level)->getCString();
+	const char* key = __String::createWithFormat("score%d", level)->getCString();
 	int maxScore = userDefault->getIntegerForKey(key, 0);
 	if (score > maxScore)
 	{
@@ -112,7 +112,7 @@ int UserData::setAndGetLevelMaxScore(int level, int score)
 
 __Array* UserData::componentsSeparatedByString(__String* srcStr, const char*sepStr)
 {
-	Array* arr = Array::create();
+	auto arr = __Array::create();
 	std::string src = srcStr->getCString();
 	std::string sep(sepStr);
 	std::string subStr;

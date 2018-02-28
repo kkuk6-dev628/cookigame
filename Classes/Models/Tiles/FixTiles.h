@@ -56,12 +56,6 @@ public:
 };
 
 
-class IceCoverObject : public FixTiles
-{
-public:
-	CREATE_FUNC(IceCoverObject);
-};
-
 #pragma region invisible objects
 
 class SeekerPriorityObject : public FixTiles

@@ -44,7 +44,7 @@ public:
 		_action = dynamic_cast<cocostudio::timeline::ActionTimeline*>(node->getActionByTag(node->getTag()));
 	}
 	void runTimeLine() {
-		if (_action && _node->getActionManager()->numberOfRunningActionsInTarget(_node) == 0) {
+		if (_action && _node->getNumberOfRunningActions() == 0) {
 			_action->gotoFrameAndPlay(0, true);
 			_node->runAction(_action);
 		}

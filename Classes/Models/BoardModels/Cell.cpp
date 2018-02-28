@@ -66,6 +66,15 @@ void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 
 void Cell::removeTileAtLayer(LayerId layer)
 {
+	auto obj = layers->objectForKey(layer);
+	if (obj == nullptr)
+	{
+		return;
+	}
+	if(obj->getReferenceCount() >= 0)
+	{
+		obj->retain();
+	}
 	layers->removeObjectForKey(layer);
 }
 
@@ -173,7 +182,15 @@ bool Cell::crushUnderTiles(LayerId layerId)
 				auto iceCoverTile = static_cast<IceCoverObject*>(underTile);
 				if(iceCoverTile != nullptr)
 				{
-					return iceCoverTile->crush(true);
+					if(iceCoverTile->crush(true))
+					{
+						if (layers->objectForKey(LayerId::Cover) != nullptr)
+						{
+							layers->removeObjectForKey(LayerId::Cover);
+						}
+						return true;
+					}
+					return false;
 				}
 				else
 				{

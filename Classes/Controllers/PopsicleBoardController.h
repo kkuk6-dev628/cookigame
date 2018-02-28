@@ -16,9 +16,22 @@ protected:
 	void addCellToBoard(char col, char row) override;
 
 	void initPopsicleGame();
+	void crushUnderCells(Cell* cell) override;
+	void processCustomLogic(float dt) override;
+	Cell* findSeekerTarget(std::list<Cell*>* targetsList) const override;
 
 private:
-	short totalWaffleCount = 0;
+	std::vector<Cell*>* popsicleCells = nullptr;
+
+	std::vector<Cell*>* coveredPopsicleCells = nullptr;
+
+	void checkPopsicles();
+	void canCollectedPopsicle(Cell* cell);
+	void showPopsicleCollectingAction(Cell* cell);
+	void showPopNormalCollectingAction(Cell* cell);
+	void showPopLineCollectingAction(Cell* cell);
+	void showPopBombCollectingAction(Cell* cell);
+	void showPopRainbowCollectingAction(Cell* cell);
 
 };
 

@@ -105,6 +105,22 @@ char ActionController::getPendingActionCount()
 	return pendingActions->size();
 }
 
+cocos2d::Action* ActionController::createHiderSegmentShakeAction(Node* node, bool isHorizental)
+{
+	float x = isHorizental ? 50 : 0;
+	float y = isHorizental ? 0 : 50;
+	Sequence* seq = Sequence::create(
+		MoveBy::create(0.1, Vec2(-x, -y)),
+		MoveBy::create(0.1, Vec2(x, y)),
+		MoveBy::create(0.1, Vec2(-x, -y)),
+		MoveBy::create(0.1, Vec2(x, y)),
+		MoveBy::create(0.1, Vec2(0, 0)),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
 Action* ActionController::createSeekerPendingAction(Node* node, Vec2 pos)
 {
 	Sequence* seq = Sequence::create(
@@ -340,6 +356,22 @@ cocos2d::Action* ActionController::createTileMoveAction(const cocos2d::Vec2& sta
 	return seq;
 }
 
+cocos2d::Action* ActionController::createHiderSegmentMoveAction(std::list<Cell*>* path, std::function<void()> callback, cocos2d::Node* node)
+{
+	auto actions = Vector<FiniteTimeAction*>();
+	actions.pushBack(DelayTime::create(0.05f));
+	for (auto cell : *path)
+	{
+		actions.pushBack(MoveTo::create(0.1f, cell->boardPos));
+	}
+
+	actions.pushBack(CallFunc::create(callback));
+	actions.pushBack(CallFunc::create([this, node]() { this->endAction(node); }));
+	auto seq = Sequence::create(actions);
+	seq->retain();
+	return seq;
+}
+
 cocos2d::Action* ActionController::creatLightCircleShowAction(std::function<void()> callback, cocos2d::Node* node)
 {
 	Sequence* seq = Sequence::create(
@@ -367,6 +399,50 @@ cocos2d::Action* ActionController::createHopplerMoveAction(std::list<Cell*>* pat
 	actions.pushBack(CallFunc::create(callback));
 	actions.pushBack(CallFunc::create([this, node]() { this->endAction(node); }));
 	auto seq = Sequence::create(actions);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::createPopLineAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node)
+{
+	auto tileMovingTime = 0.4;
+	Sequence* seq = Sequence::create(
+		MoveTo::create(tileMovingTime, targetPos),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::createPopCollectionAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node)
+{
+	auto tileMovingTime = 0.4;
+	Sequence* seq = Sequence::create(
+		ScaleTo::create(0.1, 1.2),
+		ScaleTo::create(0.1, 0.8),
+		ScaleTo::create(0.1, 1.1),
+		ScaleTo::create(0.1, 1.0),
+		MoveTo::create(tileMovingTime, targetPos),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::createPopBombAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node)
+{
+	auto tileMovingTime = 0.4;
+	Sequence* seq = Sequence::create(
+		ScaleTo::create(0.1, 1.2),
+		ScaleTo::create(0.1, 0.8),
+		ScaleTo::create(0.1, 1.1),
+		ScaleTo::create(0.1, 1.0),
+		MoveTo::create(tileMovingTime, targetPos),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
 	seq->retain();
 	return seq;
 }

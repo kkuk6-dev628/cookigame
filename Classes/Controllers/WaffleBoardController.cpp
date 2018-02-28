@@ -27,8 +27,7 @@ void WaffleBoardController::initWaffleGame()
 	auto circleGroupNode = topMenuArea->getChildByName("top_menu_circle");
 	circleGroupNode->getChildByName("FileNode_6")->setVisible(true);
 
-	waffleTargetPos = Utils::convertPos(circleGroupNode, effectNode);
-	objectCountNode->setString(StringUtils::toString(totalWaffleCount));
+	objectCountNode->setString(StringUtils::toString(totalObjectCount));
 }
 
 void WaffleBoardController::crushUnderCells(Cell* cell)
@@ -45,20 +44,13 @@ void WaffleBoardController::showWaffleCollectAction(Cell* cell)
 	waffleShow->setPosition(cell->getBoardPos());
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(waffleShow);
-	ckAction.action = actionController->createJumpAction(ckAction.node, waffleTargetPos, 2 * CellSize, [=]()
+	ckAction.action = actionController->createJumpAction(ckAction.node, objectTargetPos, 2 * CellSize, [=]()
 	{
 		PoolController::getInstance()->recycleWaffleShow(waffleShow);
-		collectedWaffleCount++;
+		this->increaseObjectCount();
 	});
 	effectNode->addChild(waffleShow);
 	actionController->pushAction(ckAction, false);
-}
-
-
-void WaffleBoardController::collectWaffle()
-{
-	collectedWaffleCount++;
-	objectCountNode->setString(StringUtils::toString(totalWaffleCount - collectedWaffleCount));
 }
 
 void WaffleBoardController::addCellToBoard(char col, char row)
@@ -73,15 +65,6 @@ void WaffleBoardController::addCellToBoard(char col, char row)
 	auto waffleTile = cell->getTileAtLayer(LayerId::Waffle);
 	if(waffleTile != nullptr)
 	{
-		totalWaffleCount += waffleTile->getLayers();
-	}
-}
-
-void WaffleBoardController::checkObjective()
-{
-	if (totalWaffleCount == collectedWaffleCount)
-	{
-		gameState = GameState::Completed;
-		showGameWinDlg();
+		totalObjectCount += waffleTile->getLayers();
 	}
 }

@@ -186,6 +186,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\Tiles\ChocolateChipObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\HiderGroup.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\HiderSegmentObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LayeredCrackerTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LayeredMatchObject.cpp" />
@@ -248,6 +250,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\ChocolateChipObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\HiderGroup.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\HiderSegmentObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LayeredCrackerTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LayeredMatchObject.h" />

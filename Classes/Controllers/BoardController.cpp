@@ -81,7 +81,6 @@ void BoardController::initWithNode(Node* node, Node* effect)
 	circleGroupNode->getChildByName("FileNode_6")->setVisible(true);
 
 	objectTargetPos = Utils::convertPos(circleGroupNode, effectNode);
-
 	for (char i = 1; i <= 6; i++)
 	{
 		auto nodeName = StringUtils::format("FileNode_%d", i);
@@ -93,6 +92,7 @@ void BoardController::initWithNode(Node* node, Node* effect)
 	setContentSize(Size(width, height));
 	const auto originX = CenterX - width / 2;
 	const auto originY = CenterY - height / 2;
+	centerPos.set(width / 2, height / 2);
 	setPosition(originX, originY);
 }
 
@@ -163,11 +163,28 @@ void BoardController::showGameWinDlg()
 		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
 		dlg->close();
 		BoardController::gameState = Idle;
+		Director::getInstance()->popScene();
 		GameController::getInstance()->goGamePlay(currentLevel->getLevelNumber() + 1);
 	});
 	dlg->retain();
-	dlg->show(this, LayerId::ShowLayer);
+	dlg->show(this->getParent(), LayerId::ShowLayer);
 
+}
+
+void BoardController::increaseObjectCount()
+{
+	collectedObjectCount++;
+	objectCountNode->setString(StringUtils::toString(totalObjectCount - collectedObjectCount));
+}
+
+void BoardController::checkObjective()
+{
+	if (fallingTileCount > 0 || gameState != Idle) return;
+	if (totalObjectCount == collectedObjectCount)
+	{
+		gameState = GameState::Completed;
+		showGameWinDlg();
+	}
 }
 
 void BoardController::endGame()
@@ -706,6 +723,7 @@ void BoardController::showHintAction()
 			),
 			5
 		);
+
 		hintAction->setTag(HINT_ACTION);
 		cell->getMovingTile()->runAction(hintAction);
 	}
@@ -1438,7 +1456,11 @@ FallPath* BoardController::findFallPath(Cell* cell)
 	if (cell->containsPortalOut()) 
 	{
 		fallPath->containsPortal = true;
-		fallPath->startCell = cell->findPortalInCell(boardModel->portalInList);
+		auto fallCell = cell->findPortalInCell(boardModel->portalInList);
+		if(fallCell->canFall())
+		{
+			fallPath->startCell = fallCell;
+		}
 		return fallPath;
 	}
 	if(cell->containsSpawner())
@@ -1559,8 +1581,8 @@ void BoardController::crushCell(Cell* cell)
 
 	if(canMatch)
 	{
-		crushNearbyCells(cell);
 		crushUnderCells(cell);
+		crushNearbyCells(cell);
 	}
 
 	switch (tileType)
@@ -1762,7 +1784,7 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 	showLineCrushEffect(cell, rot);
 }
 
-void BoardController::crushRowBreaker(Cell* cell)
+void BoardController::crushRowBreaker(Cell* cell, bool showEffect)
 {
 	auto leftCell = cell->leftCell;
 	cell->crushCell();
@@ -1795,10 +1817,10 @@ void BoardController::crushRowBreaker(Cell* cell)
 		rightCell = rightCell->rightCell;
 	}
 
-	showLineCrushEffect(cell, 0);
+	if(showEffect) showLineCrushEffect(cell, 0);
 }
 
-void BoardController::crushColumnBreaker(Cell* cell)
+void BoardController::crushColumnBreaker(Cell* cell, bool showEffect)
 {
 	auto upCell = cell->upCell;
 	cell->crushCell();
@@ -1829,7 +1851,7 @@ void BoardController::crushColumnBreaker(Cell* cell)
 		}	
 		downCell = downCell->downCell;
 	}
-	showLineCrushEffect(cell, 90);
+	if (showEffect) showLineCrushEffect(cell, 90);
 }
 
 void BoardController::crushXBreaker(Cell* cell)
@@ -1946,7 +1968,7 @@ void BoardController::crushBonusManually(Cell* cell, std::string bonusString)
 	}
 }
 
-Cell* BoardController::findSeekerTarget(std::list<Cell*>* targetsList)
+Cell* BoardController::findSeekerTarget(std::list<Cell*>* targetsList) const
 {
 	auto specialTiles = boardModel->getSpecialTiles();
 	auto breakers = static_cast<__Array*>(specialTiles->objectForKey("breakers"));

@@ -21,11 +21,11 @@ MovingTile::~MovingTile()
 
 bool MovingTile::init()
 {
+	actionController = ActionController::getInstance();
 	if(!Node::init())
 	{
 		return false;
 	}
-	actionController = ActionController::getInstance();
 	return true;
 }
 
@@ -196,7 +196,7 @@ void MovingTile::initTexture()
 void MovingTile::initMovingTile()
 {
 	stopAllActionsByTag(HINT_ACTION);
-	setScale(1.0f);
+	setScale(1.0f, 1.0f);
 }
 
 void MovingTile::setModifierTexture()

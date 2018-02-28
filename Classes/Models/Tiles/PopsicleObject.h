@@ -11,6 +11,9 @@ public:
 
 	void initWithJson(rapidjson::Value& json) override;
 
+	PopsicleType getPopType() const { return popType; }
+	Vec2 getLineTarget(float boardWidth, float boardHeight) const;
+
 protected:
 	void initTexture() override;
 
