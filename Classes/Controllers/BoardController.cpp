@@ -16,6 +16,7 @@
 #include "Layers/Dialogs.h"
 #include "Scenes/LevelMapScene.h"
 #include "GameController.h"
+#include "Models/Tiles/LavaCakeObject.h"
 
 char BoardController::cellSize = 79;
 GameState BoardController::gameState;
@@ -64,6 +65,7 @@ void BoardController::processLogic(float dt)
 	processPendingSeekers();
 	processCustomLogic(dt);
 	checkObjective();
+	moveConveyors();
 	doShuffle();
 }
 
@@ -437,7 +439,8 @@ void BoardController::initBoardElements()
 	
 	addMask();
 	initLiquidLayer();
-	//addTile(1, 4, MovingTileTypes::BombBreakerObject, TileColors::red);
+	boardModel->buildConveyors();
+	//addTile(4, 4, MovingTileTypes::BombBreakerObject, TileColors::red);
 	//addTile(1, 3, MovingTileTypes::RowBreakerObject, TileColors::blue);
 	//addTile(1, 2, MovingTileTypes::XBreakerObject, TileColors::yellow);
 }
@@ -458,10 +461,32 @@ void BoardController::addCellToBoard(char col, char row)
 	{
 		auto cellLayer = cell->getTileAtLayer(layerId);
 		if (cellLayer == nullptr) continue;
-		if (layerId == +LayerId::Background || layerId == +LayerId::Border) continue;
+		if (layerId == +LayerId::Background || layerId == +LayerId::Border || cellLayer->getParent()!= nullptr) continue;
 		getBoardLayer(layerId)->addChild(cellLayer);
 	}
+
+	auto tile = cell->getSourceTile();
+	if( tile != nullptr && tile->getType() == LAVACAKEOBJECT)
+	{
+		boardModel->addLavaCakeTile(static_cast<LavaCakeObject*>(tile));
+		addLavaCakeObject(col + 1, row, tile);
+		addLavaCakeObject(col + 1, row - 1, tile);
+		addLavaCakeObject(col, row - 1, tile);
+	}
 }
+
+void BoardController::addLavaCakeObject(char col, char row, CookieTile* lavaCake)
+{
+	auto cell = getMatchCell(col, row);
+	if (cell == nullptr || cell->isOutCell) return;
+	auto oldTile = cell->getSourceTile();
+	if(oldTile != nullptr && oldTile->getType() == "PointerObject")
+	{
+		if (oldTile->getParent() != nullptr) oldTile->removeFromParent();
+		cell->setSourceTile(lavaCake);
+	}
+}
+
 
 void BoardController::addTile(char col, char row, MovingTileTypes type, TileColors tileColor)
 {
@@ -591,12 +616,19 @@ void BoardController::showBombAndLineCrushEffect(Cell* cell)
 	showObjectsLayer->addChild(effect);
 }
 
+void BoardController::showBombCrushEffect(Cell* cell)
+{
+	auto effect = poolController->getBombCrushShow();
+	effect->setPosition(cell->getBoardPos());
+	showObjectsLayer->addChild(effect);
+}
+
 void BoardController::addBackgroundTile(const char col, const char row)
 {
 	auto cell = getMatchCell(col, row);
 	auto tile = cell->getSourceTile();
 
-	if(tile != nullptr && (strcmp(tile->getType().c_str(), "EmptyObject") == 0 || strcmp(tile->getType().c_str(), "InvisibleBrickObject") == 0))
+	if(tile != nullptr && (strcmp(tile->getType().c_str(), EMPTYOBJECT) == 0 || strcmp(tile->getType().c_str(), INVISIBLEBRICKOBJECT) == 0))
 	{
 		cell->isOutCell = cell->isEmpty = true;
 		return;
@@ -704,6 +736,17 @@ void BoardController::doShuffle()
 		gameState = GameState::Shuffling;
 		showShuffleAction();
 	}
+}
+
+void BoardController::moveConveyors()
+{
+	if (fallingTileCount > 0 || gameState != Idle || pendingCrushCells->count() > 0 || !moveConveyorsFlag)
+	{
+		return;
+	}
+
+	moveConveyorsFlag = false;
+	boardModel->moveConveyors();
 }
 
 void BoardController::showHintAction()
@@ -997,7 +1040,9 @@ void BoardController::countDownMoveNumber()
 void BoardController::doSomethingPerMove()
 {
 	countDownMoveNumber();
+	boardModel->setIncreaseLavaCakeFlag(true);
 	initHintAction();
+	moveConveyorsFlag = true;
 }
 
 void BoardController::crushPendingCells()
@@ -1255,7 +1300,7 @@ void BoardController::combineSeekerAndBonus(Cell* seekerCell, Cell* bonusCell)
 	}
 	else
 	{
-		crushSeeker(seekerCell, bonusCell->getMovingTile()->getMovingTileType());
+		crushSeekerAndBonus(seekerCell, bonusCell);
 	}
 	seekerCell->crushCell(false);
 	bonusCell->crushCell(false);
@@ -1573,6 +1618,7 @@ void BoardController::crushCell(Cell* cell)
 
 	auto tile = cell->getMovingTile();
 	auto tileType = tile->getMovingTileType();
+	auto strType = tile->getType();
 	auto canMatch = tile->canMatch;
 	if(!cell->crushCell())
 	{
@@ -1619,6 +1665,47 @@ void BoardController::crushCell(Cell* cell)
 	default:
 		break;
 	}
+
+	if (strType == LAVACAKEOBJECT)
+	{
+		auto lavaCakeTagets = boardModel->getLavaCakeTargets();
+		spawnLavaCake(cell, lavaCakeTagets);
+	}
+}
+
+void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
+{
+	if (targets == nullptr && targets->size() > 0)
+	{
+		return;
+	}
+
+	for(auto targetCell : *targets)
+	{
+		auto spawnColor = spawnController->getSpawnColor();
+		auto lavaCakeTile = cell->getSourceTile();
+		auto spawnType = lavaCakeTile->getSpawnType();
+		auto spawnTile = poolController->getCookieTile(spawnType);
+		spawnTile->setTileColor(spawnColor);
+		spawnTile->initWithGrid(targetCell->gridPos.Col, targetCell->gridPos.Row);
+		spawnTile->setPosition(cell->getBoardPos());
+		spawnTile->initWithType(spawnType, spawnColor);
+		effectNode->addChild(spawnTile);
+
+		CKAction ckAction;
+		ckAction.node = spawnTile;
+	
+		ckAction.action = actionController->createJumpAction(spawnTile, targetCell->getBoardPos(), CellSize, [=] {
+			crushCell(targetCell);
+			targetCell->setSourceTile(spawnTile);
+			spawnTile->removeFromParent();
+			layeredMatchLayer->addChild(spawnTile);
+			spawnTile->setPosition(targetCell->getBoardPos());
+			fallingTileCount--;
+		});
+		fallingTileCount++;
+		actionController->pushAction(ckAction, false);
+	}
 }
 
 void BoardController::fillLiquid(bool inverse)
@@ -1635,6 +1722,7 @@ void BoardController::fillLiquid(bool inverse)
 	
 	liquidNode->runAction(MoveTo::create(0.5, Vec2(0, boardModel->getCurrentLiquidLevel() * CellSize)));
 }
+
 
 void BoardController::crushBombBreaker(Cell* cell)
 {
@@ -1657,6 +1745,7 @@ void BoardController::crushBombBreaker(Cell* cell)
 			crushCell(bombCell);
 		}
 	}
+	showBombCrushEffect(cell);
 }
 
 void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
@@ -1902,13 +1991,45 @@ void BoardController::crushSeeker(Cell* cell, MovingTileTypes bonusType)
 	cell->crushCell();
 }
 
+void BoardController::crushSeekerAndBonus(Cell* seekerCell, Cell* bonusCell)
+{
+	auto randomPos = boardModel->getRandomBoardPosition();
+	auto seekerShow = poolController->getSeekerShow(seekerCell->tileColor);
+	seekerShow->customData->insert(std::pair<std::string, std::string>("bonusType", bonusCell->getMovingTile()->getType()));
+	showObjectsLayer->addChild(seekerShow);
+	seekerShow->setPosition(seekerCell->getBoardPos());
+	CKAction ckAction;
+	ckAction.node = static_cast<Node*>(seekerShow);
+	ckAction.action = actionController->createSeekerPendingAction(ckAction.node, randomPos);
+	actionController->pushAction(ckAction, false);
+	pendingSeekers->addObject(seekerShow);
+	seekerCell->crushCell();
+
+	auto bonusTile = bonusCell->getMovingTile();
+	
+	auto showObj = poolController->getTileShowObject();
+	showObj->setSpriteFrame(bonusTile->getSpriteFrame());
+	showObj->setPosition(bonusCell->getBoardPos());
+	showObj->setAnchorPoint(Vec2(0.5, 0.5));
+	showObjectsLayer->addChild(showObj);
+	CKAction ckActionB;
+	ckActionB.node = static_cast<Node*>(showObj);
+	ckActionB.action = actionController->createSeekerAndBonusPendingAction(ckAction.node, randomPos, [=]{
+		showObj->removeFromParent();
+		showObj->setScale(0.6);
+		seekerShow->addChild(showObj, 200, "bonusChild");
+		showObj->setPosition(Vec2(0, 0));
+	});
+	actionController->pushAction(ckActionB, false);
+}
+
 void BoardController::processPendingSeekers()
 {
 	if(fallingTileCount > 0 || gameState != GameState::Idle)
 	{
 		return;
 	}
-	std::list<Cell*> targetsList;
+	CellsList targetsList;
 	Ref* itr = nullptr;
 	CCARRAY_FOREACH(pendingSeekers, itr)
 	{
@@ -1968,7 +2089,7 @@ void BoardController::crushBonusManually(Cell* cell, std::string bonusString)
 	}
 }
 
-Cell* BoardController::findSeekerTarget(std::list<Cell*>* targetsList) const
+Cell* BoardController::findSeekerTarget(CellsList* targetsList) const
 {
 	auto specialTiles = boardModel->getSpecialTiles();
 	auto breakers = static_cast<__Array*>(specialTiles->objectForKey("breakers"));

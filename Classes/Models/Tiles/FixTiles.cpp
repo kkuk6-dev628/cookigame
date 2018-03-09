@@ -34,7 +34,6 @@ void FixTiles::initTexture()
 
 void PathObject::initTexture()
 {
-	std::string textureName;
 	auto tempDirStr = direction._to_string();
 	if(direction == +Direction::right)
 	{
@@ -48,7 +47,7 @@ void PathObject::initTexture()
 	{
 		tempDirStr = dirString.c_str();
 	}
-	textureName = StringUtils::format("%s_%s.png", type.c_str(), tempDirStr);
+	auto textureName = StringUtils::format("%s_%s.png", type.c_str(), tempDirStr);
 	TileBase::initTexture(textureName);
 }
 

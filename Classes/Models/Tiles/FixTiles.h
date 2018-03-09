@@ -17,7 +17,7 @@ public:
 class PortalInletObject : public FixTiles
 {
 public:
-	CREATE_FUNC(PortalInletObject);
+	CREATE_FUNC(PortalInletObject)
 	void initTexture() override;
 	char passedCount = 0;
 };
@@ -25,7 +25,7 @@ public:
 class PortalOutletObject : public FixTiles
 {
 public:
-	CREATE_FUNC(PortalOutletObject);
+	CREATE_FUNC(PortalOutletObject)
 	void initTexture() override;
 	char passedCount = 0;
 };
@@ -33,7 +33,7 @@ public:
 class PathObject: public FixTiles
 {
 public:
-	CREATE_FUNC(PathObject);
+	CREATE_FUNC(PathObject)
 
 	void initTexture() override;
 };
@@ -41,7 +41,7 @@ public:
 class PathFollowerObject: public FixTiles
 {
 public:
-	CREATE_FUNC(PathFollowerObject);
+	CREATE_FUNC(PathFollowerObject)
 
 	void initTexture() override;
 	bool crush(bool showEffect) override { return false; };
@@ -51,7 +51,7 @@ public:
 class PathGoalObject: public FixTiles
 {
 public:
-	CREATE_FUNC(PathGoalObject);
+	CREATE_FUNC(PathGoalObject)
 	bool crush(bool showEffect) override { return false; };
 };
 
@@ -64,18 +64,29 @@ public:
 	void countDownLayer() { layers--; }
 };
 
+class LavaCakeTargetObject : public FixTiles
+{
+};
+
 class InvisibleBrickObject : public FixTiles
 {
 public:
-	CREATE_FUNC(InvisibleBrickObject);
+	CREATE_FUNC(InvisibleBrickObject)
 	InvisibleBrickObject();
 };
 
 class EmptyObject : public FixTiles
 {
 public:
-	CREATE_FUNC(EmptyObject);
+	CREATE_FUNC(EmptyObject)
 	EmptyObject() { canMatch = false; }
+};
+
+class PointerObject : public FixTiles
+{
+public:
+	CREATE_FUNC(PointerObject)
+	PointerObject() { canMatch = false; }
 };
 
 #pragma endregion

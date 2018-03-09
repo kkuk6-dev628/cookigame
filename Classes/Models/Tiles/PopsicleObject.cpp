@@ -68,6 +68,17 @@ void PopsicleObject::initTexture()
 		break;
 	case PopsicleType::rainbow:
 		textureName = "PopsicleObject_rainbow.png";
+		if(colspan > rowspan)
+		{
+			if(gridPos.Col > 4)
+			{
+				rotation = 90;
+			}
+			else
+			{
+				rotation = 270;
+			}
+		}
 		break;
 	default:
 		{
@@ -100,10 +111,19 @@ void PopsicleObject::initTexture()
 		addChild(textureSprite);
 	}
 	textureSprite->setSpriteFrame(spriteFrame);
-	textureSprite->setContentSize(Size(CellSize * colspan, CellSize * rowspan));
-	textureSprite->setAnchorPoint(Vec2(0, 1));
-	textureSprite->setPosition(0, CellSize);
-
+	if(rotation > 0)
+	{
+		textureSprite->setAnchorPoint(Vec2(0.5, 0.5));
+		textureSprite->setContentSize(Size(CellSize, CellSize * 2));
+		textureSprite->setRotation(rotation);
+		textureSprite->setPosition(CellSize, CellSize / 2);
+	}
+	else
+	{
+		textureSprite->setContentSize(Size(CellSize * colspan, CellSize * rowspan));
+		textureSprite->setAnchorPoint(Vec2(0, 1));
+		textureSprite->setPosition(0, CellSize);
+	}
 }
 
 Vec2 PopsicleObject::getLineTarget(float boardWidth, float boardHeight) const

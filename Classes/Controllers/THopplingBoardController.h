@@ -19,7 +19,7 @@ protected:
 
 	void crushCell(Cell* cell) override;
 	Cell* findThopplerTarget();
-	std::list<Cell*>* findHopplingTarget(Cell* cell);
+	CellsList* findHopplingTarget(Cell* cell);
 	Cell* findNextCrackerCell(Cell* cell, char* inIndent, char** indent);
 
 	void processCustomLogic(float dt) override;

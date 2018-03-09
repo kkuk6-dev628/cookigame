@@ -55,6 +55,10 @@ void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 {
 	if (layer == +LayerId::Match)
 	{
+		//if(pSourceTile != nullptr && pSourceTile->getParent() != nullptr)
+		//{
+		//	PoolController::getInstance()->recycleCookieTile(pSourceTile);
+		//}
 		pSourceTile = pTile;
 		isEmpty = false;
 		isFixed = !pTile->isMovable();
@@ -145,8 +149,9 @@ bool Cell::crushCell(bool showCrushEffect)
 		targetObj->setLayers(targetObj->getLayers() - 1);
 	}
 
-	auto ret = getSourceTile()->crush(true);
-	if (ret) 
+	auto noClearFlag = pSourceTile->noClear;
+	auto ret = pSourceTile->crush(true);
+	if (ret && !noClearFlag)
 	{
 		clear();
 		dirty = false;
@@ -437,7 +442,7 @@ bool Cell::containsPortalOut() const
 	if(layers->objectForKey(LayerId::Portal) != nullptr)
 	{
 		auto portal = static_cast<FixTiles*>(layers->objectForKey(LayerId::Portal));
-		return strcmp(portal->getType().c_str(), "PortalOutletObject") == 0;
+		return strcmp(portal->getType().c_str(), PORTALOUTLETOBJECT) == 0;
 	}
 	return false;
 }
@@ -447,7 +452,7 @@ bool Cell::containsPortalIn() const
 	if (layers->objectForKey(LayerId::Portal) != nullptr)
 	{
 		auto portal = static_cast<FixTiles*>(layers->objectForKey(LayerId::Portal));
-		return strcmp(portal->getType().c_str(), "PortalInletObject") == 0;
+		return strcmp(portal->getType().c_str(), PORTALINLETOBJECT) == 0;
 	}
 	return false;
 }

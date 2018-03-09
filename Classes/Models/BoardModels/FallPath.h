@@ -42,7 +42,7 @@ public:
 
 	Cell* startCell = nullptr;
 	Cell* endCell = nullptr;
-	std::list<Cell*> fallPath;
+	CellsList fallPath;
 	bool containsPortal = false;
 	bool inWater = false;
 private:

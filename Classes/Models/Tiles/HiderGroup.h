@@ -15,18 +15,18 @@ public:
 	HiderSegmentObject* getSegmentAt(char index) const;
 	char getSegmentsCount() const { return segmentsCount; }
 	void initSegmentTextures();
-	void moveHiderGroup(std::list<Cell*>* cells, Cell* startCell);
+	void moveHiderGroup(CellsList* cells, Cell* startCell);
 	bool checkHiderGroup();
-	std::list<Cell*>* getCoveredSegmentCells() const { return coveredCells; }
+	CellsList* getCoveredSegmentCells() const { return coveredCells; }
 
 private:
-	void moveSegmentToCell(HiderSegmentObject* segment, std::list<Cell*>* cell);
+	void moveSegmentToCell(HiderSegmentObject* segment, CellsList* cell);
 
 	HiderSegmentObject* head = nullptr;
 	std::vector<HiderSegmentObject*>* segments = nullptr;
 	std::string chainName = "";
 	char segmentsCount = 0;
 
-	std::list<Cell*>* coveredCells = nullptr;
+	CellsList* coveredCells = nullptr;
 };
 

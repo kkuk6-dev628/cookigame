@@ -9,7 +9,7 @@ public:
 	void setColorTable(TileColorsTable& ct) const;
 	void setSpawnTable(SpawnTablesList ct) { spawnTable = ct; }
 	TileColors getSpawnColor() const;
-	MovingTileTypes getSpawnType() const;
+	MovingTileTypes getSpawnType(std::string spawnerName) const;
 	void countSpawnedTiles() { spawnedTilesCount++; }
 
 private:

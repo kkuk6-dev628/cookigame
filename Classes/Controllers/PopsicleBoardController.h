@@ -18,7 +18,7 @@ protected:
 	void initPopsicleGame();
 	void crushUnderCells(Cell* cell) override;
 	void processCustomLogic(float dt) override;
-	Cell* findSeekerTarget(std::list<Cell*>* targetsList) const override;
+	Cell* findSeekerTarget(CellsList* targetsList) const override;
 
 private:
 	std::vector<Cell*>* popsicleCells = nullptr;

@@ -29,6 +29,7 @@ public:
 	bool canMatch = true;
 	int matchId = 0;
 	bool receiveNearbyAffect = false;
+	bool noClear = false;
 
 protected:
 	Cell* pCell;

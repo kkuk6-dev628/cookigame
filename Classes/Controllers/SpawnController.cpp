@@ -51,30 +51,34 @@ TileColors SpawnController::getSpawnColor() const
 	return TileColors::_from_integral(rnd * 6);
 }
 
-MovingTileTypes SpawnController::getSpawnType() const
+MovingTileTypes SpawnController::getSpawnType(std::string spawnerName) const
 {
 	std::string spawnTypeString = "LayeredMatchObject";
-	if(pendingSpawnTypes->size() > 0)
-	{
-		spawnTypeString = pendingSpawnTypes->front();
-		pendingSpawnTypes->pop_front();
-		return MovingTileTypes::_from_string(spawnTypeString.c_str());
-	}
-	if(spawnTable != nullptr && spawnTable->size() > 0)
-	{
-		for(auto table : *spawnTable)
-		{
-			if(Utils::checkSpawn(spawnedTilesCount, table.Percent))
-			{
-				pendingSpawnTypes->push_back(*table.Type);
-			}
-		}
 
+	if(spawnerName == "normal")
+	{
 		if (pendingSpawnTypes->size() > 0)
 		{
 			spawnTypeString = pendingSpawnTypes->front();
 			pendingSpawnTypes->pop_front();
 			return MovingTileTypes::_from_string(spawnTypeString.c_str());
+		}
+		if (spawnTable != nullptr && spawnTable->size() > 0)
+		{
+			for (auto table : *spawnTable)
+			{
+				if (Utils::checkSpawn(spawnedTilesCount, table.Percent))
+				{
+					pendingSpawnTypes->push_back(*table.Type);
+				}
+			}
+
+			if (pendingSpawnTypes->size() > 0)
+			{
+				spawnTypeString = pendingSpawnTypes->front();
+				pendingSpawnTypes->pop_front();
+				return MovingTileTypes::_from_string(spawnTypeString.c_str());
+			}
 		}
 	}
 	return MovingTileTypes::LayeredMatchObject;

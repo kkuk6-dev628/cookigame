@@ -55,11 +55,13 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/TilePools/TilePool.cpp \
 ../../../Classes/Models/TilePools/TileShowObjectPool.cpp \
 ../../../Classes/Models/Tiles/ChocolateChipObject.cpp \
+../../../Classes/Models/Tiles/ConveyorBeltObject.cpp \
 ../../../Classes/Models/Tiles/CookieTile.cpp \
 ../../../Classes/Models/Tiles/FixTiles.cpp \
 ../../../Classes/Models/Tiles/HiderGroup.cpp \
 ../../../Classes/Models/Tiles/HiderSegmentObject.cpp \
 ../../../Classes/Models/Tiles/LargeTile.cpp \
+../../../Classes/Models/Tiles/LavaCakeObject.cpp \
 ../../../Classes/Models/Tiles/LayeredCrackerTile.cpp \
 ../../../Classes/Models/Tiles/LayeredMatchObject.cpp \
 ../../../Classes/Models/Tiles/MovingTile.cpp \

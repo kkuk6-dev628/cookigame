@@ -90,9 +90,9 @@ void PathBoardController::processCustomLogic(float dt)
 
 }
 
-std::list<Cell*>* PathBoardController::findPath()
+CellsList* PathBoardController::findPath()
 {
-	auto movePath = new std::list<Cell*>;
+	auto movePath = new CellsList;
 	Cell* pathCell = pathFollowerObject->getCell();
 	while(collectedPowerCount > 0)
 	{

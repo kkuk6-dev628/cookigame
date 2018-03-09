@@ -13,7 +13,7 @@ Utils::~Utils()
 {
 }
 
-bool Utils::containsCell(std::list<Cell*>* cellsList, Cell* cell)
+bool Utils::containsCell(CellsList* cellsList, Cell* cell)
 {
 	if(cellsList == nullptr || cellsList->size() == 0 || cell == nullptr)
 	{

@@ -8,6 +8,8 @@
 #include "Models/Tiles/ThopplerTile.h"
 #include "Models/Tiles/PopsicleObject.h"
 #include "Models/Tiles/HiderSegmentObject.h"
+#include "Models/Tiles/ConveyorBeltObject.h"
+#include "Models/Tiles/LavaCakeObject.h"
 
 PoolController* PoolController::instance = nullptr;
 static factory TileClassFactory;
@@ -42,7 +44,9 @@ PoolController::PoolController()
 	donutCrushPool = new NodePool<AnimationShowObject>;
 
 	lineCrushShowPool = new NodePool<AnimationShowObject>;
+	bombCrushShowPool = new NodePool<AnimationShowObject>;
 	bombAndLineCrushShowPool = new NodePool<AnimationShowObject>;
+	lavaCakeEffectPool = new NodePool<AnimationShowObject>;
 
 	waffleShowPool = new NodePool<SpriteShowObject>;
 	powerShowPool = new NodePool<SpriteShowObject>;
@@ -57,6 +61,7 @@ PoolController::PoolController()
 	popLineShowPool = new NodePool<SpriteShowObject>;
 	popBombShowPool = new NodePool<SpriteShowObject>;
 	popRainbowShowPool = new NodePool<SpriteShowObject>;
+	hiderShowPool = new NodePool<SpriteShowObject>;
 
 	RegisterTileClasses();
 }
@@ -92,10 +97,14 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(PopsicleObject);
 	REGISTER_CLASS(IceCoverObject);
 	REGISTER_CLASS(HiderSegmentObject);
+	REGISTER_CLASS(ConveyorBeltObject);
+	REGISTER_CLASS(LavaCakeObject);
 
+	REGISTER_CLASS(PointerObject);
 	REGISTER_CLASS(InvisibleBrickObject);
 	REGISTER_CLASS(EmptyObject);
 	REGISTER_CLASS(SeekerPriorityObject);
+	REGISTER_CLASS(LavaCakeTargetObject);
 }
 
 CookieTile* PoolController::getCookieTile(std::string typeName)
@@ -573,6 +582,11 @@ AnimationShowObject* PoolController::getSeekerShow(TileColors color) const
 
 void PoolController::recycleSeekerShow(AnimationShowObject* show) const
 {
+	if(show->getChildrenCount() > 1)
+	{
+		auto tileShow = show->getChildByName("bonusChild");
+		tileShow->removeFromParent();
+	}
 	switch (show->tileColor)
 	{
 	case TileColors::blue:
@@ -698,6 +712,31 @@ void PoolController::recycleLineCrushShow(AnimationShowObject* show) const
 	lineCrushShowPool->recycleNode(show);
 }
 
+AnimationShowObject* PoolController::getBombCrushShow() const
+{
+	AnimationShowObject* show;
+	if (bombCrushShowPool->size() > 0)
+	{
+		show = bombCrushShowPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/bomb.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleBombCrushShow(show);
+	});
+	return show;
+}
+
+void PoolController::recycleBombCrushShow(AnimationShowObject* show) const
+{
+	show->recycle();
+	bombCrushShowPool->recycleNode(show);
+}
+
 AnimationShowObject* PoolController::getBombAndLineCrushShow() const
 {
 	AnimationShowObject* show;
@@ -721,6 +760,31 @@ void PoolController::recycleBombAndLineCrushShow(AnimationShowObject* show) cons
 {
 	show->recycle();
 	bombAndLineCrushShowPool->recycleNode(show);
+}
+
+AnimationShowObject* PoolController::getLavaCakeEffect() const
+{
+	AnimationShowObject* show;
+	if (lavaCakeEffectPool->size() > 0)
+	{
+		show = lavaCakeEffectPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/CK_particle.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleLavaCakeEffect(show);
+	});
+	return show;
+}
+
+void PoolController::recycleLavaCakeEffect(AnimationShowObject* show) const
+{
+	show->recycle();
+	lavaCakeEffectPool->recycleNode(show);
 }
 
 SpriteShowObject* PoolController::getWaffleShow() const
@@ -931,4 +995,25 @@ SpriteShowObject* PoolController::getPopRainbowShow() const
 void PoolController::recyclePopRainbowShow(SpriteShowObject* popRainbowShow) const
 {
 	popRainbowShowPool->recycleNode(popRainbowShow);
+}
+
+SpriteShowObject* PoolController::getHiderShow() const
+{
+	SpriteShowObject* show;
+	if (hiderShowPool->size() > 0)
+	{
+		show = hiderShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("hider.png");
+	}
+	return show;
+}
+
+void PoolController::recycleHiderShow(SpriteShowObject* popHiderShow) const
+{
+	hiderShowPool->recycleNode(popHiderShow);
 }

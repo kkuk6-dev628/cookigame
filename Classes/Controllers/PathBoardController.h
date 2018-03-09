@@ -18,7 +18,7 @@ protected:
 
 	void addCellToBoard(char col, char row) override;
 	void processCustomLogic(float) override;
-	std::list<Cell*>* findPath();
+	CellsList* findPath();
 	Cell* getNextPath(Cell* cell);
 	void initPathGame();
 

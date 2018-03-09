@@ -10,6 +10,7 @@
 #include "Models/Tiles/FixTiles.h"
 
 class BoardLayerModel;
+class LavaCakeObject;
 
 class BoardModel : public cocos2d::Ref
 {
@@ -37,7 +38,7 @@ public:
 	Cell* getCell(const char col, const char row) const;
 
 	Cell* getSeekerTarget();
-	std::list<Cell*>* getSameColorCells(TileColors tileColor);
+	CellsList* getSameColorCells(TileColors tileColor);
 	__Dictionary* getSpecialTiles();
 	Cell* getRandomCell();
 	Vec2 getRandomBoardPosition();
@@ -52,12 +53,22 @@ public:
 
 	std::list<PortalInletObject*>* portalInList = nullptr;
 	std::list<PortalOutletObject*>* portalOutList = nullptr;
-	std::list<Cell*>* findAvailableMoveCells();
-	std::list<Cell*>* availableMove = nullptr;
+	CellsList* findAvailableMoveCells();
+	CellsList* availableMove = nullptr;
 
 	Cell* getDirectFallCell(Cell* cell);
 	Cell* getInclinedFallCell(Cell* cell);
+	std::list<ConveyorInfo*>* getConveyorInfo() const { return conveyorInfo; }
+	void buildConveyors();
+	bool containedInConveyors(Cell* cell) const;
+	bool checkConveyorStatus(CellsList* conveyor) const;
+	ConveyorInfo* findConveyorInfo(Cell* cell) const;
+	void conveyTile(MovingTile* from, Cell* to) const;
+	CellsList* getLavaCakeTargets();
+	void setIncreaseLavaCakeFlag(bool flag = true);
+	void addLavaCakeTile(LavaCakeObject* lavaCake);
 
+	void moveConveyors();
 
 	Vec2 getBoardCenterPos() const { return Vec2(CellSize * width / 2, CellSize * height / 2); }
 
@@ -73,13 +84,21 @@ private:
 	std::list<Goal>* goals;
 	std::list<CustomSpawnTableItem>* customSpawnTable;
 	std::list<SeekerPriorityObject*>* seekerPriorityList = nullptr;
+
+	CellsList* lavaCakeTargets = nullptr;
+
 	SpawnTablesList liquidSpawnTable;
 	cocos2d::__Array* data;
 	LiquidSystem* liquidSystem = nullptr;
+	std::list<ConveyorInfo*>* conveyorInfo = nullptr;
+
+	std::list<CellsList*>* conveyors = nullptr;
 
 	Cell*** cells;
 	float currentLiquidLevel = 0;
 	bool hasToAddSpawners = true;
+
+	std::list<LavaCakeObject*>* lavaCakeTiles = nullptr;
 
 public:
 	rapidjson::Document LayersJson;

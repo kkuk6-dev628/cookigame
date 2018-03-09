@@ -169,9 +169,9 @@ MovingTileTypes Match::getAvailableBonusType()
 
 Match::Match()
 {
-	hMatchedCells = new std::list<Cell*>();
-	vMatchedCells = new std::list<Cell*>();
-	sMatchedCells = new std::list<Cell*>();
+	hMatchedCells = new CellsList();
+	vMatchedCells = new CellsList();
+	sMatchedCells = new CellsList();
 	poolController = PoolController::getInstance();
 }
 

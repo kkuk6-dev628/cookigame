@@ -16,6 +16,8 @@ class ActionController;
 class BoardModel;
 class Level;
 class FallPath;
+class LavaCakeObject;
+
 USING_NS_CC;
 
 class BoardController : public Layer
@@ -31,7 +33,7 @@ public:
 
 	bool init() override;
 	void initWithJson(rapidjson::Value& data);
-	CREATE_FUNC(BoardController);
+	CREATE_FUNC(BoardController)
 
 	virtual void initWithModel(BoardModel* model);
 	virtual void initWithNode(Node* rootNode, Node* effectNode);
@@ -55,8 +57,8 @@ public:
 	void manualShuffle();
 	//void BoardController::initWithData(BoardModel* boardData);
 
-	float getBoardWidth() { return boardModel->getWidth(); }
-	float getBoardHeight() { return boardModel->getHeight(); }
+	float getBoardWidth() const { return boardModel->getWidth(); }
+	float getBoardHeight() const { return boardModel->getHeight(); }
 
 	void showGameWinDlg();
 
@@ -108,6 +110,7 @@ protected:
 
 	void showLineCrushEffect(Cell* cell, float rotation);
 	void showBombAndLineCrushEffect(Cell* cell);
+	void showBombCrushEffect(Cell* cell);
 
 	bool checkPastHole(Cell* cell, char refCol, char refRow, bool inWater = false);
 	Cell* fillCell(Cell* cell);
@@ -122,7 +125,7 @@ protected:
 	void shuffle(float);
 	void showHintAction();
 
-	virtual Cell* findSeekerTarget(std::list<Cell*>* targetsList) const;
+	virtual Cell* findSeekerTarget(CellsList* targetsList) const;
 	void landingSeeker(AnimationShowObject* seekerShow, Cell* targetCell);
 	void crushBonusManually(Cell* cell, std::string bonusString);
 
@@ -132,6 +135,7 @@ protected:
 	void crushColumnBreaker(Cell* cell, bool showEffect = true);
 	void crushXBreaker(Cell* cell);
 	void crushSeeker(Cell* cell, MovingTileTypes bonusType=MovingTileTypes::LayeredMatchObject);
+	void crushSeekerAndBonus(Cell* seekerCell, Cell* bonusCell);
 
 	void crushNearbyCells(Cell* cell);
 	virtual void crushUnderCells(Cell* cell);
@@ -142,9 +146,13 @@ protected:
 	void countDownMoveNumber();
 	void fillLiquid(bool inverse = false);
 
+	void moveConveyors();
 	virtual void pathMoverCollected(Cell* cell){};
 
 	void increaseObjectCount();
+
+	void addLavaCakeObject(char col, char row, CookieTile* lavaCake);
+	void spawnLavaCake(Cell* cell, CellsList* targets);
 
 	void endGame();
 	////////////////////
@@ -212,6 +220,7 @@ protected:
 
 	float totalObjectCount = 0;
 	float collectedObjectCount = 0;
+	bool moveConveyorsFlag = false;
 
 #pragma endregion
 

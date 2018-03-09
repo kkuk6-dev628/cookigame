@@ -33,6 +33,14 @@
 #define TOPPLINGOBJECT "TopplingObject"
 #define HOPPLINGOBJECT "HopplingObject"
 #define CRACKEROBJECT "CrackerObject"
+#define LAVACAKEOBJECT "LavaCakeObject"
+#define LAVACAKETARGETOBJECT "LavaCakeTargetObject"
+#define SEEKERPRIORITYOBJECT "SeekerPriorityObject"
+#define EMPTYOBJECT "EmptyObject"
+#define INVISIBLEBRICKOBJECT "InvisibleBrickObject"
+#define PORTALOUTLETOBJECT "PortalOutletObject"
+#define PORTALINLETOBJECT "PortalInletObject"
+#define POPSICLEOBJECT "PopsicleObject"
 
 //////////////////////////////////////////////////
 
@@ -105,7 +113,7 @@ static const char AvailableMoves[AVAILABLE_MOVES_COUNT][4][2] = {
 	},
 };
 
-static const std::map<std::string, std::vector<char>> MoveDirectionsMap = {
+static const std::map<std::string, std::vector<char>> MoveDirectionsMap = { // { col, row }
 	{ std::string("down"),{ -1, 0 } },
 	{ std::string("down-left"),{ -1, 0 } },
 	{ std::string("down-left (CW)"),{ 0, -1 } },
@@ -114,7 +122,7 @@ static const std::map<std::string, std::vector<char>> MoveDirectionsMap = {
 	{ std::string("left"),{ 0, -1 } },
 	{ std::string("right"),{ 0, 1 } },
 	{ std::string("up"),{ 1, 0 } },
-	{ std::string("up-left"),{ -1, 0 } },
+	{ std::string("up-left"),{ 0, -1 } },
 	{ std::string("up-left (CW)"),{ 0, 1 } },
 	{ std::string("up-right"),{ 1, 0 } },
 	{ std::string("up-right (CW)"),{ 0, 1 } },

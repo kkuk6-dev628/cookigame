@@ -237,13 +237,13 @@ void THopplingBoardController::showThopplerCollectingEffect(Cell* startCell)
 	actionController->pushAction(ckAction, true);
 }
 
-std::list<Cell*>* THopplingBoardController::findHopplingTarget(Cell* cell)
+CellsList* THopplingBoardController::findHopplingTarget(Cell* cell)
 {
 	char* oldIndent = nullptr;
 	char* newIndent = nullptr;
 	Cell* oldCell = cell;
 	Cell* newCell = cell;
-	auto hopplingPath = new std::list<Cell*>;
+	auto hopplingPath = new CellsList;
 	char loopCount = 0;
 	do
 	{

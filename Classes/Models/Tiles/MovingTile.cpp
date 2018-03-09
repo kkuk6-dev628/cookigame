@@ -82,6 +82,8 @@ void MovingTile::showFallAction(FallPath* path)
 
 void MovingTile::showMoveAction(Cell* cell)
 {
+	initMovingTile();
+
 	auto showObj = poolController->getTileShowObject();
 	showObj->setSpriteFrame(textureSprite->getSpriteFrame());
 	showObj->setPosition(getPosition());
@@ -90,14 +92,13 @@ void MovingTile::showMoveAction(Cell* cell)
 	{
 		getParent()->addChild(showObj);
 	}
-	initMovingTile();
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(showObj);
 	ckAction.action = actionController->createTileMoveAction(getPosition(), cell->getBoardPos(), [=] {
 		this->setVisible(true);
 		this->isMoving = false;
 		this->movingDuration = 0.f;
-		this->setPosition(Utils::Grid2BoardPos(this->gridPos));
+		this->setPosition(cell->getBoardPos());
 		PoolController::getInstance()->recycleTileShowObject(showObj);
 		BoardController::fallingTileCount--;
 	}, ckAction.node);

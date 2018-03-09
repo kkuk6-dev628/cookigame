@@ -20,7 +20,7 @@ public:
 	void initEffectNode();
 
 	// implement the "static create()" method manually
-	CREATE_FUNC(GamePlayScene);
+	CREATE_FUNC(GamePlayScene)
 
 	void restartCallback(Ref* pSender);
 

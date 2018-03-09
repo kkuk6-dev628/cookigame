@@ -49,7 +49,7 @@ void PopsicleBoardController::addCellToBoard(char col, char row)
 	}
 
 	auto popsicle = static_cast<PopsicleObject*>(cell->getTileAtLayer(LayerId::UnderCover));
-	if(popsicle != nullptr)
+	if(popsicle != nullptr && popsicle->getType() == POPSICLEOBJECT)
 	{
 		totalObjectCount ++;
 		if(popsicleCells == nullptr)
@@ -130,7 +130,7 @@ void PopsicleBoardController::canCollectedPopsicle(Cell* cell)
 	}
 }
 
-Cell* PopsicleBoardController::findSeekerTarget(std::list<Cell*>* targetsList) const
+Cell* PopsicleBoardController::findSeekerTarget(CellsList* targetsList) const
 {
 	if(coveredPopsicleCells != nullptr && coveredPopsicleCells->size() > 0)
 	{

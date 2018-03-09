@@ -8,7 +8,7 @@ public:
 	Utils();
 	~Utils();
 
-	static bool containsCell(std::list<Cell*>* cellsList, Cell* cell);
+	static bool containsCell(CellsList* cellsList, Cell* cell);
 
 	static GridSizeT StrToGridSize(std::string str, std::string delim);
 	static std::vector<std::string> splitString(std::string str, char delim);

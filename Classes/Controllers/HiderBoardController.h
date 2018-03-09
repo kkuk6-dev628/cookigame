@@ -18,16 +18,17 @@ protected:
 	void crushUnderCells(Cell* cell) override;
 	void crushCell(Cell* pCell) override;
 	void processCustomLogic(float dt) override;
-	Cell* findSeekerTarget(std::list<Cell*>* targetsList) const override;
+	Cell* findSeekerTarget(CellsList* targetsList) const override;
 
 	void initHiderGame();
 
 private:
 	std::map<std::string, HiderGroup*>* hidersMap = nullptr;
 	HiderSegmentObject* findNextSegment(HiderSegmentObject* seg, HiderSegmentObject* pastSeg) const;
-	std::list<Cell*>* findHiderMoveCells(Cell* startCelll, char segmentsCount);
-	bool searchCoveredCells(Cell* cell, Cell* exceptCell, std::list<Cell*>* coveredCells, char count);
+	CellsList* findHiderMoveCells(Cell* startCelll, char segmentsCount);
+	bool searchCoveredCells(Cell* cell, Cell* exceptCell, CellsList* coveredCells, char count);
 	void moveHider(HiderSegmentObject* headSeg);
 	void checkHiders();
+	void showHiderCollectingAction(Vec2& pos);
 };
 

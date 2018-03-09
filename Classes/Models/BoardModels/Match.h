@@ -14,9 +14,9 @@ public:
 	int matchId = 0;
 	bool isWaiting = false;
 	Cell* refCell = nullptr;
-	std::list<Cell*>* hMatchedCells;
-	std::list<Cell*>* vMatchedCells;
-	std::list<Cell*>* sMatchedCells;
+	CellsList* hMatchedCells;
+	CellsList* vMatchedCells;
+	CellsList* sMatchedCells;
 	Cell* bonusMatchCell = nullptr;
 
 	bool equal(Match* other);

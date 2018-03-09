@@ -5,7 +5,7 @@
 HiderGroup::HiderGroup()
 {
 	segments = new std::vector<HiderSegmentObject*>;
-	coveredCells = new std::list<Cell*>;
+	coveredCells = new CellsList;
 }
 
 
@@ -33,14 +33,14 @@ void HiderGroup::initSegmentTextures()
 	}
 }
 
-void HiderGroup::moveHiderGroup(std::list<Cell*>* cells, Cell* startCell)
+void HiderGroup::moveHiderGroup(CellsList* cells, Cell* startCell)
 {
 	CC_ASSERT(cells->size() == segmentsCount);
 	auto segment = segments->back();
 	auto segmentsItr = segments->end();
 	for(auto cell : *cells)
 	{
-		std::list<Cell*> newVec;
+		CellsList newVec;
 		auto cellItr = std::find(cells->begin(), cells->end(), cell);
 		std::copy(cells->begin(), cellItr, std::back_inserter(newVec));
 		if(newVec.size() == 0)
@@ -93,7 +93,7 @@ bool HiderGroup::checkHiderGroup()
 	return true;
 }
 
-void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, std::list<Cell*>* movePath)
+void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* movePath)
 {
 	CKAction ckAction;
 	auto actionController = ActionController::getInstance();

@@ -18,11 +18,12 @@ MovingTile* SpawnerObject::spawnMovingTile()
 {
 	spawnController->countSpawnedTiles();
 	auto spawnColor = spawnController->getSpawnColor();
-	auto spawnType = spawnController->getSpawnType();
+	auto spawnType = spawnController->getSpawnType(name);
 	auto spawnTile = static_cast<MovingTile*>(poolController->getCookieTile(spawnType._to_string()));
 
 	spawnTile->setTileColor(spawnColor);
 	auto spawnedPos = Utils::Grid2BoardPos(gridPos);
+
 	auto dir = direction == +Direction::S ? 1 : -1;
 	spawnedPos.add(Vec2(0, (spawnedCount + 1) * dir * CellSize));
 	spawnedCount++;

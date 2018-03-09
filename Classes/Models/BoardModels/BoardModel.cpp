@@ -6,7 +6,8 @@
 #include "Models/Tiles/SpawnerObject.h"
 #include "Controllers/ActionController.h"
 #include "Controllers/BoardController.h"
-
+#include "Models/Tiles/ConveyorBeltObject.h"
+#include "Models/Tiles/LavaCakeObject.h"
 
 BoardModel::BoardModel()
 {
@@ -181,7 +182,7 @@ Cell* BoardModel::getSeekerTarget()
 	auto seekerTarget = seekerPriorityList->front();
 	seekerTarget->countDownLayer();
 	auto retCell = seekerTarget->getCell();
-	if(seekerTarget->getLayers() < 0)
+	if(seekerTarget->getLayers() <= 0)
 	{
 		seekerPriorityList->pop_front();
 		seekerTarget->release();
@@ -189,9 +190,9 @@ Cell* BoardModel::getSeekerTarget()
 	return retCell;
 }
 
-std::list<Cell*>* BoardModel::getSameColorCells(TileColors tileColor)
+CellsList* BoardModel::getSameColorCells(TileColors tileColor)
 {
-	auto ret = new std::list<Cell*>;
+	auto ret = new CellsList;
 	for (char i = 0; i < height; i++)
 	{
 		for (char j = 0; j < width; j++)
@@ -499,6 +500,20 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 					}
 					setCurrentLiquidLevel(liquidSystem->LevelStart);
 				}
+				else if(strcmp(dataType, "ConveyorBeltObject") == 0)
+				{
+					if(conveyorInfo == nullptr)
+					{
+						conveyorInfo = new std::list<ConveyorInfo*>;
+					}
+
+					auto conveyorInfoItem = new ConveyorInfo;
+					conveyorInfoItem->FromColumn = customData["from_column"].GetInt();
+					conveyorInfoItem->FromRow = customData["from_row"].GetInt();
+					conveyorInfoItem->ToColumn = customData["to_column"].GetInt();
+					conveyorInfoItem->ToRow = customData["to_row"].GetInt();
+					conveyorInfo->push_back(conveyorInfoItem);
+				}
 			}
 		}
 	}
@@ -508,6 +523,216 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	}
 
 	setNoShuffleCells(json["noReshuffle"]);
+}
+
+ConveyorInfo* BoardModel::findConveyorInfo(Cell* cell) const
+{
+	if (cell == nullptr) return nullptr;
+	if (conveyorInfo == nullptr || conveyorInfo->size() == 0) return nullptr;
+
+	for(auto conveyorInfoItem : *conveyorInfo)
+	{
+		if(conveyorInfoItem->FromColumn == cell->gridPos.Col && conveyorInfoItem->FromRow == cell->gridPos.Row)
+		{
+			return conveyorInfoItem;
+		}
+	}
+	return nullptr;
+}
+
+void BoardModel::buildConveyors()
+{
+	if(conveyors == nullptr)
+	{
+		conveyors = new std::list<CellsList*>;
+	}
+	if(conveyorInfo != nullptr)
+	{
+		for(auto conveyorInfoItem : *conveyorInfo)
+		{
+			auto conveyor = new CellsList;
+			auto startCell = getCell(conveyorInfoItem->ToColumn, conveyorInfoItem->ToRow);
+			auto endCell = getCell(conveyorInfoItem->FromColumn, conveyorInfoItem->FromRow);
+			if (containedInConveyors(startCell)) continue;
+			auto itrCell = startCell;
+			auto prevCell = startCell;
+			do
+			{
+				auto conveyorTile = static_cast<ConveyorBeltObject*>(itrCell->getTileAtLayer(LayerId::PathConveyor));
+				if(conveyorTile == nullptr)
+				{
+					break;
+				}
+				conveyor->push_back(itrCell);
+				
+				auto strDir = conveyorTile->getDirectionString();
+				auto indent = MoveDirectionsMap.at(strDir);
+				prevCell = itrCell;
+				itrCell = getCell(itrCell->gridPos.Col + indent.at(1), itrCell->gridPos.Row + indent.at(0));
+				if(itrCell == nullptr || itrCell->isOutCell)
+				{
+					auto nextSectionInfo = findConveyorInfo(prevCell);
+					if(nextSectionInfo != nullptr)
+					{
+						itrCell = getCell(nextSectionInfo->ToColumn, nextSectionInfo->ToRow);
+					}
+					else
+					{
+						break;
+					}
+				}
+			}while (itrCell != startCell);
+			if(conveyor->size() > 1)
+			{
+				conveyors->push_back(conveyor);
+			}
+			else
+			{
+				CC_SAFE_DELETE(conveyor);
+			}
+		}
+	}
+
+	for(char i = 0; i < height; i++)
+	{
+		for(char j = 0; j < width; j++)
+		{
+			auto cell = getCell(j, i);
+			if(cell == nullptr) continue;
+
+			auto startConveyor = static_cast<ConveyorBeltObject*>(cell->getTileAtLayer(LayerId::PathConveyor));
+			if(startConveyor == nullptr || startConveyor->getType() != "ConveyorBeltObject") continue;
+			if(containedInConveyors(cell)) continue;
+			
+			auto conveyor = new CellsList;
+			auto itrCell = cell;
+			do
+			{
+				auto conveyorTile = static_cast<ConveyorBeltObject*>(itrCell->getTileAtLayer(LayerId::PathConveyor));
+				if (conveyorTile == nullptr)
+				{
+					break;
+				}
+				conveyor->push_back(itrCell);
+
+				auto strDir = conveyorTile->getDirectionString();
+				auto indent = MoveDirectionsMap.at(strDir);
+				itrCell = getCell(itrCell->gridPos.Col + indent.at(1), itrCell->gridPos.Row + indent.at(0));
+			}while (itrCell != nullptr && itrCell != cell);
+			conveyors->push_back(conveyor);
+		}
+	}
+}
+
+bool BoardModel::containedInConveyors(Cell* cell) const
+{
+	if(conveyors == nullptr)
+	{
+		return false;
+	}
+	for(auto conveyor : *conveyors)
+	{
+		auto itr = std::find(conveyor->begin(), conveyor->end(), cell);
+		if(itr != conveyor->end())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BoardModel::checkConveyorStatus(CellsList* conveyor) const
+{
+	if(conveyor == nullptr || conveyor->size() == 0)
+	{
+		return false;
+	}
+	for(auto cell : *conveyor)
+	{
+		if (cell->isFixed) return false;
+
+	}
+	return true;
+}
+
+void BoardModel::moveConveyors()
+{
+	if (conveyors == nullptr || conveyors->size() == 0) return;
+
+	for(auto conveyor : *conveyors)
+	{
+		if(!checkConveyorStatus(conveyor)) continue;
+
+		auto cell = conveyor->back();
+		auto lastTile = cell->getMovingTile();
+
+		for(auto itr = conveyor->rbegin(); itr != --conveyor->rend(); ++itr)
+		{
+			auto next = std::next(itr);
+			conveyTile((*next)->getMovingTile(), *itr);
+		}
+
+		conveyTile(lastTile, conveyor->front());
+	}
+}
+
+void BoardModel::conveyTile(MovingTile* from, Cell* to) const
+{
+	if (from == nullptr || to == nullptr) return;
+
+	auto colIndent = abs(from->gridPos.Col - to->gridPos.Col);
+	auto rowIndent = abs(from->gridPos.Row - to->gridPos.Row);
+	if (colIndent + rowIndent > 1)
+	{
+		auto conveyorTile = to->getTileAtLayer(LayerId::PathConveyor);
+		auto strDir = conveyorTile->getDirectionString();
+		auto indent = MoveDirectionsMap.at(strDir);
+		auto pos = to->getBoardPos() + Vec2(-indent.at(1) * CellSize, -indent.at(0) * CellSize);
+		from->setPosition(pos);
+	}
+
+	from->showMoveAction(to);
+	to->setSourceTile(from);
+}
+
+CellsList* BoardModel::getLavaCakeTargets()
+{
+	if(lavaCakeTargets == nullptr || lavaCakeTargets->size() == 0)
+	{
+		return nullptr;
+	}
+	else
+	{
+		auto retList = std::vector<Cell*>(lavaCakeTargets->begin(), lavaCakeTargets->end());
+		while(retList.size() > 4)
+		{
+			retList.erase(retList.begin() + rand_0_1() * retList.size());
+		}
+		auto lst = new CellsList;
+		std::copy(retList.begin(), retList.end(), std::back_inserter(*lst));
+		return lst;
+	}
+}
+
+void BoardModel::setIncreaseLavaCakeFlag(bool flag)
+{
+	if(lavaCakeTiles == nullptr || lavaCakeTiles->size() == 0)
+	{
+		return;
+	}
+	for(auto lava : *lavaCakeTiles)
+	{
+		lava->setIncreaseLavaCakeFlag(true);
+	}
+}
+
+void BoardModel::addLavaCakeTile(LavaCakeObject* lavaCake)
+{
+	if(lavaCakeTiles == nullptr)
+	{
+		lavaCakeTiles = new std::list<LavaCakeObject*>;
+	}
+	lavaCakeTiles->push_back(lavaCake);
 }
 
 void BoardModel::setNoShuffleCells(rapidjson::Value& json)
@@ -532,6 +757,9 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 		{
 			auto gridPos = Utils::StrToGridPos(itr->name.GetString(), "_");
 			assert(this->width > gridPos.Col && this->height > gridPos.Row);
+
+			auto cell = cells[gridPos.Row][gridPos.Col];
+
 			const auto itr1 = itr->value.FindMember("type");
 			if (itr1 != itr->value.MemberEnd() && itr1->value.IsString())
 			{
@@ -542,9 +770,9 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 					tile->initWithGrid(gridPos.Col, gridPos.Row);
 					tile->initWithJson(itr->value);
 
-					cells[gridPos.Row][gridPos.Col]->setTileToLayer(tile, layerNumber);
+					cell->setTileToLayer(tile, layerNumber);
 
-					if(strcmp(typeName, "SeekerPriorityObject") == 0)
+					if(strcmp(typeName, SEEKERPRIORITYOBJECT) == 0)
 					{
 						if(seekerPriorityList == nullptr)
 						{
@@ -552,15 +780,15 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 						}
 						seekerPriorityList->push_back(static_cast<SeekerPriorityObject*>(tile));
 					}
-					else if (strcmp(typeName, "EmptyObject") == 0)
+					else if (strcmp(typeName, EMPTYOBJECT) == 0)
 					{
-						cells[gridPos.Row][gridPos.Col]->isOutCell = true;
+						cell->isOutCell = true;
 					}
-					else if (strcmp(typeName, "InvisibleBrickObject") == 0)
+					else if (strcmp(typeName, INVISIBLEBRICKOBJECT) == 0)
 					{
-						cells[gridPos.Row][gridPos.Col]->isOutCell = true;
+						cell->isOutCell = true;
 					}
-					else if(strcmp(typeName, "PortalOutletObject") == 0)
+					else if(strcmp(typeName, PORTALOUTLETOBJECT) == 0)
 					{
 						if(portalOutList == nullptr)
 						{
@@ -568,13 +796,21 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 						}
 						portalOutList->push_back(reinterpret_cast<PortalOutletObject* const&>(tile));
 					}
-					else if (strcmp(typeName, "PortalInletObject") == 0)
+					else if (strcmp(typeName, PORTALINLETOBJECT) == 0)
 					{
 						if (portalInList == nullptr)
 						{
 							portalInList = new std::list<PortalInletObject*>;
 						}
 						portalInList->push_back(reinterpret_cast<PortalInletObject* const&>(tile));
+					}
+					else if (strcmp(typeName, LAVACAKETARGETOBJECT) == 0)
+					{
+						if (lavaCakeTargets == nullptr)
+						{
+							lavaCakeTargets = new CellsList;
+						}
+						lavaCakeTargets->push_back(cell);
 					}
 					//else if(strcmp(typeName, "SpawnerObject") == 0)
 					//{
@@ -587,7 +823,7 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 
 }
 
-std::list<Cell*>* BoardModel::findAvailableMoveCells()
+CellsList* BoardModel::findAvailableMoveCells()
 {
 	for (char i = 0; i < height; i++)
 	{
@@ -629,7 +865,7 @@ std::list<Cell*>* BoardModel::findAvailableMoveCells()
 
 				if(allMovable)
 				{
-					return new std::list<Cell*>{
+					return new CellsList{
 						cells[i][j],
 						cells[i + AvailableMoves[k][0][0]][j + AvailableMoves[k][0][1]],
 						cells[i + AvailableMoves[k][1][0]][j + AvailableMoves[k][1][1]]
@@ -702,7 +938,7 @@ bool BoardModel::checkAvailableMove(char col, char row)
 				if(refTile->getMovingTileType() == +MovingTileTypes::RainbowObject 
 					|| aCell->getMovingTile()->isBonusTile())
 				{
-					availableMove = new std::list<Cell*>{
+					availableMove = new CellsList{
 						refCell,
 						aCell
 					};
@@ -716,7 +952,7 @@ bool BoardModel::checkAvailableMove(char col, char row)
 		TileColors refColor = refCell->getMovingTile()->getTileColor();
 		for(char i = 0; i < AVAILABLE_MOVES_COUNT; i++)
 		{
-			std::list<Cell*> availableTiles;
+			CellsList availableTiles;
 			char count = 0;
 			for(char j = 0; j < 2; j++)
 			{
@@ -751,7 +987,7 @@ bool BoardModel::checkAvailableMove(char col, char row)
 				auto cCell = cells[cRow][cCol];
 				if (bCell != nullptr && bCell->canMove() && cCell != nullptr && cCell->canMove())
 				{
-					availableMove = new std::list<Cell*>(availableTiles);
+					availableMove = new CellsList(availableTiles);
 					availableMove->push_back(refCell);
 					return true;
 				}

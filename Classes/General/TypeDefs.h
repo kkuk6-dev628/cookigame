@@ -7,6 +7,8 @@
 #include "json/rapidjson.h"
 #include "cocostudio/ActionTimeline/CCActionTimelineCache.h"
 
+class Cell;
+
 struct Goal
 {
 	GoalTypes GoalType = GoalTypes::WaffleObject;
@@ -100,6 +102,7 @@ struct SpawnTable
 
 typedef std::map<TileColors, float>* TileColorsTable;
 typedef std::list<SpawnTable>* SpawnTablesList;
+typedef std::list<Cell*> CellsList;
 
 struct GridPos
 {
@@ -142,6 +145,14 @@ struct SpawnOnCollectSystem
 	std::string ObjectType;
 	std::string Type;
 	char IntervalMin;
+};
+
+struct ConveyorInfo
+{
+	char ToColumn;
+	char ToRow;
+	char FromColumn;
+	char FromRow;
 };
 
 struct Limit

@@ -64,8 +64,14 @@ public:
 	AnimationShowObject* getLineCrushShow() const;
 	void recycleLineCrushShow(AnimationShowObject* show) const;
 
+	AnimationShowObject* getBombCrushShow() const;
+	void recycleBombCrushShow(AnimationShowObject* show) const;
+
 	AnimationShowObject* getBombAndLineCrushShow() const;
 	void recycleBombAndLineCrushShow(AnimationShowObject* show) const;
+
+	AnimationShowObject* getLavaCakeEffect() const;
+	void recycleLavaCakeEffect(AnimationShowObject* show) const;
 
 	SpriteShowObject* getWaffleShow() const;
 	void recycleWaffleShow(SpriteShowObject* waffleShow) const;
@@ -93,6 +99,8 @@ public:
 	void recyclePopBombShow(SpriteShowObject* popBombShow) const;
 	SpriteShowObject* getPopRainbowShow() const;
 	void recyclePopRainbowShow(SpriteShowObject* popRainbowShow) const;
+	SpriteShowObject* getHiderShow() const;
+	void recycleHiderShow(SpriteShowObject* popHiderShow) const;
 
 private:
 	PoolController();
@@ -120,7 +128,9 @@ private:
 	NodePool<AnimationShowObject>* yellowSeekerShowPool;
 
 	NodePool<AnimationShowObject>* lineCrushShowPool;
+	NodePool<AnimationShowObject>* bombCrushShowPool;
 	NodePool<AnimationShowObject>* bombAndLineCrushShowPool;
+	NodePool<AnimationShowObject>* lavaCakeEffectPool;
 
 	NodePool<AnimationShowObject>* chocolateCrushPool;
 
@@ -140,5 +150,6 @@ private:
 	NodePool<SpriteShowObject>* popLineShowPool;
 	NodePool<SpriteShowObject>* popBombShowPool;
 	NodePool<SpriteShowObject>* popRainbowShowPool;
+	NodePool<SpriteShowObject>* hiderShowPool;
 };
 

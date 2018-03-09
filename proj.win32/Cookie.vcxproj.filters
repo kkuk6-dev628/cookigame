@@ -213,13 +213,16 @@
     <ClCompile Include="..\Classes\Models\Tiles\HiderSegmentObject.cpp">
       <Filter>src\Models\Tiles</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\ConveyorBeltObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\LavaCakeObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\AppDelegate.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Controllers\SpawnController.h">
       <Filter>src\Controllers</Filter>
@@ -403,6 +406,15 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Models\Tiles\HiderSegmentObject.h">
       <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\ConveyorBeltObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\LavaCakeObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\AppDelegate.h">
+      <Filter>win32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

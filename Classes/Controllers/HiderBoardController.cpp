@@ -1,5 +1,6 @@
 #include "HiderBoardController.h"
 #include "Models/Tiles/HiderSegmentObject.h"
+#include "ActionController.h"
 
 
 HiderBoardController::HiderBoardController()
@@ -36,7 +37,7 @@ void HiderBoardController::processCustomLogic(float dt)
 	checkHiders();
 }
 
-Cell* HiderBoardController::findSeekerTarget(std::list<Cell*>* targetsList) const
+Cell* HiderBoardController::findSeekerTarget(CellsList* targetsList) const
 {
 	std::vector<Cell*> coveredSegmentCells;
 	for(auto hiderGroupItem : *hidersMap)
@@ -132,14 +133,14 @@ void HiderBoardController::crushUnderCells(Cell* cell)
 	}
 }
 
-std::list<Cell*>* HiderBoardController::findHiderMoveCells(Cell* startCelll, char segmentsCount)
+CellsList* HiderBoardController::findHiderMoveCells(Cell* startCelll, char segmentsCount)
 {
-	auto hiderMoveCells = new std::list<Cell*>;
+	auto hiderMoveCells = new CellsList;
 	auto res = searchCoveredCells(startCelll, nullptr, hiderMoveCells, segmentsCount);
 	return hiderMoveCells;
 }
 
-bool HiderBoardController::searchCoveredCells(Cell* cell, Cell* exceptCell, std::list<Cell*>* coveredCells, char count)
+bool HiderBoardController::searchCoveredCells(Cell* cell, Cell* exceptCell, CellsList* coveredCells, char count)
 {
 	if (cell == nullptr || cell->isOutCell) return false;
 
@@ -171,7 +172,8 @@ void HiderBoardController::checkHiders()
 		if (hiderItem.second->checkHiderGroup())
 		{
 			removeHiders.push_back(hiderItem.first);
-			increaseObjectCount();
+			auto pos = hiderItem.second->getHead()->getPosition();
+			showHiderCollectingAction(pos);
 		}
 	}
 
@@ -180,6 +182,21 @@ void HiderBoardController::checkHiders()
 		hidersMap->erase(removeKey);
 	}
 }
+
+void HiderBoardController::showHiderCollectingAction(Vec2& pos)
+{
+	auto showObj = poolController->getHiderShow();
+	showObj->setPosition(pos);
+	effectNode->addChild(showObj);
+	CKAction ckAction;
+	ckAction.node = showObj;
+	ckAction.action = actionController->createHiderCollectionAction(objectTargetPos, [=] {
+		this->increaseObjectCount();
+		this->poolController->recycleHiderShow(showObj);
+	}, showObj);
+	actionController->pushAction(ckAction, true);
+}
+
 
 void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 {
