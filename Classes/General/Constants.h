@@ -41,6 +41,20 @@
 #define PORTALOUTLETOBJECT "PortalOutletObject"
 #define PORTALINLETOBJECT "PortalInletObject"
 #define POPSICLEOBJECT "PopsicleObject"
+#define POINTEROBJECT "PointerObject"
+#define OBJECTSPINNEROBJECT "ObjectSpinnerObject"
+#define WAFFLEOBJECT "WaffleObject"
+#define PIECESWAPPEROBJECT "PieceSwapperObject"
+#define PRETZELOBJECT "PretzelObject"
+#define SPAWNEROBJECT "SpawnerObject"
+#define DISPLAYCASEOBJECT "DisplayCaseObject"
+
+//////////////////////////////////////////////////
+
+//////////////////////////////////////////////////
+// Tiles ZOrders
+
+#define PRETZELZORDER 10000
 
 //////////////////////////////////////////////////
 
@@ -123,7 +137,7 @@ static const std::map<std::string, std::vector<char>> MoveDirectionsMap = { // {
 	{ std::string("right"),{ 0, 1 } },
 	{ std::string("up"),{ 1, 0 } },
 	{ std::string("up-left"),{ 0, -1 } },
-	{ std::string("up-left (CW)"),{ 0, 1 } },
+	{ std::string("up-left (CW)"),{ 1, 0 } },
 	{ std::string("up-right"),{ 1, 0 } },
 	{ std::string("up-right (CW)"),{ 0, 1 } },
 };

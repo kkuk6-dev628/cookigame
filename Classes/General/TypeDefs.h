@@ -75,6 +75,14 @@ struct SpawnTable
 				{
 					this->Percent = atof(itr->value.GetString());
 				}
+				else if(itr->value.IsInt())
+				{
+					this->Percent = itr->value.GetInt();
+					if (this->Percent > 1)
+					{
+						this->Percent /= 100;
+					}
+				}
 			}
 			
 			

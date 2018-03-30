@@ -17,8 +17,8 @@ public:
 	//void onEnterTransitionDidFinish() override;
 	//bool onTouchBegan(Touch* touch, Event* unused_event);
 
-	void showScaleBouncingAction() const;
-	void showDirectionalScaleAction(AdjacentDirs dir) const;
+	void showScaleBouncingAction();
+	void showDirectionalScaleAction(AdjacentDirs dir);
 	void showFallAction(FallPath* path);
 	void showMoveAction(Cell* cell);
 

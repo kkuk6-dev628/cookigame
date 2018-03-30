@@ -1,5 +1,6 @@
 #include "SpawnController.h"
 #include "General/Utils.h"
+#include "Models/Tiles/SpawnerObject.h"
 
 SpawnController* SpawnController::instance = nullptr;
 SpawnController::SpawnController()
@@ -51,10 +52,20 @@ TileColors SpawnController::getSpawnColor() const
 	return TileColors::_from_integral(rnd * 6);
 }
 
-MovingTileTypes SpawnController::getSpawnType(std::string spawnerName) const
+MovingTileTypes SpawnController::getSpawnType(std::string spawnerName, int spawnedCount, bool inWater) const
 {
 	std::string spawnTypeString = "LayeredMatchObject";
 
+	if(inWater && liquidSpawnTable != nullptr)
+	{
+		for (auto table : *liquidSpawnTable)
+		{
+			if (Utils::checkSpawn(spawnedCount, table.Percent))
+			{
+				return MovingTileTypes::_from_string((*table.Type).c_str());
+			}
+		}
+	}
 	if(spawnerName == "normal")
 	{
 		if (pendingSpawnTypes->size() > 0)
@@ -81,5 +92,49 @@ MovingTileTypes SpawnController::getSpawnType(std::string spawnerName) const
 			}
 		}
 	}
+	else if(customSpawnTable != nullptr)
+	{
+		if(customSpawnTable->find(spawnerName) != customSpawnTable->end())
+		{
+			auto spawnTable = customSpawnTable->at(spawnerName);
+			auto spt = spawnTable.getSpawnTable();
+			if(spt != nullptr)
+			{
+				for (auto table : *spt)
+				{
+					if (Utils::checkSpawn(spawnedCount, table.Percent))
+					{
+						return MovingTileTypes::_from_string((*table.Type).c_str());
+					}
+				}
+			}
+
+		}
+	}
 	return MovingTileTypes::LayeredMatchObject;
+}
+
+void SpawnController::clearSpawners()
+{
+	if(spawnersList != nullptr && spawnersList->size() > 0)
+	{
+		spawnersList->clear();
+	}
+}
+
+void SpawnController::addSpawner(SpawnerObject* spawner)
+{
+	if(spawnersList == nullptr)
+	{
+		spawnersList = new std::list<SpawnerObject*>;
+	}
+	spawnersList->push_back(spawner);
+}
+
+void SpawnController::resetSpawners()
+{
+	for(auto spawner : *spawnersList)
+	{
+		spawner->initSpawnedCount();
+	}
 }

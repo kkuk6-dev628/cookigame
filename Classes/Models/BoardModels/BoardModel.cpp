@@ -97,7 +97,7 @@ Cell* BoardModel::getDirectFallCell(Cell* cell)
 	auto loopCell = cell->getFallUpCell();
 	auto prevCell = cell;
 
-	while (loopCell != nullptr && loopCell->canFill())
+	while (loopCell != nullptr && (loopCell->canFill() || (loopCell->canPass && (loopCell->isOutCell || loopCell->isFixed))))
 	{
 		if (loopCell->canFall())
 		{
@@ -123,6 +123,37 @@ Cell* BoardModel::getDirectFallCell(Cell* cell)
 		return loopCell;
 	}
 	return prevCell;
+}
+
+void BoardModel::addPieceSwapperCell(std::string color, Cell* cell)
+{
+	if(pieceSwappers == nullptr)
+	{
+		pieceSwappers = new std::map<std::string, PieceSwapper*>;
+	}
+	PieceSwapper* swapper = nullptr;
+	if(pieceSwappers->find(color) == pieceSwappers->end())
+	{
+		swapper = new PieceSwapper;
+		pieceSwappers->insert(std::pair<std::string, PieceSwapper*>(color, swapper));
+	}
+	else
+	{
+		swapper = pieceSwappers->at(color);
+	}
+	swapper->addCell(cell);
+}
+
+void BoardModel::runSwappers()
+{
+	if(pieceSwappers == nullptr || pieceSwappers->size() == 0)
+	{
+		return;
+	}
+	for(auto swapperPair : *pieceSwappers)
+	{
+		swapperPair.second->swap();
+	}
 }
 
 Cell* BoardModel::getInclinedFallCell(Cell* cell) 
@@ -185,7 +216,7 @@ Cell* BoardModel::getSeekerTarget()
 	if(seekerTarget->getLayers() <= 0)
 	{
 		seekerPriorityList->pop_front();
-		seekerTarget->release();
+		//seekerTarget->release();
 	}
 	return retCell;
 }
@@ -229,8 +260,8 @@ __Dictionary* BoardModel::getSpecialTiles()
 			{
 				breakers->addObject(tile->getCell());
 			}
-			if (tile->getType() == "WaffleObject" || tile->getType() == "PathMoverMatchObject"
-				|| cell->containsThoppler())
+			if (tile->getType() == "PathMoverMatchObject"
+				|| cell->containsThoppler() || cell->containsWaffle())
 			{
 				wafflesAndPathMovers->addObject(tile->getCell());
 			}
@@ -246,6 +277,27 @@ __Dictionary* BoardModel::getSpecialTiles()
 	specialTiles->setObject(liquids, "liquids");
 	return specialTiles;
 }
+
+bool BoardModel::checkPathMoverExist()
+{
+	for (char i = 0; i < height; i++)
+	{
+		for (char j = 0; j < width; j++)
+		{
+			if (cells[i][j] == nullptr || cells[i][j]->isEmpty) continue;
+
+			auto cell = cells[i][j];
+			auto tile = cell->getSourceTile();
+			if (tile == nullptr) continue;
+			if(tile->getMovingTileType() == +MovingTileTypes::PathMoverMatchObject)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 
 Cell* BoardModel::getRandomCell()
 {
@@ -313,6 +365,15 @@ BoardModel::~BoardModel()
 		CC_SAFE_DELETE(liquidSystem);
 	}
 
+	if (pieceSwappers != nullptr)
+	{
+		for(auto swapper : *pieceSwappers)
+		{
+			CC_SAFE_DELETE(swapper.second);
+		}
+		CC_SAFE_DELETE(pieceSwappers);
+	}
+
 	for (auto i = 0; i < height; i++)
 	{
 		for (auto j = 0; j < width; j++)
@@ -342,18 +403,18 @@ TileColorsTable BoardModel::CreateColorsTableFromJson(const rapidjson::Value& js
 	return nullptr;
 }
 
-std::list<CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTablesListFromJson(rapidjson::Value& json)
+std::map<std::string, CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTablesListFromJson(rapidjson::Value& json)
 {
 	if (json.IsArray() && json.Size() > 0)
 	{
-		auto ret = new std::list<CustomSpawnTableItem>();
+		auto ret = new std::map<std::string, CustomSpawnTableItem>();
 		auto arr = json.GetArray();
 
 		for (auto& conv : arr)
 		{
 			CustomSpawnTableItem spt;
 			spt.initWithJson(conv);
-			ret->push_back(spt);
+			ret->insert(std::pair<std::string, CustomSpawnTableItem>(spt.getName(), spt));
 		}
 		return ret;
 	}
@@ -380,6 +441,7 @@ void BoardModel::initSpawners()
 					auto spawner = SpawnerObject::create();
 					spawner->initSpawner();
 					cell->setTileToLayer(spawner, LayerId::Spawner);
+					SpawnController::getInstance()->addSpawner(spawner);
 				}
 				break;
 			}
@@ -395,6 +457,7 @@ void BoardModel::initSpawners()
 					spawner->initSpawner();
 					spawner->setDirection(Direction::N);
 					cell->setTileToLayer(spawner, LayerId::Spawner);
+					SpawnController::getInstance()->addSpawner(spawner);
 				}
 				break;
 			}
@@ -428,8 +491,12 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 		this->goals->push_back(goal);
 	}
 
-	this->customSpawnTable = CreateCustomSpawnTablesListFromJson(json["custom_spawn_table"]);
+	SpawnController::getInstance()->setCustomSpawnTable(CreateCustomSpawnTablesListFromJson(json["custom_spawn_table"]));
 	CreateSpawnTableFromJson(json["spawn_table"]);
+
+	auto liquidSpawnTable = CustomSpawnTableItem::CreateSpawnTablesFromJson(json["liquid_spawn_table"]);
+	SpawnController::getInstance()->setLiquidSpawnTable(liquidSpawnTable);
+
 
 	auto& layersJson = json["layers"];
 	for (auto itr = layersJson.MemberBegin(); itr != layersJson.MemberEnd(); ++itr)
@@ -669,10 +736,13 @@ void BoardModel::moveConveyors()
 		for(auto itr = conveyor->rbegin(); itr != --conveyor->rend(); ++itr)
 		{
 			auto next = std::next(itr);
-			conveyTile((*next)->getMovingTile(), *itr);
+			auto fromCell = *next;
+			conveyTile(fromCell->getMovingTile(), *itr);
+			fromCell->clear();
 		}
 
 		conveyTile(lastTile, conveyor->front());
+
 	}
 }
 
@@ -735,6 +805,67 @@ void BoardModel::addLavaCakeTile(LavaCakeObject* lavaCake)
 	lavaCakeTiles->push_back(lavaCake);
 }
 
+void BoardModel::addObjectSpinnerCell(Cell* cell)
+{
+	if(objectSpinnerCells == nullptr)
+	{
+		objectSpinnerCells = new CellsList;
+	}
+	objectSpinnerCells->push_back(cell);
+}
+
+void BoardModel::runObjectSpinner()
+{
+	if(objectSpinnerCells == nullptr || objectSpinnerCells->size() == 0)
+	{
+		return;
+	}
+
+	for(auto cell : *objectSpinnerCells)
+	{
+		auto spinner = cell->getTileAtLayer(LayerId::Waffle);
+		rotateSpinner(cell, spinner->getDirectionString() == "clockwise");
+	}
+}
+
+void BoardModel::rotateSpinner(Cell* cell, bool isClockWise)
+{
+	if(cell->isFixed || cell->rightCell->isFixed || cell->rightCell->downCell->isFixed || cell->downCell->isFixed)
+	{
+		return;
+	}
+	auto firstTile = cell->getMovingTile();
+	if(isClockWise)
+	{
+		moveTile(cell, cell->downCell->getMovingTile());
+		moveTile(cell->downCell, cell->downCell->rightCell->getMovingTile());
+		moveTile(cell->downCell->rightCell, cell->rightCell->getMovingTile());
+		moveTile(cell->rightCell, firstTile);
+	}
+	else
+	{
+		moveTile(cell, cell->rightCell->getMovingTile());
+		moveTile(cell->rightCell, cell->rightCell->downCell->getMovingTile());
+		moveTile(cell->rightCell->downCell, cell->downCell->getMovingTile());
+		moveTile(cell->downCell, firstTile);
+	}
+}
+
+MovingTile* BoardModel::moveTile(Cell* cell, MovingTile* movingTile)
+{
+	auto oldTile = cell->getMovingTile();
+	if (movingTile != nullptr)
+	{
+		movingTile->showMoveAction(cell);
+		cell->setSourceTile(movingTile);
+	}
+	else
+	{
+		cell->clear();
+	}
+	return oldTile;
+}
+
 void BoardModel::setNoShuffleCells(rapidjson::Value& json)
 {
 	for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
@@ -751,6 +882,7 @@ void BoardModel::setNoShuffleCells(rapidjson::Value& json)
 
 void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNumber)
 {
+	int n = layerNumber._to_integral();
 	for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
 	{
 		if (itr->value.IsObject() && !itr->value.ObjectEmpty())
@@ -812,10 +944,10 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 						}
 						lavaCakeTargets->push_back(cell);
 					}
-					//else if(strcmp(typeName, "SpawnerObject") == 0)
-					//{
-					//	hasToAddSpawners = false;
-					//}
+					else if(strcmp(typeName, SPAWNEROBJECT) == 0)
+					{
+						SpawnController::getInstance()->addSpawner(static_cast<SpawnerObject*>(tile));
+					}
 				}
 			}
 		}

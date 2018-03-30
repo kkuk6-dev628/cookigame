@@ -32,7 +32,7 @@ UserData::UserData()
 	topLevel = MAX(topLevel, 1);
 
 	//topLevel = 1599;//test
-	if (g_bDebugMode) topLevel = 246;
+	if (g_bDebugMode) topLevel = 26;
 #ifdef TEST_UserDataClearOnInit
 	clear();
 #endif
@@ -46,7 +46,7 @@ UserData::~UserData()
 void UserData::saveBooster() {
 	std::string strTmp = "";
 	for (int i = 0; i < BoosterCount; i++)
-		strTmp += String::createWithFormat("%d,", nBoosterCount[i])->getCString();
+		strTmp += __String::createWithFormat("%d", nBoosterCount[i])->getCString();
 
 	UserDefault::getInstance()->setStringForKey("BoosterCount", strTmp);
 }
@@ -122,14 +122,14 @@ __Array* UserData::componentsSeparatedByString(__String* srcStr, const char*sepS
 	{
 		subStr = src.substr(n1, n2 - n1);
 		if (subStr != "")
-			arr->addObject(String::create(subStr));
+			arr->addObject(__String::create(subStr));
 		n1 = n2 + 1;
 		n2 = src.find(sep, n1);
 	}
 	n2 = src.length();
 	subStr = src.substr(n1, n2 - n1);
 	if (subStr != "")
-		arr->addObject(String::create(subStr));
+		arr->addObject(__String::create(subStr));
 
 	return arr;
 }
@@ -235,7 +235,7 @@ int UserData::getTodayAvailableAds(int type) {
 	return nDaily_Total;
 }
 void UserData::setTodayAdsClick(int type) {
-	long cur_time = time(NULL);
+	long cur_time = time(nullptr);
 	long nDaily_time = UserDefault::getInstance()->getIntegerForKey(__String::createWithFormat("DailyAds_%d", type)->getCString(), 0);
 	int nDaily_Total = getTodayAvailableAds(type);
 	long c_time = getTodayTimeStamp();

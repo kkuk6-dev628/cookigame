@@ -18,6 +18,13 @@ public:
 	CREATE_FUNC(CrackerObject)
 };
 
+class PretzelObject : public LayeredCrackerTile
+{
+public:
+	PretzelObject() : LayeredCrackerTile() {}
+	CREATE_FUNC(PretzelObject)
+};
+
 class ChocolateObject : public LayeredCrackerTile
 {
 public:

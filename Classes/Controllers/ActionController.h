@@ -37,7 +37,7 @@ public:
 	//cocos2d::Action* createPowerCollectAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> callback);
 	cocos2d::Action* createFrontCrushAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> crushCallback, std::function<void()> lastCallback, char crushCount);
 
-	cocos2d::Action* createScaleBouncingAction(cocos2d::Node* node);
+	cocos2d::Action* createScaleBouncingAction(std::function<void()> callback, cocos2d::Node* node);
 	cocos2d::Action* createDirectionalScaleAction(cocos2d::Node* node, AdjacentDirs dir);
 	cocos2d::Action* createMoveThroughAction(FallPath* path, std::function<void()> callback, cocos2d::Node* node);
 	cocos2d::Action* createTileMoveAction(const cocos2d::Vec2& startPos, const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node) const;
@@ -50,6 +50,9 @@ public:
 	cocos2d::Action* createPopCollectionAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
 	cocos2d::Action* createHiderCollectionAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
 	cocos2d::Action* createPopBombAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
+
+	cocos2d::Action* createPieceSwappingAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
+
 
 	void endAction(cocos2d::Node* node) const;
 

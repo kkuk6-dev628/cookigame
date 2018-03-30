@@ -51,6 +51,12 @@ void PathObject::initTexture()
 	TileBase::initTexture(textureName);
 }
 
+void PieceSwapperObject::initTexture()
+{
+	auto textureName = StringUtils::format("%s_%s.png", type.c_str(), color._to_string());
+	TileBase::initTexture(textureName);
+}
+
 void PathFollowerObject::initTexture()
 {
 	rootNode = cocos2d::CSLoader::createNode("res/skeletal/SpinePatherIceCream.csb");

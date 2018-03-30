@@ -29,21 +29,43 @@ bool MovingTile::init()
 	return true;
 }
 
-void MovingTile::showScaleBouncingAction() const
+void MovingTile::showScaleBouncingAction()
 {
+	//CKAction ckAction;
+	//ckAction.node = reinterpret_cast<Node*>(this->textureSprite);
+	//ckAction.action = actionController->createScaleBouncingAction(ckAction.node);
+	//actionController->pushAction(ckAction, false);
+	initMovingTile();
+
+	auto showObj = poolController->getTileShowObject();
+	showObj->setSpriteFrame(textureSprite->getSpriteFrame());
+	showObj->setPosition(getPosition());
+	showObj->setAnchorPoint(Vec2(0.5, 0.5));
+	if (getParent() != nullptr && showObj->getParent() == nullptr)
+	{
+		getParent()->addChild(showObj);
+	}
 	CKAction ckAction;
-	ckAction.node = reinterpret_cast<Node*>(this->textureSprite);
-	ckAction.action = actionController->createScaleBouncingAction(ckAction.node);
-	actionController->pushAction(ckAction, false);
+	ckAction.node = reinterpret_cast<Node*>(showObj);
+	ckAction.action = actionController->createScaleBouncingAction([=] {
+		this->setVisible(true);
+		PoolController::getInstance()->recycleTileShowObject(showObj);
+		BoardController::fallingTileCount--;
+	}, ckAction.node);
+	setVisible(false);
+	isMoving = true;
+	movingDuration = static_cast<Sequence*>(ckAction.action)->getDuration();
+	actionController->pushAction(ckAction, true);
+	BoardController::fallingTileCount++;
 }
 
-void MovingTile::showDirectionalScaleAction(const AdjacentDirs dir) const
+void MovingTile::showDirectionalScaleAction(const AdjacentDirs dir)
 {
 	if (this->textureSprite == nullptr) return;
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(this->textureSprite);
 	ckAction.action = actionController->createDirectionalScaleAction(ckAction.node, dir);
-	actionController->pushAction(ckAction, false);
+	actionController->pushAction(ckAction, true);
 }
 
 void MovingTile::showFallAction(FallPath* path)
@@ -140,11 +162,33 @@ bool MovingTile::isMovable()
 
 void MovingTile::showSwapAction(GridPos& gridPos, const std::function<void()> callback)
 {
-	const auto targetPos = Utils::Grid2BoardPos(gridPos);
+	initMovingTile();
+
+	auto showObj = poolController->getTileShowObject();
+	showObj->setSpriteFrame(textureSprite->getSpriteFrame());
+	showObj->setPosition(getPosition());
+	showObj->setAnchorPoint(Vec2(0.5, 0.5));
+	if (getParent() != nullptr && showObj->getParent() == nullptr)
+	{
+		getParent()->addChild(showObj);
+	}
 	CKAction ckAction;
-	ckAction.node = reinterpret_cast<Node*>(this);
-	ckAction.action = actionController->createTileMoveAction(getPosition(), targetPos, callback, ckAction.node);
-	actionController->pushAction(ckAction, false);
+	ckAction.node = reinterpret_cast<Node*>(showObj);
+	auto boardPos = Utils::Grid2BoardPos(gridPos);
+	ckAction.action = actionController->createTileMoveAction(getPosition(), boardPos, [=] {
+		this->setVisible(true);
+		this->isMoving = false;
+		this->movingDuration = 0.f;
+		this->setPosition(boardPos);
+		PoolController::getInstance()->recycleTileShowObject(showObj);
+		callback();
+		BoardController::fallingTileCount--;
+	}, ckAction.node);
+	setVisible(false);
+	isMoving = true;
+	movingDuration = static_cast<Sequence*>(ckAction.action)->getDuration();
+	actionController->pushAction(ckAction, true);
+	BoardController::fallingTileCount++;
 
 }
 
@@ -169,6 +213,10 @@ void MovingTile::initTexture()
 		{
 		case MovingTileTypes::ChocolateCheesecakeObject:
 			canMatch = true;
+			if(direction == +Direction::any)
+			{
+				direction = Direction::W;
+			}
 			textureName = StringUtils::format("%s_%s_%s.png", type.c_str(), color._to_string(), direction._to_string());
 			break;
 		case MovingTileTypes::ChocolateChipObject:

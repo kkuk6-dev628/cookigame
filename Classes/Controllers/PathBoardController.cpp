@@ -194,13 +194,28 @@ void PathBoardController::showPathFollowerMovingAction(Cell* cell)
 {
 	pathFollowerShow->setVisible(true);
 	pathFollowerObject->setVisible(false);
+	gameState = SwappingTile;
 	CKAction ckAction;
 	ckAction.node = pathFollowerShow;
 	ckAction.action = actionController->createTileMoveAction(pathFollowerShow->getPosition(), cell->getBoardPos(), [=] {
 		pathFollowerShow->setVisible(false);
 		pathFollowerObject->setVisible(true);
-
+		gameState = Idle;
 	}, ckAction.node);
 
 	actionController->pushAction(ckAction, false);
 }
+
+void PathBoardController::spawnNewTile(Cell* cell)
+{
+	if(boardModel->checkPathMoverExist())
+	{
+		BoardController::spawnNewTile(cell);
+	}
+	else
+	{
+		cell->spawnPathMover();
+	}
+}
+
+

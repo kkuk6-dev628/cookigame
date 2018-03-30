@@ -55,6 +55,13 @@ public:
 	bool crush(bool showEffect) override { return false; };
 };
 
+class PieceSwapperObject : public FixTiles
+{
+public:
+	CREATE_FUNC(PieceSwapperObject)
+
+	void initTexture() override;
+};
 
 #pragma region invisible objects
 

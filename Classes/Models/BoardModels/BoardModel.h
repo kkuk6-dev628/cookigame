@@ -8,6 +8,7 @@
 #include "Models/DataModels/CustomSpawnTableItem.h"
 #include "Cell.h"
 #include "Models/Tiles/FixTiles.h"
+#include "PieceSwapper.h"
 
 class BoardLayerModel;
 class LavaCakeObject;
@@ -18,7 +19,7 @@ public:
 	~BoardModel();
 	
 	static TileColorsTable CreateColorsTableFromJson(const rapidjson::Value& json);
-	static std::list<CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
+	static std::map<std::string, CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
 	
 	
 	void CreateSpawnTableFromJson(rapidjson::Value& json);
@@ -64,11 +65,21 @@ public:
 	bool checkConveyorStatus(CellsList* conveyor) const;
 	ConveyorInfo* findConveyorInfo(Cell* cell) const;
 	void conveyTile(MovingTile* from, Cell* to) const;
+
 	CellsList* getLavaCakeTargets();
 	void setIncreaseLavaCakeFlag(bool flag = true);
 	void addLavaCakeTile(LavaCakeObject* lavaCake);
+	
+	void addObjectSpinnerCell(Cell* cell);
+	void runObjectSpinner();
+	void rotateSpinner(Cell* cell, bool isClockWise);
+	MovingTile* moveTile(Cell* cell, MovingTile* movingTile);
 
 	void moveConveyors();
+
+	void addPieceSwapperCell(std::string color, Cell* cell);
+	void runSwappers();
+	bool checkPathMoverExist();
 
 	Vec2 getBoardCenterPos() const { return Vec2(CellSize * width / 2, CellSize * height / 2); }
 
@@ -82,7 +93,7 @@ private:
 	TileColorsTable colors;
 	TileColorsTable colorsEasy;
 	std::list<Goal>* goals;
-	std::list<CustomSpawnTableItem>* customSpawnTable;
+	std::map<std::string, CustomSpawnTableItem>* customSpawnTable;
 	std::list<SeekerPriorityObject*>* seekerPriorityList = nullptr;
 
 	CellsList* lavaCakeTargets = nullptr;
@@ -99,6 +110,8 @@ private:
 	bool hasToAddSpawners = true;
 
 	std::list<LavaCakeObject*>* lavaCakeTiles = nullptr;
+	CellsList* objectSpinnerCells = nullptr;
+	std::map<std::string, PieceSwapper*> * pieceSwappers = nullptr;
 
 public:
 	rapidjson::Document LayersJson;
@@ -183,12 +196,12 @@ public:
 		this->goals = goals;
 	}
 
-	std::list<CustomSpawnTableItem>* getCustomSpawnTable() const
+	std::map<std::string, CustomSpawnTableItem>* getCustomSpawnTable() const
 	{
 		return customSpawnTable;
 	}
 
-	void setCustomSpawnTable(std::list<CustomSpawnTableItem>* custom_spawn_table_items)
+	void setCustomSpawnTable(std::map<std::string, CustomSpawnTableItem>* custom_spawn_table_items)
 	{
 		customSpawnTable = custom_spawn_table_items;
 	}

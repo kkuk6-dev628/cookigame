@@ -67,6 +67,7 @@ protected:
 #pragma region protected functions
 
 	void processLogic(float);
+	void checkFallingTileCount();
 	virtual void processCustomLogic(float) {};
 	virtual void checkObjective();
 
@@ -117,6 +118,8 @@ protected:
 	bool fallTiles();
 	void fallTilesLoop();
 	FallPath* findFallPath(Cell* cell);
+	virtual void spawnNewTile(Cell* cell);
+
 	void checkMatchesInBoard();
 	Match* findMatchInPendings(Match* newMatch);
 
@@ -131,13 +134,14 @@ protected:
 
 	virtual void crushCell(Cell* pCell);
 	void crushBombBreaker(Cell* cell);
+	void crushTwoBomb(Cell* cell);
 	void crushRowBreaker(Cell* cell, bool showEffect = true);
 	void crushColumnBreaker(Cell* cell, bool showEffect = true);
 	void crushXBreaker(Cell* cell);
 	void crushSeeker(Cell* cell, MovingTileTypes bonusType=MovingTileTypes::LayeredMatchObject);
 	void crushSeekerAndBonus(Cell* seekerCell, Cell* bonusCell);
 
-	void crushNearbyCells(Cell* cell);
+	void crushNearbyCells(Cell* cell, TileColors color);
 	virtual void crushUnderCells(Cell* cell);
 
 	void processPendingSeekers();
@@ -153,6 +157,9 @@ protected:
 
 	void addLavaCakeObject(char col, char row, CookieTile* lavaCake);
 	void spawnLavaCake(Cell* cell, CellsList* targets);
+	void moveSpinners();
+
+	void moveSwappers();
 
 	void endGame();
 	////////////////////
@@ -220,7 +227,12 @@ protected:
 
 	float totalObjectCount = 0;
 	float collectedObjectCount = 0;
+
 	bool moveConveyorsFlag = false;
+	bool moveSpinnerFlag = false;
+	bool moveSwappersFlag = false;
+
+	char checkFallingCount = 0;
 
 #pragma endregion
 

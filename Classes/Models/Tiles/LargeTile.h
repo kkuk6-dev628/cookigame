@@ -14,9 +14,3 @@ protected:
 	char colspan = 1;
 	char rowspan = 1;
 };
-
-
-class ColorPie3Object : public LargeTile
-{
-
-};

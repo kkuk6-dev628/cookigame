@@ -79,9 +79,9 @@ bool HiderGroup::checkHiderGroup()
 	}
 
 	// else remove hider segment objects
+	head->getCell()->removeTileAtLayer(LayerId::UnderCover);
 	head->getCell()->clear();
 	head->removeFromParent();
-	head->getCell()->removeTileAtLayer(LayerId::UnderCover);
 
 	for (auto segment : *segments)
 	{
@@ -104,7 +104,11 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 		if(segment->isHead())
 		{
 			auto headCell = movePath->back();
-			headCell->getSourceTile()->removeFromParent();
+			auto oldTile = headCell->getSourceTile();
+			if(oldTile != nullptr && oldTile->getParent() != nullptr)
+			{
+				oldTile->removeFromParent();
+			}
 			headCell->clear();
 			auto iceCover = headCell->getTileAtLayer(LayerId::Cover);
 			iceCover->removeFromParent();

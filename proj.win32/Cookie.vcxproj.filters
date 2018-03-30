@@ -219,6 +219,18 @@
     <ClCompile Include="..\Classes\Models\Tiles\LavaCakeObject.cpp">
       <Filter>src\Models\Tiles</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\ObjectSpinnerObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\BoardModels\PieceSwapper.cpp">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\ColorPieObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\DisplayCaseObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -415,6 +427,18 @@
     </ClInclude>
     <ClInclude Include="..\Classes\AppDelegate.h">
       <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\ObjectSpinnerObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\BoardModels\PieceSwapper.h">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\ColorPieObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\DisplayCaseObject.h">
+      <Filter>src\Models\Tiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -235,7 +235,7 @@ cocos2d::Action* ActionController::createFrontCrushAction(cocos2d::Node* node, c
 	return seq;
 }
 
-Action* ActionController::createScaleBouncingAction(Node* node)
+Action* ActionController::createScaleBouncingAction(std::function<void()> callback, Node* node)
 {
 	Sequence* seq = Sequence::create(
 		ScaleTo::create(0.2f, 0.5f),
@@ -243,6 +243,7 @@ Action* ActionController::createScaleBouncingAction(Node* node)
 		ScaleTo::create(0.2f, 0.8f), 
 		ScaleTo::create(0.2f, 1.1f),
 		ScaleTo::create(0.2f, 1.0f),
+		CallFunc::create(callback),
 		CallFunc::create([this, node]() { this->endAction(node); }),
 		nullptr);
 	seq->retain();
@@ -335,7 +336,7 @@ Action* ActionController::createMoveThroughAction(FallPath* path, std::function<
 	//}
 	for (auto cell : path->fallPath)
 	{
-		if (cell->containsPortalOut())
+		if (cell->containsPortalOut() && pathPos.y < cell->getBoardPos().y)
 		{
 			actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
 			actions.pushBack(Hide::create());
@@ -353,7 +354,7 @@ Action* ActionController::createMoveThroughAction(FallPath* path, std::function<
 		pathPos = cell->boardPos;
 	}
 
-	if (path->endCell->containsPortalOut())
+	if (path->endCell->containsPortalOut() && pathPos.y < path->endCell->getBoardPos().y)
 	{
 		pathPos = path->endCell->boardPos + Vec2(0, CellSize);
 		actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
@@ -490,6 +491,28 @@ cocos2d::Action* ActionController::createPopBombAction(const cocos2d::Vec2& targ
 		ScaleTo::create(0.1, 1.1),
 		ScaleTo::create(0.1, 1.0),
 		MoveTo::create(tileMovingTime, targetPos),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+cocos2d::Action* ActionController::createPieceSwappingAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node)
+{
+	auto tileMovingTime = 0.3;
+	Sequence* seq = Sequence::create(
+		Spawn::create(
+			ScaleTo::create(tileMovingTime, 0),
+			RotateTo::create(tileMovingTime, 180),
+			nullptr
+		),
+		Place::create(targetPos),
+		Spawn::create(
+			ScaleTo::create(tileMovingTime, 1),
+			RotateTo::create(tileMovingTime, 360),
+			nullptr
+		),
 		CallFunc::create(callback),
 		CallFunc::create([this, node]() { this->endAction(node); }),
 		nullptr);

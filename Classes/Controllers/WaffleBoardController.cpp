@@ -63,7 +63,7 @@ void WaffleBoardController::addCellToBoard(char col, char row)
 	}
 
 	auto waffleTile = cell->getTileAtLayer(LayerId::Waffle);
-	if(waffleTile != nullptr)
+	if(waffleTile != nullptr && waffleTile->getType() == WAFFLEOBJECT)
 	{
 		totalObjectCount += waffleTile->getLayers();
 	}

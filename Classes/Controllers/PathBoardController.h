@@ -28,6 +28,8 @@ protected:
 	void showPathFollowerMovingAction(Cell* cell);
 	void showFrontCrushAction(Cell* frontCell);
 
+	void spawnNewTile(Cell* cell) override;
+
 private:
 	CookieTile* pathFollowerObject = nullptr;
 	Sprite* pathFollowerShow = nullptr;

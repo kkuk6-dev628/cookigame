@@ -10,6 +10,9 @@
 #include "Models/Tiles/HiderSegmentObject.h"
 #include "Models/Tiles/ConveyorBeltObject.h"
 #include "Models/Tiles/LavaCakeObject.h"
+#include "Models/Tiles/ObjectSpinnerObject.h"
+#include "Models/Tiles/ColorPieObject.h"
+#include "Models/Tiles/DisplayCaseObject.h"
 
 PoolController* PoolController::instance = nullptr;
 static factory TileClassFactory;
@@ -83,7 +86,6 @@ void PoolController::RegisterTileClasses()
 {
 	REGISTER_CLASS(LayeredMatchObject);
 	REGISTER_CLASS(WaffleObject);
-	REGISTER_CLASS(ColorPie3Object);
 	REGISTER_CLASS(SpawnerObject);
 	REGISTER_CLASS(CrackerObject);
 	REGISTER_CLASS(ChocolateObject);
@@ -99,6 +101,14 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(HiderSegmentObject);
 	REGISTER_CLASS(ConveyorBeltObject);
 	REGISTER_CLASS(LavaCakeObject);
+	REGISTER_CLASS(ObjectSpinnerObject);
+	REGISTER_CLASS(PieceSwapperObject);
+	REGISTER_CLASS(PretzelObject);
+	REGISTER_CLASS(ColorPie3Object);
+	REGISTER_CLASS(ColorPie4Object);
+	REGISTER_CLASS(ColorPie5Object);
+	REGISTER_CLASS(ColorPie6Object);
+	REGISTER_CLASS(DisplayCaseObject);
 
 	REGISTER_CLASS(PointerObject);
 	REGISTER_CLASS(InvisibleBrickObject);
@@ -585,6 +595,8 @@ void PoolController::recycleSeekerShow(AnimationShowObject* show) const
 	if(show->getChildrenCount() > 1)
 	{
 		auto tileShow = show->getChildByName("bonusChild");
+
+		show->customData->clear();
 		tileShow->removeFromParent();
 	}
 	switch (show->tileColor)

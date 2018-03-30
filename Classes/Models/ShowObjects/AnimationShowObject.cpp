@@ -111,5 +111,8 @@ void ParticleShowObject::reuse(const std::function<void()> callback)
 
 void ParticleShowObject::scheduleToRecycle(float dt)
 {
-	recycleCallback();
+	if(recycleCallback != nullptr)
+	{
+		recycleCallback();
+	}
 }

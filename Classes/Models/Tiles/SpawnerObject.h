@@ -13,6 +13,7 @@ public:
 	CREATE_FUNC(SpawnerObject)
 
 	MovingTile* spawnMovingTile();
+	MovingTile* spawnPathMover();
 	void initSpawnedCount() { spawnedCount = 0; }
 	void initSpawner() { direction = Direction::S; }
 
@@ -21,6 +22,7 @@ private:
 	PoolController* poolController;
 
 	char spawnedCount = 0;
+	int totalSpawnedCount = 0;
 
 	char fallDirection() const;
 

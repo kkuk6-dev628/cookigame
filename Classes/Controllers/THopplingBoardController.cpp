@@ -49,7 +49,7 @@ void THopplingBoardController::addCellToBoard(char col, char row)
 
 
 	auto sourceTile = cell->getSourceTile();
-	if (strcmp(sourceTile->getType().c_str(), CRACKEROBJECT) == 0)
+	if (sourceTile != nullptr && (sourceTile->getType() == CRACKEROBJECT || sourceTile->getType() == PRETZELOBJECT))
 	{
 		if(crackerCells == nullptr)
 		{
@@ -84,7 +84,7 @@ void THopplingBoardController::crushCell(Cell* cell)
 		return;
 	}
 	auto sourceTile = cell->getSourceTile();
-	if(strcmp(sourceTile->getType().c_str(), CRACKEROBJECT) == 0)
+	if(sourceTile->getType() == CRACKEROBJECT || sourceTile->getType() == PRETZELOBJECT)
 	{
 		auto crushResult = cell->crushCell(true);
 		auto thopplerTile = cell->getTileAtLayer(LayerId::Toppling);
@@ -114,10 +114,10 @@ void THopplingBoardController::crushCell(Cell* cell)
 			crackerCells->erase(std::remove(crackerCells->begin(), crackerCells->end(), cell), crackerCells->end());
 		}
 	}
-	else if(strcmp(sourceTile->getType().c_str(), TOPPLINGOBJECT) == 0 || strcmp(sourceTile->getType().c_str(), HOPPLINGOBJECT) == 0)
+	else if(sourceTile->getType() == TOPPLINGOBJECT || sourceTile->getType() == HOPPLINGOBJECT)
 	{
-		cell->crushCell(true);
 		showThopplerCollectingEffect(cell);
+		cell->crushCell(true);
 	}
 	else
 	{
@@ -168,7 +168,7 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 	auto hopplerTile = cell->getTileAtLayer(LayerId::Toppling);
 
 	auto hopplingPath = findHopplingTarget(cell);
-	if(hopplingPath == nullptr || hopplingPath->size() == 0)
+	if(hopplingPath == nullptr || hopplingPath->size() < 2)
 	{
 		return;
 	}

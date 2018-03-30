@@ -173,6 +173,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\BoardModels\FallPath.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\HolesQueue.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\Match.cpp" />
+    <ClCompile Include="..\Classes\Models\BoardModels\PieceSwapper.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\BoardLayerData.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\CustomSpawnTableItem.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\Level.cpp" />
@@ -184,8 +185,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\TilePools\TileShowObjectPool.cpp" />
     <ClCompile Include="..\Classes\Models\TilePools\TilePool.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\ChocolateChipObject.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\ColorPieObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\ConveyorBeltObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\DisplayCaseObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\HiderGroup.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\HiderSegmentObject.cpp" />
@@ -194,6 +197,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\Tiles\LayeredCrackerTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LayeredMatchObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\MovingTile.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\ObjectSpinnerObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\PopsicleObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\SpawnerObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\ThopplerTile.cpp" />
@@ -238,6 +242,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\BoardModels\FallPath.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\HolesQueue.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\Match.h" />
+    <ClInclude Include="..\Classes\Models\BoardModels\PieceSwapper.h" />
     <ClInclude Include="..\Classes\Models\DataModels\BoardLayerData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\CustomSpawnTableItem.h" />
     <ClInclude Include="..\Classes\Models\DataModels\Level.h" />
@@ -250,8 +255,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\TilePools\TileShowObjectPool.h" />
     <ClInclude Include="..\Classes\Models\TilePools\TilePool.h" />
     <ClInclude Include="..\Classes\Models\Tiles\ChocolateChipObject.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\ColorPieObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\ConveyorBeltObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\DisplayCaseObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h" />
     <ClInclude Include="..\Classes\Models\Tiles\HiderGroup.h" />
     <ClInclude Include="..\Classes\Models\Tiles\HiderSegmentObject.h" />
@@ -260,6 +267,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\LayeredCrackerTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LayeredMatchObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\MovingTile.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\ObjectSpinnerObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\PopsicleObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\SpawnerObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\ThopplerTile.h" />

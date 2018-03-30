@@ -191,37 +191,38 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	itr = data.FindMember("slot_1");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		this->slot1 = TileColors::_from_string(itr->value.GetString());
+		if (slotColors == nullptr) slotColors = new std::list<TileColors>;
+		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
 	}
 
 	itr = data.FindMember("slot_2");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		this->slot2 = TileColors::_from_string(itr->value.GetString());
+		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
 	}
 
 	itr = data.FindMember("slot_3");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		this->slot3 = TileColors::_from_string(itr->value.GetString());
+		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
 	}
 
 	itr = data.FindMember("slot_4");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		this->slot4 = TileColors::_from_string(itr->value.GetString());
+		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
 	}
 
 	itr = data.FindMember("slot_5");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		this->slot5 = TileColors::_from_string(itr->value.GetString());
+		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
 	}
 
 	itr = data.FindMember("slot_6");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		this->slot6 = TileColors::_from_string(itr->value.GetString());
+		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
 	}
 
 	itr = data.FindMember("sequence_id");

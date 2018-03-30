@@ -3,18 +3,18 @@
 #include "Models/Tiles/SpawnerObject.h"
 #include "Controllers/PoolController.h"
 #include "Models/Tiles/LayeredCrackerTile.h"
+#include "Models/Tiles/DisplayCaseObject.h"
 
 Cell::Cell()
 {
 	pSourceTile = nullptr;
-	layers = __Dictionary::create();
-	layers->retain();
+	layers = new std::map<LayerId, CookieTile*>;
 }
 
 
 Cell::~Cell()
 {
-	layers->release();
+	CC_SAFE_DELETE(layers);
 }
 
 void Cell::setSourceTile(CookieTile* pTile)
@@ -28,7 +28,11 @@ void Cell::setSourceTile(CookieTile* pTile)
 
 CookieTile* Cell::getTileAtLayer(LayerId layer) const
 {
-	const auto tile = static_cast<CookieTile*>(layers->objectForKey(layer));
+	if(layers->find(layer) == layers->end())
+	{
+		return nullptr;
+	}
+	const auto tile = layers->at(layer);
 	return tile;
 }
 
@@ -53,6 +57,10 @@ void Cell::countDownReserveCount()
 
 void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 {
+	if(pTile == nullptr)
+	{
+		return;
+	}
 	if (layer == +LayerId::Match)
 	{
 		//if(pSourceTile != nullptr && pSourceTile->getParent() != nullptr)
@@ -61,33 +69,50 @@ void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 		//}
 		pSourceTile = pTile;
 		isEmpty = false;
-		isFixed = !pTile->isMovable();
+		if (!containsDisplayCase())
+		{
+			isFixed = !pTile->isMovable();
+			canPass = !isFixed;
+		}
+		if(pTile->getType() == PRETZELOBJECT || pTile->getType() == EMPTYOBJECT)
+		{
+			canPass = true;
+		}
 		tileColor = pTile->getTileColor();
 	}
 	pTile->setCell(this);
-	layers->setObject(pTile, layer._to_integral());
+	if (pTile->getType() == DISPLAYCASEOBJECT)
+	{
+		isFixed = true;
+		canPass = false;
+	}
+	layers->insert(std::pair<LayerId, CookieTile*>(layer, pTile));
 }
 
 void Cell::removeTileAtLayer(LayerId layer)
 {
-	auto obj = layers->objectForKey(layer);
-	if (obj == nullptr)
+	if(layers->find(layer) != layers->end())
 	{
-		return;
+		layers->erase(layer);
 	}
-	if(obj->getReferenceCount() >= 0)
-	{
-		obj->retain();
-	}
-	layers->removeObjectForKey(layer);
 }
 
 void Cell::clear()
 {
 	isEmpty = true;
-	isFixed = false;
+	auto displayCaseTile = getTileAtLayer(LayerId::Toppling);
+	if(displayCaseTile != nullptr && displayCaseTile->getType() == DISPLAYCASEOBJECT)
+	{
+		isFixed = true;
+		canPass = false;
+	}
+	else
+	{
+		isFixed = false;
+		canPass = true;
+	}
 	pSourceTile = nullptr;
-	layers->removeObjectForKey(LayerId::Match);
+	removeTileAtLayer(LayerId::Match);
 }
 
 void Cell::crushNearbyCells()
@@ -173,7 +198,10 @@ bool Cell::crushUnderTiles(LayerId layerId)
 				{
 					if(waffleTile->crush(true))
 					{
-						layers->removeObjectForKey(LayerId::Waffle);
+						if (layers->find(LayerId::Waffle) != layers->end())
+						{
+							layers->erase(LayerId::Waffle);
+						}
 					}
 					return true;
 				}
@@ -189,9 +217,9 @@ bool Cell::crushUnderTiles(LayerId layerId)
 				{
 					if(iceCoverTile->crush(true))
 					{
-						if (layers->objectForKey(LayerId::Cover) != nullptr)
+						if (layers->find(LayerId::Cover) != layers->end())
 						{
-							layers->removeObjectForKey(LayerId::Cover);
+							layers->erase(LayerId::Cover);
 						}
 						return true;
 					}
@@ -226,198 +254,69 @@ void Cell::createShuffleShow()
 
 void Cell::spawnMatchTile()
 {
-	auto spawnerObject = static_cast<SpawnerObject*>(layers->objectForKey(LayerId::Spawner));
+	auto spawnerObject = static_cast<SpawnerObject*>(layers->at(LayerId::Spawner));
 	if(spawnerObject != nullptr)
 	{
-		auto spawnedTile = spawnerObject->spawnMovingTile();
-		setSourceTile(spawnedTile);
+		spawnedTile = spawnerObject->spawnMovingTile();
+		if(spawnedTile->getParent() == nullptr)
+		{
+			boardLayer->addChild(spawnedTile);
+		}
+		if(!isFixed)
+		{
+			setSourceTile(spawnedTile);
+		}
 	}
 }
 
-//Cell* Cell::getDirectFallCell(std::list<PortalInletObject*>* portalInData)
-//{
-//	if (!inWater)
-//	{
-//		if (containsPortalOut())
-//		{
-//			return findPortalInCell(portalInData);
-//		}
-//		if (containsSpawner()) 
-//		{
-//			return this;
-//		}
-//
-//		auto loopCell = upCell;
-//		auto prevCell = upCell;
-//
-//		while (loopCell != nullptr && loopCell->canFill())
-//		{
-//			if (loopCell->canFall())
-//			{
-//				return loopCell;
-//			}
-//			if (loopCell->containsPortalOut())
-//			{
-//				prevCell = loopCell;
-//				loopCell = loopCell->findPortalInCell(portalInData);
-//				continue;
-//			}
-//			if (loopCell->containsSpawner()) 
-//			{
-//				return loopCell;
-//			}
-//			
-//			prevCell = loopCell;
-//			loopCell = loopCell->upCell;
-//		}
-//
-//		return prevCell;
-//	}
-//	else
-//	{
-//		//if (containsPortalOut())
-//		//{
-//		//	return findPortalInCell(portalInData);
-//		//}
-//		if (containsSpawner())
-//		{
-//			return this;
-//		}
-//		auto loopCell = downCell;
-//		auto prevCell = downCell;
-//
-//		while (loopCell != nullptr && loopCell->canFill())
-//		{
-//			if (loopCell->canFall())
-//			{
-//				return loopCell;
-//			}
-//			if (loopCell->containsPortalOut())
-//			{
-//				prevCell = loopCell;
-//				return loopCell->findPortalInCell(portalInData);
-//			}
-//			if (loopCell->containsSpawner())
-//			{
-//				return loopCell;
-//			}
-//
-//			prevCell = loopCell;
-//			loopCell = loopCell->downCell;
-//		}
-//
-//		return prevCell;
-//	}
-//
-//}
+void Cell::spawnPathMover()
+{
+	auto spawnerObject = static_cast<SpawnerObject*>(layers->at(LayerId::Spawner));
+	if (spawnerObject != nullptr)
+	{
+		spawnedTile = spawnerObject->spawnPathMover();
+		if (spawnedTile->getParent() == nullptr)
+		{
+			boardLayer->addChild(spawnedTile);
+		}
+		if (!isFixed)
+		{
+			setSourceTile(spawnedTile);
+		}
+	}
+}
 
-//Cell* Cell::getInclinedFallCell(std::list<PortalInletObject*>* portalInData)
-//{
-//	if (!inWater) 
-//	{
-//		if (upCell != nullptr) 
-//		{
-//			if (upCell->leftCell != nullptr && upCell->leftCell->canFall())
-//			{
-//				return upCell->leftCell;
-//			}
-//			if (upCell->rightCell != nullptr && upCell->rightCell->canFall())
-//			{
-//				return upCell->rightCell;
-//			}
-//			if (upCell->leftCell != nullptr && upCell->leftCell->canFill())
-//			{
-//				return upCell->leftCell;
-//			}
-//			if (upCell->rightCell != nullptr && upCell->rightCell->canFill())
-//			{
-//				return upCell->rightCell;
-//			}
-//		}
-//	}
-//	return nullptr;
-//}
+MovingTile* Cell::getSpawnedTile() const
+{
+	//return getMovingTile();
+	if(isFixed)
+	{
+		if (spawnedTile != nullptr)
+		{
+			return spawnedTile;
+		}
+		return getMovingTile();
+	}
+	else
+	{
+		return getMovingTile();
+	}
+}
 
-//Cell* Cell::getFallCell(std::list<PortalInletObject*>* portalInData) const
-//{
-//	if (!inWater)
-//	{
-//		if(containsPortalOut())
-//		{
-//			return findPortalInCell(portalInData);
-//		}
-//		if(upCell == nullptr)
-//		{
-//			return nullptr;
-//		}
-//
-//		if (!upCell->isFixed && !upCell->isOutCell && !upCell->inWater)
-//		{
-//			return upCell;
-//		}
-//		else
-//		{
-//			if(upCell->leftCell != nullptr && !upCell->leftCell->isFixed && !upCell->leftCell->isOutCell && !upCell->leftCell->inWater)
-//			{
-//				return upCell->leftCell;
-//			}
-//			else if(upCell->rightCell != nullptr && !upCell->rightCell->isFixed && !upCell->rightCell->isOutCell && !upCell->rightCell->inWater)
-//			{
-//				return upCell->rightCell;
-//			}
-//			else if (leftCell != nullptr && !leftCell->isFixed && !leftCell->isOutCell && !leftCell->isEmpty && !leftCell->inWater && downCell != nullptr && !downCell->isOutCell)
-//			{
-//				return leftCell;
-//			}
-//			else if (rightCell != nullptr && !rightCell->isFixed && !rightCell->isOutCell && !rightCell->isEmpty && !rightCell->inWater && downCell != nullptr && !downCell->isOutCell)
-//			{
-//				return rightCell;
-//			}
-//			{
-//				return nullptr;
-//			}
-//		}
-//	}
-//	else
-//	{
-//		//if (containsPortalOut())
-//		//{
-//		//	return findPortalInCell(portalInData);
-//		//}
-//		if (downCell == nullptr)
-//		{
-//			return nullptr;
-//		}
-//
-//		if (!downCell->isFixed && !downCell->isOutCell && downCell->inWater)
-//		{
-//			return downCell;
-//		}
-//		else
-//		{
-//			if (downCell->leftCell != nullptr && !downCell->leftCell->isFixed && !downCell->leftCell->isOutCell && downCell->leftCell->inWater)
-//			{
-//				return downCell->leftCell;
-//			}
-//			else if (downCell->rightCell != nullptr && !downCell->rightCell->isFixed && !downCell->rightCell->isOutCell && downCell->rightCell->inWater)
-//			{
-//				return downCell->rightCell;
-//			}
-//			else if (leftCell != nullptr && !leftCell->isFixed && !leftCell->isOutCell && !leftCell->isEmpty && leftCell->inWater && upCell != nullptr && !upCell->isOutCell)
-//			{
-//				return leftCell;
-//			}
-//			else if (rightCell != nullptr && !rightCell->isFixed && !rightCell->isOutCell && !rightCell->isEmpty && rightCell->inWater && upCell != nullptr && !upCell->isOutCell)
-//			{
-//				return rightCell;
-//			}
-//			{
-//				return nullptr;
-//			}
-//		}
-//	}
-//	return nullptr;
-//}
+void Cell::fillDisplayCase()
+{
+	auto dispObject = static_cast<DisplayCaseObject*>(getTileAtLayer(LayerId::Toppling));
+	if(dispObject != nullptr && dispObject->getType() == DISPLAYCASEOBJECT)
+	{
+		if(dispObject->refill())
+		{
+			removeTileAtLayer(LayerId::Toppling);
+			isFixed = false;
+			canPass = true;
+			isEmpty = true;
+		}
+	}
+}
 
 Cell* Cell::findPortalInCell(std::list<PortalInletObject*>* portalInData) const
 {
@@ -434,14 +333,28 @@ Cell* Cell::findPortalInCell(std::list<PortalInletObject*>* portalInData) const
 
 PortalOutletObject* Cell::getPortalOut() const
 {
-	return static_cast<PortalOutletObject*>(layers->objectForKey(LayerId::Portal));
+	if(layers->find(LayerId::Portal) != layers->end())
+	{
+		return nullptr;
+	}
+	return static_cast<PortalOutletObject*>(layers->at(LayerId::Portal));
+}
+
+bool Cell::containsDisplayCase() const
+{
+	auto dispCase = getTileAtLayer(LayerId::Toppling);
+	if(dispCase != nullptr && dispCase->getType() == DISPLAYCASEOBJECT)
+	{
+		return true;
+	}
+	return false;
 }
 
 bool Cell::containsPortalOut() const
 {
-	if(layers->objectForKey(LayerId::Portal) != nullptr)
+	if(layers->find(LayerId::Portal) != layers->end())
 	{
-		auto portal = static_cast<FixTiles*>(layers->objectForKey(LayerId::Portal));
+		auto portal = static_cast<FixTiles*>(layers->at(LayerId::Portal));
 		return strcmp(portal->getType().c_str(), PORTALOUTLETOBJECT) == 0;
 	}
 	return false;
@@ -449,10 +362,20 @@ bool Cell::containsPortalOut() const
 
 bool Cell::containsPortalIn() const
 {
-	if (layers->objectForKey(LayerId::Portal) != nullptr)
+	if (layers->find(LayerId::Portal) != layers->end())
 	{
-		auto portal = static_cast<FixTiles*>(layers->objectForKey(LayerId::Portal));
+		auto portal = static_cast<FixTiles*>(layers->at(LayerId::Portal));
 		return strcmp(portal->getType().c_str(), PORTALINLETOBJECT) == 0;
+	}
+	return false;
+}
+
+bool Cell::containsWaffle() const
+{
+	auto waffleTile = getTileAtLayer(LayerId::Waffle);
+	if(waffleTile != nullptr && waffleTile->getType() == WAFFLEOBJECT)
+	{
+		return true;
 	}
 	return false;
 }

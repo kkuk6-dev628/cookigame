@@ -26,6 +26,8 @@ public:
 	virtual bool isMovable() { return true; }
 	virtual bool crush(bool showEffect);
 
+	void setNearbyColor(TileColors color) { nearbyColor = color; }
+
 	bool canMatch = true;
 	int matchId = 0;
 	bool receiveNearbyAffect = false;
@@ -33,6 +35,7 @@ public:
 
 protected:
 	Cell* pCell;
+	TileColors nearbyColor = TileColors::any;
 
 	std::string type;
 	char layers = 0;
@@ -53,12 +56,7 @@ protected:
 	SpawnTable spawnData;
 	char zone = 0;
 	std::string spawnTableName;
-	TileColors slot1 = TileColors::any;
-	TileColors slot2 = TileColors::any;
-	TileColors slot3 = TileColors::any;
-	TileColors slot4 = TileColors::any;
-	TileColors slot5 = TileColors::any;
-	TileColors slot6 = TileColors::any;
+	std::list<TileColors>* slotColors = nullptr;
 	char sequenceId = 0;
 	char power = 0;
 
@@ -241,66 +239,6 @@ public:
 	void setSpawnTableName(const std::string& spawn_table_name)
 	{
 		spawnTableName = spawn_table_name;
-	}
-
-	TileColors getSlot1() const
-	{
-		return slot1;
-	}
-
-	void setSlot1(const TileColors& slot1)
-	{
-		this->slot1 = slot1;
-	}
-
-	TileColors getSlot2() const
-	{
-		return slot2;
-	}
-
-	void setSlot2(const TileColors& slot2)
-	{
-		this->slot2 = slot2;
-	}
-
-	TileColors getSlot3() const
-	{
-		return slot3;
-	}
-
-	void setSlot3(const TileColors& slot3)
-	{
-		this->slot3 = slot3;
-	}
-
-	TileColors getSlot4() const
-	{
-		return slot4;
-	}
-
-	void setSlot4(const TileColors& slot4)
-	{
-		this->slot4 = slot4;
-	}
-
-	TileColors getSlot5() const
-	{
-		return slot5;
-	}
-
-	void setSlot5(const TileColors& slot5)
-	{
-		this->slot5 = slot5;
-	}
-
-	TileColors getSlot6() const
-	{
-		return slot6;
-	}
-
-	void setSlot6(const TileColors& slot6)
-	{
-		this->slot6 = slot6;
 	}
 
 	char getSequenceId() const

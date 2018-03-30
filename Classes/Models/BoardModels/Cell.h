@@ -40,12 +40,14 @@ public:
 	bool canFill() const { return !isOutCell && !isFixed && isEmpty; }
 	bool canFall() const { return !isOutCell && !isFixed && !isEmpty; }
 
-	bool containsSpawner() const { return layers->objectForKey(LayerId::Spawner) != nullptr; }
+	bool containsSpawner() const { return layers->find(LayerId::Spawner) != layers->end(); }
+	bool containsDisplayCase() const;
 	bool containsPortalOut() const;
 	bool containsPortalIn() const;
-	bool containsThoppler() const { return layers->objectForKey(LayerId::Toppling) != nullptr; }
-	bool containsPopsicle() const { return layers->objectForKey(LayerId::UnderCover) != nullptr; }
-	bool containsIceCover() const { return layers->objectForKey(LayerId::Cover) != nullptr; }
+	bool containsThoppler() const { return layers->find(LayerId::Toppling) != layers->end(); }
+	bool containsPopsicle() const { return layers->find(LayerId::UnderCover) != layers->end(); }
+	bool containsIceCover() const { return layers->find(LayerId::Cover) != layers->end(); }
+	bool containsWaffle() const;
 	bool isReceiveNearbyAffect();
 	bool isNoShuffleCell();
 	bool canMatch() const
@@ -69,6 +71,7 @@ public:
 	PortalOutletObject* getPortalOut() const;
 
 	void setGridPos(const char col, const char row) { gridPos.Col = col; gridPos.Row = row; boardPos = Utils::Grid2BoardPos(gridPos); }
+	void setNearbyCrushColor(TileColors color) const { if (pSourceTile != nullptr) pSourceTile->setNearbyColor(color); }
 	void clear();
 	void crushNearbyCells();
 	void receiveNearbyAffect();
@@ -80,14 +83,18 @@ public:
 	cocos2d::Vec2 getBoardPos(){ return boardPos; }
 
 	void spawnMatchTile();
+	void spawnPathMover();
+	MovingTile* getSpawnedTile() const;
+	void resetSpawnedTile() { spawnedTile = nullptr; }
 
+	void fillDisplayCase();
 	GridPos gridPos;
 	Vec2 boardPos;
 	Direction fallDirection = Direction::S; // top -> down, if N bottom -> up 
 	bool isOutCell = false;
 	bool isFixed = false;
 	bool isFillable = true;
-	bool isPass = false;
+	bool canPass = true;
 	bool dirty = false;
 	bool noShuffleCell = false;
 
@@ -109,9 +116,10 @@ public:
 	bool inWater = false;
 
 private:
-	__Dictionary* layers;
+	std::map<LayerId, CookieTile*>* layers;
 	CookieTile* pSourceTile = nullptr;
 	CookieTile* reservedTile = nullptr;
+	MovingTile* spawnedTile = nullptr;
 
 	BoardLayer* boardLayer;
 

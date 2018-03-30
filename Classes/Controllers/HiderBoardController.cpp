@@ -86,7 +86,8 @@ void HiderBoardController::addCellToBoard(char col, char row)
 			headCover->removeFromParent();
 			cell->removeTileAtLayer(LayerId::Cover);
 		}
-		cell->crushCell(false);
+		cell->getMovingTile()->removeFromParent();
+		cell->clear();
 		cell->setSourceTile(hiderSegment);
 		auto hiderGroup = new HiderGroup;
 		hiderGroup->setHead(hiderSegment);
@@ -169,10 +170,10 @@ void HiderBoardController::checkHiders()
 	std::list<std::string> removeHiders;
 	for(auto hiderItem : *hidersMap)
 	{
+		auto pos = hiderItem.second->getHead()->getPosition();
 		if (hiderItem.second->checkHiderGroup())
 		{
 			removeHiders.push_back(hiderItem.first);
-			auto pos = hiderItem.second->getHead()->getPosition();
 			showHiderCollectingAction(pos);
 		}
 	}

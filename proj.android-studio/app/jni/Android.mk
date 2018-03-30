@@ -40,6 +40,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/BoardModels/FallPath.cpp \
 ../../../Classes/Models/BoardModels/HolesQueue.cpp \
 ../../../Classes/Models/BoardModels/Match.cpp \
+../../../Classes/Models/BoardModels/PieceSwapper.cpp \
 ../../../Classes/Models/DataModels/BoardLayerData.cpp \
 ../../../Classes/Models/DataModels/CustomSpawnTableItem.cpp \
 ../../../Classes/Models/DataModels/Level.cpp \
@@ -55,8 +56,10 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/TilePools/TilePool.cpp \
 ../../../Classes/Models/TilePools/TileShowObjectPool.cpp \
 ../../../Classes/Models/Tiles/ChocolateChipObject.cpp \
+../../../Classes/Models/Tiles/ColorPieObject.cpp \
 ../../../Classes/Models/Tiles/ConveyorBeltObject.cpp \
 ../../../Classes/Models/Tiles/CookieTile.cpp \
+../../../Classes/Models/Tiles/DisplayCaseObject.cpp \
 ../../../Classes/Models/Tiles/FixTiles.cpp \
 ../../../Classes/Models/Tiles/HiderGroup.cpp \
 ../../../Classes/Models/Tiles/HiderSegmentObject.cpp \
@@ -65,6 +68,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/Tiles/LayeredCrackerTile.cpp \
 ../../../Classes/Models/Tiles/LayeredMatchObject.cpp \
 ../../../Classes/Models/Tiles/MovingTile.cpp \
+../../../Classes/Models/Tiles/ObjectSpinnerObject.cpp \
 ../../../Classes/Models/Tiles/PopsicleObject.cpp \
 ../../../Classes/Models/Tiles/SpawnerObject.cpp \
 ../../../Classes/Models/Tiles/ThopplerTile.cpp \
