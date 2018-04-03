@@ -23,6 +23,7 @@ protected:
 	Cell* findNextCrackerCell(Cell* cell, char* inIndent, char** indent);
 
 	void processCustomLogic(float dt) override;
+	Cell* findSeekerTarget(CellsList* targetsList) const override;
 
 	virtual void movePendingThopplers();
 	void showHopplerMoveEffect(Cell* startCell);

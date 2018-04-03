@@ -16,13 +16,17 @@ enum
 	kZPopup,
 };
 
+GamePlayScene* GamePlayScene::instance = nullptr;
+
 GamePlayScene::GamePlayScene()
 {
+	instance = this;
 }
 
 
 GamePlayScene::~GamePlayScene()
 {
+	instance = nullptr;
 }
 
 Scene* GamePlayScene::createScene()

@@ -67,6 +67,50 @@ void THopplingBoardController::addCellToBoard(char col, char row)
 	}
 }
 
+Cell* THopplingBoardController::findSeekerTarget(CellsList* targetsList) const
+{
+	auto specialTiles = boardModel->getSpecialTiles();
+	auto breakers = static_cast<__Array*>(specialTiles->objectForKey(BREAKERS));
+	auto wafflePath = static_cast<__Array*>(specialTiles->objectForKey(WAFFLEPATH));
+	auto liquids = static_cast<__Array*>(specialTiles->objectForKey(LIQUIDS));
+	auto thopplers = static_cast<__Array*>(specialTiles->objectForKey(THOPPLERS));
+
+	if(thopplers->count() > 0)
+	{
+		auto targetCell = static_cast<Cell*>(thopplers->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
+	}
+	if (wafflePath->count() > 0)
+	{
+		auto targetCell = static_cast<Cell*>(wafflePath->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
+	}
+	if (liquids->count() > 0)
+	{
+		auto targetCell = static_cast<Cell*>(liquids->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
+	}
+	if (breakers->count() > 0)
+	{
+		auto targetCell = static_cast<Cell*>(breakers->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
+	}
+	return boardModel->getRandomCell();
+}
+
+
 Cell* THopplingBoardController::findThopplerTarget()
 {
 	if(crackerCells->size() > 0)

@@ -147,7 +147,7 @@ void PathBoardController::movePathFollower()
 			moveToCell = cell;
 			lastCell = cell;
 		}
-		showPathFollowerMovingAction(lastCell);
+		showPathFollowerMovingAction(movePath);
 
 		lastCell->setSourceTile(pathFollowerObject);
 		pathFollowerObject->setPosition(lastCell->getBoardPos());
@@ -158,8 +158,8 @@ void PathBoardController::movePathFollower()
 		if(nextCell == pathGoalCell)
 		{
 			showPathFollowerMovingAction(pathGoalCell);
-			BoardController::gameState = Completed;
-			showGameWinDlg();
+			collectedPowerCount = 0;
+			finishLevel();
 		}
 		else if(nextCell != nullptr && !nextCell->canMove())
 		{
@@ -190,6 +190,40 @@ void PathBoardController::showFrontCrushAction(Cell* frontCell)
 	actionController->pushAction(ckAction, false);
 }
 
+Cell* PathBoardController::findSeekerTarget(CellsList* targetsList) const
+{
+	auto specialTiles = boardModel->getSpecialTiles();
+	auto breakers = static_cast<__Array*>(specialTiles->objectForKey(BREAKERS));
+	auto wafflePath = static_cast<__Array*>(specialTiles->objectForKey(WAFFLEPATH));
+	auto liquids = static_cast<__Array*>(specialTiles->objectForKey(LIQUIDS));
+
+	if (liquids->count() > 0)
+	{
+		auto targetCell = static_cast<Cell*>(liquids->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
+	}
+	if (wafflePath->count() > 0)
+	{
+		auto targetCell = static_cast<Cell*>(wafflePath->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
+	}
+	if (breakers->count() > 0)
+	{
+		auto targetCell = static_cast<Cell*>(breakers->getRandomObject());
+		if (!Utils::containsCell(targetsList, targetCell))
+		{
+			return targetCell;
+		}
+	}
+	return boardModel->getRandomCell();
+}
+
 void PathBoardController::showPathFollowerMovingAction(Cell* cell)
 {
 	pathFollowerShow->setVisible(true);
@@ -206,9 +240,25 @@ void PathBoardController::showPathFollowerMovingAction(Cell* cell)
 	actionController->pushAction(ckAction, false);
 }
 
+void PathBoardController::showPathFollowerMovingAction(CellsList* path)
+{
+	pathFollowerShow->setVisible(true);
+	pathFollowerObject->setVisible(false);
+	gameState = SwappingTile;
+	CKAction ckAction;
+	ckAction.node = pathFollowerShow;
+	ckAction.action = actionController->createPathFollowerMoveAction(path, [=] {
+		pathFollowerShow->setVisible(false);
+		pathFollowerObject->setVisible(true);
+		gameState = Idle;
+	}, ckAction.node);
+
+	actionController->pushAction(ckAction, false);
+}
+
 void PathBoardController::spawnNewTile(Cell* cell)
 {
-	if(boardModel->checkPathMoverExist())
+	if(boardModel->getPathMoversCount() > 2)
 	{
 		BoardController::spawnNewTile(cell);
 	}

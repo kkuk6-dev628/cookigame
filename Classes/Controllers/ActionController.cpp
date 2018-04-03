@@ -391,6 +391,24 @@ cocos2d::Action* ActionController::createTileMoveAction(const cocos2d::Vec2& sta
 	return seq;
 }
 
+cocos2d::Action* ActionController::createPathFollowerMoveAction(const CellsList* path, std::function<void()> callback, cocos2d::Node* node) const
+{
+	auto actions = Vector<FiniteTimeAction*>();
+	auto pathPos = node->getPosition();
+	for (auto cell : *path)
+	{
+		auto distance = pathPos.distance(cell->boardPos);
+		auto movingTime = calcTileMovingTime(distance);
+		actions.pushBack(MoveTo::create(movingTime, cell->getBoardPos()));
+		pathPos = cell->getBoardPos();
+	}
+	actions.pushBack(CallFunc::create(callback));
+	actions.pushBack(CallFunc::create([this, node]() { this->endAction(node); }));
+	auto seq = Sequence::create(actions);
+	seq->retain();
+	return seq;
+}
+
 cocos2d::Action* ActionController::createHiderSegmentMoveAction(CellsList* path, std::function<void()> callback, cocos2d::Node* node)
 {
 	auto actions = Vector<FiniteTimeAction*>();

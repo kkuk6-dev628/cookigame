@@ -44,7 +44,7 @@ public:
 	bool containsDisplayCase() const;
 	bool containsPortalOut() const;
 	bool containsPortalIn() const;
-	bool containsThoppler() const { return layers->find(LayerId::Toppling) != layers->end(); }
+	bool containsThoppler() const { return layers->find(LayerId::Toppling) != layers->end() || pSourceTile->getType() == TOPPLINGOBJECT || pSourceTile->getType() == HOPPLINGOBJECT; }
 	bool containsPopsicle() const { return layers->find(LayerId::UnderCover) != layers->end(); }
 	bool containsIceCover() const { return layers->find(LayerId::Cover) != layers->end(); }
 	bool containsWaffle() const;

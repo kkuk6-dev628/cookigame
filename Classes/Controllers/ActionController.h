@@ -41,6 +41,7 @@ public:
 	cocos2d::Action* createDirectionalScaleAction(cocos2d::Node* node, AdjacentDirs dir);
 	cocos2d::Action* createMoveThroughAction(FallPath* path, std::function<void()> callback, cocos2d::Node* node);
 	cocos2d::Action* createTileMoveAction(const cocos2d::Vec2& startPos, const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node) const;
+	cocos2d::Action* createPathFollowerMoveAction(const CellsList* path, std::function<void()> callback, cocos2d::Node* node) const;
 	cocos2d::Action* createHiderSegmentMoveAction(CellsList* path, std::function<void()> callback, cocos2d::Node* node);
 
 	cocos2d::Action* creatLightCircleShowAction(std::function<void()> callback, cocos2d::Node* node);

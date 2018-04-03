@@ -79,7 +79,7 @@ public:
 
 	void addPieceSwapperCell(std::string color, Cell* cell);
 	void runSwappers();
-	bool checkPathMoverExist();
+	char getPathMoversCount();
 
 	Vec2 getBoardCenterPos() const { return Vec2(CellSize * width / 2, CellSize * height / 2); }
 

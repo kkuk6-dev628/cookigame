@@ -32,7 +32,7 @@ UserData::UserData()
 	topLevel = MAX(topLevel, 1);
 
 	//topLevel = 1599;//test
-	if (g_bDebugMode) topLevel = 26;
+	//if (g_bDebugMode) topLevel = 31;
 #ifdef TEST_UserDataClearOnInit
 	clear();
 #endif

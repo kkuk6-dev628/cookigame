@@ -27,7 +27,12 @@ public:
 
 	void setTopLevel(int topLevel)
 	{
-		this->topLevel = topLevel;
+		if(this->topLevel < topLevel)
+		{
+			this->topLevel = topLevel;
+			userDefault->setIntegerForKey("top_level", topLevel);
+			//userDefault->flush();
+		}
 	}
 
 #pragma endregion

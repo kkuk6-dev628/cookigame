@@ -28,6 +28,13 @@
 
 #define HINT_ACTION 3001
 
+// Keys for special tiles
+
+#define BREAKERS "breakers"
+#define WAFFLEPATH "wafflePath"
+#define LIQUIDS "liquids"
+#define THOPPLERS "thopplers"
+
 // tile objects
 
 #define TOPPLINGOBJECT "TopplingObject"

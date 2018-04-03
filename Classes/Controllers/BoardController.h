@@ -70,6 +70,8 @@ protected:
 	void checkFallingTileCount();
 	virtual void processCustomLogic(float) {};
 	virtual void checkObjective();
+	virtual void checkMoveCount();
+	virtual void finishLevel();
 
 	void initBoardElements();
 	void initBoardLayers();
@@ -103,11 +105,13 @@ protected:
 
 	void combineSeekerAndBonus(Cell* seekerCell, Cell* bonusCell);
 	void combineRainbowAndBonus(Cell* rainbowCell, Cell* bonusCell);
+	void combine2Rainbow(Cell* first, Cell* second);
 	void combineBombAndLine(Cell* refCell, Cell* targetCell);
 	void combine2LineBreakers(Cell* refCell, Cell* targetCell);
 	void combineXAndLine(Cell* refCell, Cell* targetCell);
 
 	void crushMatch(Match* match);
+	void crushAllCells();
 
 	void showLineCrushEffect(Cell* cell, float rotation);
 	void showBombAndLineCrushEffect(Cell* cell);

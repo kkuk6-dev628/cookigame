@@ -7,7 +7,7 @@ public:
 	PathBoardController();
 	~PathBoardController();
 
-	CREATE_FUNC(PathBoardController);
+	CREATE_FUNC(PathBoardController)
 
 	void initWithModel(BoardModel* model) override;
 	void initWithNode(Node* rootNode, Node* effectNode) override;
@@ -23,9 +23,11 @@ protected:
 	void initPathGame();
 
 	void pathMoverCollected(Cell* cell) override;
+	Cell* findSeekerTarget(CellsList* targetsList) const override;
 
 	void movePathFollower();
 	void showPathFollowerMovingAction(Cell* cell);
+	void showPathFollowerMovingAction(CellsList* path);
 	void showFrontCrushAction(Cell* frontCell);
 
 	void spawnNewTile(Cell* cell) override;

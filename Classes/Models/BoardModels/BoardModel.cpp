@@ -243,6 +243,7 @@ __Dictionary* BoardModel::getSpecialTiles()
 	auto specialTiles = __Dictionary::create();
 	auto breakers = __Array::create();
 	auto wafflesAndPathMovers = __Array::create();
+	auto thopplers = __Array::create();
 	auto liquids = __Array::create();
 
 	for(char i = 0; i < height; i++)
@@ -258,28 +259,34 @@ __Dictionary* BoardModel::getSpecialTiles()
 			if(tile->getType() == "BombBreakerObject" || tile->getType() == "ColumnBreakerObject" || tile->getType() == "RowBreakerObject" || 
 				tile->getType() == "XBreakerObject")
 			{
-				breakers->addObject(tile->getCell());
+				breakers->addObject(cell);
 			}
 			if (tile->getType() == "PathMoverMatchObject"
 				|| cell->containsThoppler() || cell->containsWaffle())
 			{
-				wafflesAndPathMovers->addObject(tile->getCell());
+				wafflesAndPathMovers->addObject(cell);
 			}
 			if (tile->getType() == "LiquidDrainerMatchObject" || tile->getType() == "LiquidFillerMatchObject")
 			{
-				liquids->addObject(tile->getCell());
+				liquids->addObject(cell);
+			}
+			if(cell->containsThoppler())
+			{
+				thopplers->addObject(cell);
 			}
 		}
 	}
 
-	specialTiles->setObject(breakers, "breakers");
-	specialTiles->setObject(wafflesAndPathMovers, "wafflePath");
-	specialTiles->setObject(liquids, "liquids");
+	specialTiles->setObject(breakers, BREAKERS);
+	specialTiles->setObject(wafflesAndPathMovers, WAFFLEPATH);
+	specialTiles->setObject(liquids, LIQUIDS);
+	specialTiles->setObject(liquids, THOPPLERS);
 	return specialTiles;
 }
 
-bool BoardModel::checkPathMoverExist()
+char BoardModel::getPathMoversCount()
 {
+	char count = 0;
 	for (char i = 0; i < height; i++)
 	{
 		for (char j = 0; j < width; j++)
@@ -291,11 +298,11 @@ bool BoardModel::checkPathMoverExist()
 			if (tile == nullptr) continue;
 			if(tile->getMovingTileType() == +MovingTileTypes::PathMoverMatchObject)
 			{
-				return true;
+				count++;
 			}
 		}
 	}
-	return false;
+	return count;
 }
 
 

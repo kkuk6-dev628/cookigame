@@ -241,7 +241,7 @@ LevelMapScene::LevelMapScene()
 	});
 
 	int nGoldCount = UserData::getInstance()->getGold();
-	mGoldLabel = (ui::Text*)btnCoin->getChildByName("lbl_coin");
+	mGoldLabel = static_cast<ui::Text*>(btnCoin->getChildByName("lbl_coin"));
 	mGoldLabel->setString(StringUtils::toString(nGoldCount));
 
 	auto btn_daily = (ui::Button*)rootNode->getChildByName("btn_daily");

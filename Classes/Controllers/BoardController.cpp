@@ -17,6 +17,7 @@
 #include "Scenes/LevelMapScene.h"
 #include "GameController.h"
 #include "Models/Tiles/LavaCakeObject.h"
+#include "Scenes/GamePlayScene.h"
 
 char BoardController::cellSize = 79;
 GameState BoardController::gameState;
@@ -64,11 +65,14 @@ void BoardController::processLogic(float dt)
 	checkMatchesInBoard();
 	processPendingSeekers();
 	processCustomLogic(dt);
-	checkObjective();
 	moveConveyors();
 	moveSpinners();
 	moveSwappers();
 	spawnController->resetSpawners();
+
+	checkObjective();
+	checkMoveCount();
+
 	doShuffle();
 
 	checkFallingTileCount();
@@ -94,6 +98,8 @@ void BoardController::initWithNode(Node* node, Node* effect)
 	topMenuArea = rootNode->getChildByName("top_menu_area");
 	bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
 	moveCountNode = static_cast<ui::Text*>(topMenuArea->getChildByName("move_number"));
+	moveCountNode->setString(StringUtils::format("%d", currentLevel->getMoveCount() - moveCount));
+
 	scoreTextNode = static_cast<ui::Text*>(topMenuArea->getChildByName("score"));
 	objectCountNode = static_cast<ui::Text*>(topMenuArea->getChildByName("object_count"));
 	effectNode = effect;
@@ -174,6 +180,15 @@ void BoardController::initAnimations()
 void BoardController::showGameWinDlg()
 {
 	auto dlg = GameWinDialog::create();
+	auto buttonText = static_cast<ui::Text*>(dlg->btn_next->getChildByName("text_1"));
+	if(gameState == Failed)
+	{
+		buttonText->setString("Restart");
+	}
+	else
+	{
+		buttonText->setString("Next");
+	}
 
 	dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
 		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
@@ -183,9 +198,17 @@ void BoardController::showGameWinDlg()
 	dlg->btn_next->addClickEventListener([this, dlg](Ref*) {
 		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
 		dlg->close();
+		if (gameState == Failed)
+		{
+			auto gamePlayScene = GamePlayScene::getInstance();
+			gamePlayScene->restartGame();
+		}
+		else
+		{
+			Director::getInstance()->popScene();
+			GameController::getInstance()->goGamePlay(currentLevel->getLevelNumber() + 1);
+		}
 		BoardController::gameState = Idle;
-		Director::getInstance()->popScene();
-		GameController::getInstance()->goGamePlay(currentLevel->getLevelNumber() + 1);
 	});
 	dlg->retain();
 	dlg->show(this->getParent(), LayerId::ShowLayer);
@@ -203,10 +226,26 @@ void BoardController::checkObjective()
 	if (fallingTileCount > 0 || gameState != Idle) return;
 	if (totalObjectCount == collectedObjectCount)
 	{
-		gameState = GameState::Completed;
+		finishLevel();
+	}
+}
+
+void BoardController::checkMoveCount()
+{
+	if(gameState == Idle && currentLevel->getMoveCount() <= moveCount)
+	{
+		gameState = Failed;
 		showGameWinDlg();
 	}
 }
+
+void BoardController::finishLevel()
+{
+	gameState = GameState::Completed;
+	UserData::getInstance()->setTopLevel(currentLevel->getLevelNumber() + 1);
+	showGameWinDlg();
+}
+
 
 void BoardController::endGame()
 {
@@ -466,8 +505,9 @@ void BoardController::initBoardElements()
 	addMask();
 	initLiquidLayer();
 	boardModel->buildConveyors();
-	//addTile(0, 0, MovingTileTypes::ColumnBreakerObject, TileColors::red);
-	//addTile(4, 4, MovingTileTypes::ColumnBreakerObject, TileColors::blue);
+
+	//addTile(2, 1, MovingTileTypes::RainbowObject, TileColors::red);
+	//addTile(2, 2, MovingTileTypes::RainbowObject, TileColors::blue);
 	//addTile(1, 0, MovingTileTypes::SeekerObject, TileColors::yellow);
 }
 
@@ -1218,7 +1258,7 @@ void BoardController::crushBonusMatch(Match* match)
 		switch (targetCellBonusType)
 		{
 		case MovingTileTypes::RainbowObject:
-			//combineRainbowAndBonus(match->bonusMatchCell, match->refCell);
+			combine2Rainbow(match->bonusMatchCell, match->refCell);
 			break;
 		case MovingTileTypes::XBreakerObject:
 		case MovingTileTypes::BombBreakerObject:
@@ -1374,6 +1414,12 @@ void BoardController::combineRainbowAndBonus(Cell* rainbowCell, Cell* bonusCell)
 	}
 }
 
+void BoardController::combine2Rainbow(Cell* first, Cell* second)
+{
+	showBombCrushEffect(first);
+	crushAllCells();
+}
+
 void BoardController::combineBombAndLine(Cell* refCell, Cell* targetCell)
 {
 	targetCell->crushCell();
@@ -1406,6 +1452,21 @@ void BoardController::crushMatch(Match* match)
 			break;
 		default:
 			break;
+		}
+	}
+}
+
+void BoardController::crushAllCells()
+{
+	for(char i = 0; i < boardModel->getHeight(); i++)
+	{
+		for(char j = 0; j < boardModel->getWidth(); j++)
+		{
+			auto cell = getMatchCell(j, i);
+			if(cell != nullptr && !cell->isOutCell)
+			{
+				cell->crushCell(true);
+			}
 		}
 	}
 }
@@ -2202,14 +2263,10 @@ void BoardController::processPendingSeekers()
 	CCARRAY_FOREACH(pendingSeekers, itr)
 	{
 		auto seekerShow = static_cast<AnimationShowObject*>(itr);
-		auto targetCell = boardModel->getSeekerTarget();
-		if(targetCell == nullptr)
+		auto targetCell = findSeekerTarget(&targetsList);
+		while(Utils::containsCell(&targetsList, targetCell))
 		{
 			targetCell = findSeekerTarget(&targetsList);
-			while(Utils::containsCell(&targetsList, targetCell))
-			{
-				targetCell = findSeekerTarget(&targetsList);
-			}
 		}
 		//if(targetCell == nullptr) continue;
 		//if(targetCell->getSourceTile() == nullptr) continue;
@@ -2259,6 +2316,12 @@ void BoardController::crushBonusManually(Cell* cell, std::string bonusString)
 
 Cell* BoardController::findSeekerTarget(CellsList* targetsList) const
 {
+	auto targetCell = boardModel->getSeekerTarget();
+	if(targetCell != nullptr)
+	{
+		return targetCell;
+	}
+
 	auto specialTiles = boardModel->getSpecialTiles();
 	auto breakers = static_cast<__Array*>(specialTiles->objectForKey("breakers"));
 	auto wafflePath = static_cast<__Array*>(specialTiles->objectForKey("wafflePath"));
@@ -2266,7 +2329,7 @@ Cell* BoardController::findSeekerTarget(CellsList* targetsList) const
 
 	if (liquids->count() > 0)
 	{
-		auto targetCell = static_cast<Cell*>(liquids->getRandomObject());
+		targetCell = static_cast<Cell*>(liquids->getRandomObject());
 		if (!Utils::containsCell(targetsList, targetCell))
 		{
 			return targetCell;
@@ -2274,7 +2337,7 @@ Cell* BoardController::findSeekerTarget(CellsList* targetsList) const
 	}
 	if (wafflePath->count() > 0)
 	{
-		auto targetCell = static_cast<Cell*>(wafflePath->getRandomObject());
+		targetCell = static_cast<Cell*>(wafflePath->getRandomObject());
 		if (!Utils::containsCell(targetsList, targetCell))
 		{
 			return targetCell;
@@ -2282,7 +2345,7 @@ Cell* BoardController::findSeekerTarget(CellsList* targetsList) const
 	}
 	if (breakers->count() > 0)
 	{
-		auto targetCell = static_cast<Cell*>(breakers->getRandomObject());
+		targetCell = static_cast<Cell*>(breakers->getRandomObject());
 		if (!Utils::containsCell(targetsList, targetCell))
 		{
 			return targetCell;
