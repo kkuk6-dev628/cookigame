@@ -445,6 +445,16 @@ void GameWinDialog::setStar(int count)
 	}
 }
 
+GameFailedDialog::GameFailedDialog()
+{
+	Popup::initWithMask(true);
+	auto dlg = CSLoader::getInstance()->createNode("res/FailedDailogui.csb");
+	addChild(dlg);
+
+	btn_close = static_cast<Button*>(dlg->getChildByName("close"));
+	btn_playon = static_cast<Button*>(dlg->getChildByName("playButton"));
+	btn_video = static_cast<Button*>(dlg->getChildByName("videoButton"));
+}
 
 
 GameLoseDialog::GameLoseDialog()

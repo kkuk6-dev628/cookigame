@@ -538,6 +538,22 @@ cocos2d::Action* ActionController::createPieceSwappingAction(const cocos2d::Vec2
 	return seq;
 }
 
+Action* ActionController::createScoreShowAction(std::function<void()> callback, cocos2d::Node* node)
+{
+	Sequence* seq = Sequence::create(
+		Spawn::create(
+			MoveBy::create(0.5, Vec2(0, 1.2 * CellSize)),
+			FadeOut::create(0.5),
+			nullptr
+		),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
+
 void ActionController::endAction(cocos2d::Node* node) const
 {
 	if (runningActions->size() > 0)

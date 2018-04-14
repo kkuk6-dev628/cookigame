@@ -111,9 +111,12 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 			}
 			headCell->clear();
 			auto iceCover = headCell->getTileAtLayer(LayerId::Cover);
-			iceCover->removeFromParent();
-			headCell->removeTileAtLayer(LayerId::Cover);
-			headCell->setSourceTile(segment);
+			if(iceCover != nullptr)
+			{
+				iceCover->removeFromParent();
+				headCell->removeTileAtLayer(LayerId::Cover);
+				headCell->setSourceTile(segment);
+			}
 		}
 	}, segment);
 	actionController->pushAction(ckAction, false);

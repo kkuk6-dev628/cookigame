@@ -86,7 +86,8 @@ void HiderBoardController::addCellToBoard(char col, char row)
 			headCover->removeFromParent();
 			cell->removeTileAtLayer(LayerId::Cover);
 		}
-		cell->getMovingTile()->removeFromParent();
+		auto tile = cell->getMovingTile();
+		if(tile != nullptr) tile->removeFromParent();
 		cell->clear();
 		cell->setSourceTile(hiderSegment);
 		auto hiderGroup = new HiderGroup;

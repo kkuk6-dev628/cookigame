@@ -217,7 +217,25 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 		return;
 	}
 
-	auto hopplerShow = poolController->getHopplerShow();
+	SoundEffects topplingEffect = SoundEffects::VO_toppler_move_4;
+	switch (hopplingPath->size())
+	{
+	case 1:
+		topplingEffect = SoundEffects::VO_toppler_move_1;
+		break;
+	case 2:
+		topplingEffect = SoundEffects::VO_toppler_move_2;
+		break;
+	case 3:
+		topplingEffect = SoundEffects::VO_toppler_move_3;
+		break;
+	default:
+		topplingEffect = SoundEffects::VO_toppler_move_4;
+		break;
+	}
+	soundController->playEffectSound(topplingEffect);
+
+	auto hopplerShow = poolController->getTopplerShow();
 	hopplerShow->setPosition(cell->getBoardPos());
 	showObjectsLayer->addChild(hopplerShow);
 	hopplerTile->setVisible(false);

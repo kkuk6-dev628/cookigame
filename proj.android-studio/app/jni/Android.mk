@@ -22,6 +22,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Controllers/PathBoardController.cpp \
 ../../../Classes/Controllers/PoolController.cpp \
 ../../../Classes/Controllers/PopsicleBoardController.cpp \
+../../../Classes/Controllers/ScoreController.cpp \
 ../../../Classes/Controllers/SoundController.cpp \
 ../../../Classes/Controllers/SpawnController.cpp \
 ../../../Classes/Controllers/THopplingBoardController.cpp \
@@ -41,6 +42,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/BoardModels/HolesQueue.cpp \
 ../../../Classes/Models/BoardModels/Match.cpp \
 ../../../Classes/Models/BoardModels/PieceSwapper.cpp \
+../../../Classes/Models/BoardModels/Score.cpp \
 ../../../Classes/Models/DataModels/BoardLayerData.cpp \
 ../../../Classes/Models/DataModels/CustomSpawnTableItem.cpp \
 ../../../Classes/Models/DataModels/Level.cpp \
@@ -77,7 +79,6 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Scenes/LevelMapScene.cpp \
 ../../../Classes/Scenes/MainMenuScene.cpp \
 ../../../Classes/Scenes/StartScene.cpp
-
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes
 

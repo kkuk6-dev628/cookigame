@@ -115,6 +115,22 @@ public:
 	Node *m_rewardedCoin;
 };
 
+class GameFailedDialog : public Popup
+{
+public:
+	GameFailedDialog();
+	CREATE_FUNC(GameFailedDialog);
+
+public:
+	cocos2d::ui::Button* btn_close;
+	cocos2d::ui::Button* btn_playon;
+	cocos2d::ui::Button* btn_video;
+	cocos2d::ui::Text* lbl_score_title;
+	cocos2d::ui::Text* lbl_maxscore;
+
+	Node *m_pUiNode;
+};
+
 class GameLoseDialog : public Popup
 {
 public:

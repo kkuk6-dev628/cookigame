@@ -231,6 +231,12 @@
     <ClCompile Include="..\Classes\Models\Tiles\DisplayCaseObject.cpp">
       <Filter>src\Models\Tiles</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\ScoreController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\BoardModels\Score.cpp">
+      <Filter>src\Models\BoardModels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -439,6 +445,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Models\Tiles\DisplayCaseObject.h">
       <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\ScoreController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\BoardModels\Score.h">
+      <Filter>src\Models\BoardModels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

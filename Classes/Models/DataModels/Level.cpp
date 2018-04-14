@@ -65,6 +65,19 @@ void Level::initWithJson(rapidjson::Value& json)
 			limit->push_back(lim);
 		}
 	}
+
+	if (json["scores"].IsArray())
+	{
+		if(scores == nullptr)
+		{
+			scores = new std::vector<int>;
+		}
+		auto scoresArray = json["scores"].GetArray();
+		for (auto& item : scoresArray)
+		{
+			scores->push_back(item.GetInt());
+		}
+	}
 }
 
 

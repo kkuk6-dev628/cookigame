@@ -31,7 +31,7 @@ private:
 	std::list<std::string>* boosters;
 	std::list<Limit>* limit;
 	std::string background;
-	std::list<int>* scores;
+	std::vector<int>* scores = nullptr;
 	bool ignoreEveryoneHardDelta;
 
 
@@ -146,12 +146,12 @@ public:
 		this->background = background;
 	}
 
-	std::list<int>* getScores() const
+	std::vector<int>* getScores() const
 	{
 		return scores;
 	}
 
-	void setScores(std::list<int>* scores)
+	void setScores(std::vector<int>* scores)
 	{
 		this->scores = scores;
 	}

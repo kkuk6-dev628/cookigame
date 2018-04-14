@@ -102,6 +102,9 @@ public:
 	SpriteShowObject* getHiderShow() const;
 	void recycleHiderShow(SpriteShowObject* popHiderShow) const;
 
+	LabelShowObject* getScoreShow() const;
+	void recycleScoreShow(LabelShowObject* scoreNode) const;
+
 private:
 	PoolController();
 	static PoolController* instance;
@@ -151,5 +154,7 @@ private:
 	NodePool<SpriteShowObject>* popBombShowPool;
 	NodePool<SpriteShowObject>* popRainbowShowPool;
 	NodePool<SpriteShowObject>* hiderShowPool;
+
+	NodePool<LabelShowObject>* scoreShowPool;
 };
 

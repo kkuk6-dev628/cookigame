@@ -66,6 +66,7 @@ PoolController::PoolController()
 	popRainbowShowPool = new NodePool<SpriteShowObject>;
 	hiderShowPool = new NodePool<SpriteShowObject>;
 
+	scoreShowPool = new NodePool<LabelShowObject>;
 	RegisterTileClasses();
 }
 
@@ -189,7 +190,7 @@ void PoolController::recycleCookieTile(CookieTile* cookieTile) const
 	else
 	{
 		cookieTile->removeFromParent();
-		CC_SAFE_RELEASE(cookieTile);
+		//CC_SAFE_RELEASE(cookieTile);
 	}
 
 }
@@ -894,7 +895,7 @@ SpriteShowObject* PoolController::getHopplerShow() const
 	{
 		show = SpriteShowObject::create();
 		show->retain();
-		show->initWithTextureName("hoppler.png");
+		show->initWithTextureName("toppler.png");
 	}
 	return show;
 }
@@ -915,7 +916,7 @@ SpriteShowObject* PoolController::getTopplerShow() const
 	{
 		show = SpriteShowObject::create();
 		show->retain();
-		show->initWithTextureName("toppler.png");
+		show->initWithTextureName("hoppler.png");
 	}
 	return show;
 }
@@ -1028,4 +1029,24 @@ SpriteShowObject* PoolController::getHiderShow() const
 void PoolController::recycleHiderShow(SpriteShowObject* popHiderShow) const
 {
 	hiderShowPool->recycleNode(popHiderShow);
+}
+
+LabelShowObject* PoolController::getScoreShow() const
+{
+	LabelShowObject* show;
+	if (scoreShowPool->size() > 0)
+	{
+		show = scoreShowPool->getNode();
+	}
+	else
+	{
+		show = static_cast<LabelShowObject*>(LabelShowObject::createWithBMFont("res/font/san-Komika-b.fnt", "00", TextHAlignment::CENTER));
+		show->retain();
+	}
+	return show;
+}
+
+void PoolController::recycleScoreShow(LabelShowObject* scoreNode) const
+{
+	scoreShowPool->recycleNode(scoreNode);
 }

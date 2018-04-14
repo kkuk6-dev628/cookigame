@@ -261,6 +261,7 @@ LevelMapScene::LevelMapScene()
 	for (int i = 1; i <= 6; i++)
 		clouds.add(rootNode->getChildByName(__String::createWithFormat("cloud_%d", i)->getCString()));
 	cloudtime = rand() % 5;
+
 }
 
 float LevelMapScene::getOffsetForLevel(int index, int* pBgSegNo)
@@ -413,6 +414,8 @@ void LevelMapScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 
+	SoundController::getInstance()->playBgMusic(SoundController::musicGameMenu);
+
 	// keyboard
 	auto keyListener = EventListenerKeyboard::create();
 	keyListener->onKeyReleased = CC_CALLBACK_2(LevelMapScene::onKeyReleased, this);
@@ -464,51 +467,96 @@ void LevelMapScene::onEnter()
 
 void LevelMapScene::showSettingDlg()
 {
-	//auto dlg = SettingDialog::create();
-	//dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
-	//	SoundController::playEffectSound(SoundController::SoundEffect::sound_game_buttonclick);
-	//	dlg->close();
-	//});
-	//SoundController::playEffectSound(SoundController::SoundEffect::sound_game_window);
-	//dlg->show(this, kZPopup);
+	auto dlg = SettingDialog::create();
+
+	auto soundController = SoundController::getInstance();
+	auto imgMusicOn = dlg->btn_music->getChildByName("music_on");
+	auto imgMusicOff = dlg->btn_music->getChildByName("music_off");
+	auto imgSoundOn = dlg->btn_sound->getChildByName("sound_on");
+	auto imgSoundOff = dlg->btn_sound->getChildByName("sound_off");
+
+	if (soundController->isBgMusicOn())
+	{
+		imgMusicOn->setVisible(true);
+		imgMusicOff->setVisible(false);
+	}
+	else
+	{
+		imgMusicOn->setVisible(false);
+		imgMusicOff->setVisible(true);
+	}
+
+	if (soundController->isEffectsOn())
+	{
+		imgSoundOn->setVisible(true);
+		imgSoundOff->setVisible(false);
+	}
+	else
+	{
+		imgSoundOn->setVisible(false);
+		imgSoundOff->setVisible(true);
+	}
 
 
-	//((Text*)dlg->btn_retry->getChildByName("lbl"))->setString("Rate Us");
+	dlg->btn_exit->addClickEventListener([this, dlg](Ref*) {
+		Director::getInstance()->replaceScene(TransitionFade::create(0.6f, StartScene::createScene()));
+	});
+	dlg->btn_continue->setVisible(false);
+	dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
+		dlg->close();
+		BoardController::gameState = Idle;
+	});
+	auto label = static_cast<ui::Text*>(dlg->btn_retry->getChildByName("lbl"));
+	label->setString("Close");
+	dlg->btn_retry->addClickEventListener([this, dlg](Ref*) {
+		dlg->close();
+		BoardController::gameState = Idle;
+	});
 
-	//dlg->btn_retry->addClickEventListener([&](Ref*) {
-	//	SoundController::playEffectSound(SoundController::SoundEffect::sound_game_buttonclick);
-	//	GGBridge::rateApp();
-	//});
-	//dlg->btn_exit->addClickEventListener([&](Ref*) {
-	//	SoundController::playEffectSound(SoundController::SoundEffect::sound_game_buttonclick);
-	//	Director::getInstance()->replaceScene(TransitionFade::create(0.6f, StartScene::createScene()));
-	//});
-	//dlg->btn_continue->addClickEventListener([&, dlg](Ref*) {
-	//	SoundController::playEffectSound(SoundController::SoundEffect::sound_game_buttonclick);
-	//	dlg->close();
-	//});
+	dlg->btn_music->addClickEventListener([=](Ref*) {
+		soundController->toggleBgMusicOn();
+		if (soundController->isBgMusicOn())
+		{
+			imgMusicOn->setVisible(true);
+			imgMusicOff->setVisible(false);
+		}
+		else
+		{
+			imgMusicOn->setVisible(false);
+			imgMusicOff->setVisible(true);
+		}
+	});
+	dlg->btn_sound->addClickEventListener([=](Ref*) {
+		soundController->toggleEffectsOn();
+		if (soundController->isEffectsOn())
+		{
+			imgSoundOn->setVisible(true);
+			imgSoundOff->setVisible(false);
+		}
+		else
+		{
+			imgSoundOn->setVisible(false);
+			imgSoundOff->setVisible(true);
+		}
+	});
+	dlg->setOnCloseHandler([this, dlg]() {
+		BoardController::gameState = Idle;
+	});
+	dlg->retain();
+	BoardController::gameState = Paused;
+	dlg->show(this, kZPopup);
 }
 
 void LevelMapScene::onSelectLevel(Ref* pSender)
 {
 	int index = ((Node*)pSender)->getTag();
 	GameController::getInstance()->goGamePlay(index);
-	//if (!_levelManager->setCurrentLevel(index))
-	//	return;
-
-	//Level* level = _levelManager->getCurrentLevel();
-	////level->clearSelectedBoosters();
-	//auto dlg = OpenLevelDialog::createWithLevel(level);
-	////SoundController::playEffectSound(SoundController::SoundEffect::sound_level_open);
-	//dlg->show(this, kZPopup);
 }
 
 void LevelMapScene::startLevel(int index)
 {
 	if (_levelManager->setCurrentLevel(index))
 	{
-		//SoundController::playEffectSound(SoundController::SoundEffect::sound_level_open);
-		//Director::getInstance()->replaceScene(TransitionFade::create(1.0f, GamePlayScene::createScene()));
 		Director::getInstance()->pushScene(TransitionFade::create(1.0f, GamePlayScene::createScene()));
 	}
 }

@@ -28,6 +28,8 @@ BoardController::BoardController()
 	spawnController = SpawnController::getInstance();
 	actionController = ActionController::getInstance();
 	poolController = PoolController::getInstance();
+	scoreController = ScoreController::getInstance();
+	soundController = SoundController::getInstance();
 
 	pendingCrushCells = __Array::create();
 	pendingCrushCells->retain();
@@ -73,6 +75,8 @@ void BoardController::processLogic(float dt)
 	checkObjective();
 	checkMoveCount();
 
+	scoreController->processScoreQueue();
+
 	doShuffle();
 
 	checkFallingTileCount();
@@ -96,9 +100,13 @@ void BoardController::initWithNode(Node* node, Node* effect)
 {
 	rootNode = node;
 	topMenuArea = rootNode->getChildByName("top_menu_area");
+
+	scoreController->setTotalScoreNode(topMenuArea);
+	scoreController->setStarScores(currentLevel->getScores()->at(0), currentLevel->getScores()->at(1), currentLevel->getScores()->at(2));
+
 	bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
 	moveCountNode = static_cast<ui::Text*>(topMenuArea->getChildByName("move_number"));
-	moveCountNode->setString(StringUtils::format("%d", currentLevel->getMoveCount() - moveCount));
+	updateMoveCountText();
 
 	scoreTextNode = static_cast<ui::Text*>(topMenuArea->getChildByName("score"));
 	objectCountNode = static_cast<ui::Text*>(topMenuArea->getChildByName("object_count"));
@@ -183,6 +191,7 @@ void BoardController::showGameWinDlg()
 	auto buttonText = static_cast<ui::Text*>(dlg->btn_next->getChildByName("text_1"));
 	if(gameState == Failed)
 	{
+
 		buttonText->setString("Restart");
 	}
 	else
@@ -215,6 +224,25 @@ void BoardController::showGameWinDlg()
 
 }
 
+void BoardController::showGameFailedDlg()
+{
+	auto dlg = GameFailedDialog::create();
+	dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
+		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
+		dlg->close();
+		this->endGame();
+	});
+	dlg->btn_playon->addClickEventListener([=](Ref*){
+		dlg->close();
+		moveCount -= 10;
+		updateMoveCountText();
+
+		gameState = Idle;
+	});
+	dlg->retain();
+	dlg->show(this->getParent(), LayerId::ShowLayer);
+}
+
 void BoardController::increaseObjectCount()
 {
 	collectedObjectCount++;
@@ -235,7 +263,7 @@ void BoardController::checkMoveCount()
 	if(gameState == Idle && currentLevel->getMoveCount() <= moveCount)
 	{
 		gameState = Failed;
-		showGameWinDlg();
+		showGameFailedDlg();
 	}
 }
 
@@ -324,6 +352,7 @@ void BoardController::onTouchMoved(Touch* touch, Event* unused_event)
 				this->swapTilesInternal(this->selectedTile->getCell(), targetCell);
 				this->selectedTile = nullptr;
 			});
+			soundController->playEffectSound(SoundEffects::sound_gem_drag);
 			doSomethingPerMove();
 		}
 		else
@@ -337,6 +366,7 @@ void BoardController::onTouchMoved(Touch* touch, Event* unused_event)
 				selectedTile->showDirectionalScaleAction(dir);
 				targetTile->showDirectionalScaleAction(Utils::inverseDir(dir));
 			}
+			soundController->playEffectSound(SoundEffects::sound_gem_drag_fail);
 			selectedTile = nullptr;
 		}
 	}
@@ -461,6 +491,7 @@ void BoardController::initBoardLayers()
 	portalLayer			= static_cast<BoardLayer*>(layersDict->objectForKey(LayerId::Portal));
 	showObjectsLayer	= static_cast<BoardLayer*>(layersDict->objectForKey(LayerId::ShowLayer));
 
+	scoreController->setScoresContainerNode(showObjectsLayer);
 }
 
 BoardLayer* BoardController::getBoardLayer(LayerId layerId)
@@ -506,8 +537,8 @@ void BoardController::initBoardElements()
 	initLiquidLayer();
 	boardModel->buildConveyors();
 
-	//addTile(2, 1, MovingTileTypes::RainbowObject, TileColors::red);
-	//addTile(2, 2, MovingTileTypes::RainbowObject, TileColors::blue);
+	//addTile(3, 3, MovingTileTypes::SeekerObject, TileColors::red);
+	//addTile(3, 4, MovingTileTypes::ColumnBreakerObject, TileColors::blue);
 	//addTile(1, 0, MovingTileTypes::SeekerObject, TileColors::yellow);
 }
 
@@ -890,6 +921,8 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 
 	if(Utils::IsBonusTile(selectedTileType) && Utils::IsBonusTile(targetTileType))
 	{
+		matchId = 0;
+
 		auto match = Match::create();
 		match->refCell = targetCell;
 		match->bonusMatchCell = selectedCell;
@@ -904,6 +937,8 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 	}
 	if(selectedTileType == +MovingTileTypes::RainbowObject)
 	{
+		matchId = 0;
+
 		auto match = Match::create();
 		match->refCell = targetCell;
 		match->color = targetCell->getSourceTile()->getTileColor();
@@ -917,6 +952,8 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 	}
 	if (targetTileType == +MovingTileTypes::RainbowObject)
 	{
+		matchId = 0;
+
 		auto match = Match::create();
 		match->refCell = selectedCell;
 		match->color = selectedCell->getSourceTile()->getTileColor();
@@ -936,6 +973,8 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 		auto matchTarget = findMatch(targetCell);
 		if (matchSelected != nullptr)
 		{
+			matchId = 0;
+
 			canSwap = true;
 			matchSelected->matchId = getMatchId();
 			selectedCell->getSourceTile()->matchId = matchSelected->matchId;
@@ -944,6 +983,8 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 		}
 		if (matchTarget != nullptr)
 		{
+			matchId = 0;
+
 			canSwap = true;
 			matchTarget->matchId = getMatchId();
 			targetCell->getSourceTile()->matchId = matchTarget->matchId;
@@ -954,6 +995,14 @@ int BoardController::canSwapTiles(Cell* selectedCell, Cell* targetCell, bool add
 	swapTilesInternal(selectedCell, targetCell);
 	return canSwap;
 }
+
+void BoardController::addScore(ScoreType type, ScoreUnit val, char matchNumber, Vec2 pos) const
+{
+	Score score(type, val, matchNumber);
+	score.setPosition(pos);
+	scoreController->addScore(score);
+}
+
 
 Match* BoardController::findMatch(Cell* startCell)
 {
@@ -1120,6 +1169,11 @@ void BoardController::initHintAction()
 void BoardController::countDownMoveNumber()
 {
 	moveCount++;
+	updateMoveCountText();
+}
+
+void BoardController::updateMoveCountText()
+{
 	moveCountNode->setString(StringUtils::format("%d", currentLevel->getMoveCount() - moveCount));
 }
 
@@ -1159,6 +1213,33 @@ void BoardController::crushPendingCells()
 
 }
 
+void BoardController::playCreateBonusSoundEffect(MovingTileTypes bonusType)
+{
+	auto soundEffectName = SoundEffects::sound_create_row_column;
+
+	switch (bonusType)
+	{
+	case MovingTileTypes::BombBreakerObject:
+		soundEffectName = SoundEffects::sound_create_bomb;
+		break;
+	case MovingTileTypes::SeekerObject:
+		soundEffectName = SoundEffects::sound_create_honey;
+		break;
+	case MovingTileTypes::RainbowObject:
+		soundEffectName = SoundEffects::sound_create_rainbow;
+		break;
+	case MovingTileTypes::RowBreakerObject:
+	case MovingTileTypes::ColumnBreakerObject:
+		soundEffectName = SoundEffects::sound_create_row_column;
+		break;
+	case MovingTileTypes::XBreakerObject:
+		soundEffectName = SoundEffects::sound_create_x;
+		break;
+	}
+	soundController->playEffectSound(soundEffectName);
+}
+
+
 void BoardController::crushNormalMatch(Match* match)
 {
 	auto bonusType = match->getAvailableBonusType();
@@ -1170,11 +1251,14 @@ void BoardController::crushNormalMatch(Match* match)
 			bonusTile->initWithType(bonusType._to_string(), match->color);
 			match->refCell->setSourceTile(bonusTile);
 			match->refCell->reserveCount = 1;
+			playCreateBonusSoundEffect(bonusType);
+			addScore(ScoreType::additive, ScoreUnit::rainbow, match->matchId, match->refCell->getBoardPos());
 			cocos2d::log("The ref cell is null!");
 		}
 		return;
 	}
 	auto color = match->refCell->getSourceTile()->getTileColor();
+
 	if (match->hMatchedCells->size() > 2)
 	{
 		for (auto& cell : *match->hMatchedCells) if (match->refCell != cell) crushCell(cell);
@@ -1189,6 +1273,7 @@ void BoardController::crushNormalMatch(Match* match)
 	}
 
 	crushCell(match->refCell);
+	soundController->playEffectSound("sound_gem_match_tier", match->matchId);
 
 	if (bonusType != +MovingTileTypes::LayeredMatchObject)
 	{
@@ -1196,6 +1281,12 @@ void BoardController::crushNormalMatch(Match* match)
 		bonusTile->initWithType(bonusType._to_string(), color);
 		match->refCell->setSourceTile(bonusTile);
 		match->refCell->reserveCount = 1;
+		playCreateBonusSoundEffect(bonusType);
+		addScore(ScoreType::additive, ScoreUnit::rainbow, match->matchId, match->refCell->getBoardPos());
+	}
+	else
+	{
+		addScore(ScoreType::additive, ScoreUnit::match, match->matchId, match->refCell->getBoardPos());
 	}
 }
 
@@ -1503,6 +1594,7 @@ Cell* BoardController::fillCell(Cell* cell)
 		//////////////////////////////////////
 		// fallPath->log();
 		fallPath->showFallAction();
+		soundController->playEffectSound(SoundEffects::sound_gem_fall);
 		auto newTile = fallPath->startCell->getSpawnedTile();
 		if(newTile == nullptr)
 		{
@@ -1936,7 +2028,7 @@ void BoardController::crushBombBreaker(Cell* cell)
 		for(char j = cell->gridPos.Col - 2; j <= cell->gridPos.Col + 2; j++)
 		{
 			auto bombCell = getMatchCell(j, i);
-			if(bombCell == nullptr) continue;
+			if(bombCell == nullptr || bombCell == cell) continue;
 			if ((std::abs(i - cell->gridPos.Row) == 2)) 
 			{ 
 				if(std::abs(j - cell->gridPos.Col) != 0)
@@ -1951,6 +2043,7 @@ void BoardController::crushBombBreaker(Cell* cell)
 		}
 	}
 	showBombCrushEffect(cell);
+	soundController->playEffectSound(SoundEffects::sound_explode_bomb);
 }
 
 void BoardController::crushTwoBomb(Cell* cell)
@@ -1975,6 +2068,7 @@ void BoardController::crushTwoBomb(Cell* cell)
 		}
 	}
 	showBombCrushEffect(cell);
+	soundController->playEffectSound(SoundEffects::sound_explode_double_bomb);
 }
 
 void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
@@ -2100,10 +2194,15 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 		}
 	}
 	showLineCrushEffect(cell, rot);
+	soundController->playEffectSound(SoundEffects::sound_explode_row_column);
 }
 
 void BoardController::crushRowBreaker(Cell* cell, bool showEffect)
 {
+	if(cell == nullptr)
+	{
+		return;
+	}
 	auto leftCell = cell->leftCell;
 	cell->crushCell();
 	while (leftCell != nullptr)
@@ -2136,6 +2235,7 @@ void BoardController::crushRowBreaker(Cell* cell, bool showEffect)
 	}
 
 	if(showEffect) showLineCrushEffect(cell, 0);
+	soundController->playEffectSound(SoundEffects::sound_explode_row_column);
 }
 
 void BoardController::crushColumnBreaker(Cell* cell, bool showEffect)
@@ -2170,6 +2270,7 @@ void BoardController::crushColumnBreaker(Cell* cell, bool showEffect)
 		downCell = downCell->downCell;
 	}
 	if (showEffect) showLineCrushEffect(cell, 90);
+	soundController->playEffectSound(SoundEffects::sound_explode_row_column);
 }
 
 void BoardController::crushXBreaker(Cell* cell)
@@ -2203,6 +2304,7 @@ void BoardController::crushXBreaker(Cell* cell)
 	}
 	showLineCrushEffect(cell, 45);
 	showLineCrushEffect(cell, 135);
+	soundController->playEffectSound(SoundEffects::sound_explode_x);
 }
 
 void BoardController::crushSeeker(Cell* cell, MovingTileTypes bonusType)
@@ -2218,6 +2320,7 @@ void BoardController::crushSeeker(Cell* cell, MovingTileTypes bonusType)
 	actionController->pushAction(ckAction, false);
 	pendingSeekers->addObject(seekerShow);
 	cell->crushCell();
+	soundController->playEffectSound(SoundEffects::sound_explode_honey);
 }
 
 void BoardController::crushSeekerAndBonus(Cell* seekerCell, Cell* bonusCell)
@@ -2281,14 +2384,15 @@ void BoardController::landingSeeker(AnimationShowObject* seekerShow, Cell* targe
 	CKAction ckAction;
 	auto targetPos = Utils::Grid2BoardPos(targetCell->gridPos);
 	ckAction.node = seekerShow;
-	auto crushingCell = targetCell;
-	auto recycleSeeker = seekerShow;
-	ckAction.action = actionController->createSeekerLandingAction(ckAction.node, targetPos, [this, recycleSeeker, crushingCell]()
+	//auto crushingCell = targetCell;
+	//auto recycleSeeker = seekerShow;
+	ckAction.action = actionController->createSeekerLandingAction(ckAction.node, targetPos, [=]()
 	{
-		auto bonusString = recycleSeeker->customData->at("bonusType");
-		this->crushBonusManually(crushingCell, bonusString);
-		this->crushCell(crushingCell);
-		poolController->recycleSeekerShow(recycleSeeker);
+		auto bonusString = seekerShow->customData->at("bonusType");
+		this->crushCell(targetCell);
+		this->crushBonusManually(targetCell, bonusString);
+		poolController->recycleSeekerShow(seekerShow);
+		soundController->playEffectSound(SoundEffects::sound_gem_landing);
 	});
 	actionController->pushAction(ckAction, false);
 }

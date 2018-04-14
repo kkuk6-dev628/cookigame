@@ -17,6 +17,9 @@ public:
 	void initControllers();
 	void releaseControllers();
 
+	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+	void onEnterTransitionDidFinish();
+
 	// implement the "static create()" method manually
 	CREATE_FUNC(StartScene);
 

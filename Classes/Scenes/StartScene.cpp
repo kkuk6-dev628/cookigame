@@ -60,6 +60,7 @@ bool StartScene::init()
 
 	this->initControllers();
     
+	SoundController::getInstance()->playBgMusic(SoundController::musicGameMenu);
     return true;
 }
 
@@ -90,4 +91,28 @@ void StartScene::releaseControllers()
 	{
 		delete this->gameController;
 	}
+}
+
+void StartScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	if (keyCode == EventKeyboard::KeyCode::KEY_BACKSPACE || keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
+	{
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)  
+		//GGBridge::exitCP();
+#else
+
+#endif
+		event->stopPropagation();
+	}
+}
+
+void StartScene::onEnterTransitionDidFinish()
+{
+	Layer::onEnterTransitionDidFinish();
+
+	// keyboard
+	auto keyListener = EventListenerKeyboard::create();
+	keyListener->onKeyReleased = CC_CALLBACK_2(StartScene::onKeyReleased, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyListener, this);
 }

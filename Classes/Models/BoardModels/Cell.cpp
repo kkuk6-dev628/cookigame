@@ -4,6 +4,7 @@
 #include "Controllers/PoolController.h"
 #include "Models/Tiles/LayeredCrackerTile.h"
 #include "Models/Tiles/DisplayCaseObject.h"
+#include "Models/Tiles/ThopplerTile.h"
 
 Cell::Cell()
 {
@@ -181,6 +182,18 @@ bool Cell::crushCell(bool showCrushEffect)
 		clear();
 		dirty = false;
 	}
+
+	auto thopplerTile = getTileAtLayer(LayerId::Toppling);
+	if (thopplerTile != nullptr)
+	{
+		if (ret)
+		{
+			static_cast<ThopplerTile*>(thopplerTile)->moveDown();
+			setSourceTile(thopplerTile);
+			removeTileAtLayer(LayerId::Toppling);
+		}
+	}
+
 	return ret;
 }
 

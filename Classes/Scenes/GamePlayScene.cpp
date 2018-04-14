@@ -84,7 +84,28 @@ bool GamePlayScene::init()
 
 	auto levelTextNode = static_cast<ui::Text*>(topMenuArea->getChildByName("level_number"));
 	levelTextNode->setString(StringUtils::format("Lev %d", LevelController::getInstance()->getCurrentLevel()->getLevelNumber()));
+
 	return true;
+}
+
+void GamePlayScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	if (keyCode == EventKeyboard::KeyCode::KEY_BACKSPACE || keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
+	{
+		showSettingsDlg();
+	}
+}
+
+void GamePlayScene::onEnterTransitionDidFinish()
+{
+	Layer::onEnterTransitionDidFinish();
+
+	SoundController::getInstance()->playBgMusic(SoundController::musicGamePlay);
+
+	// keyboard
+	auto keyListener = EventListenerKeyboard::create();
+	keyListener->onKeyReleased = CC_CALLBACK_2(GamePlayScene::onKeyReleased, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyListener, this);
 }
 
 void GamePlayScene::initEffectNode()
@@ -128,6 +149,35 @@ void GamePlayScene::showSettingsDlg()
 	{
 		auto dlg = SettingDialog::create();
 
+		auto soundController = SoundController::getInstance();
+		auto imgMusicOn = dlg->btn_music->getChildByName("music_on");
+		auto imgMusicOff = dlg->btn_music->getChildByName("music_off");
+		auto imgSoundOn = dlg->btn_sound->getChildByName("sound_on");
+		auto imgSoundOff = dlg->btn_sound->getChildByName("sound_off");
+
+		if (soundController->isBgMusicOn())
+		{
+			imgMusicOn->setVisible(true);
+			imgMusicOff->setVisible(false);
+		}
+		else
+		{
+			imgMusicOn->setVisible(false);
+			imgMusicOff->setVisible(true);
+		}
+
+		if (soundController->isEffectsOn())
+		{
+			imgSoundOn->setVisible(true);
+			imgSoundOff->setVisible(false);
+		}
+		else
+		{
+			imgSoundOn->setVisible(false);
+			imgSoundOff->setVisible(true);
+		}
+
+
 		dlg->btn_exit->addClickEventListener([this, dlg](Ref*) {
 			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
 			dlg->close();
@@ -147,6 +197,32 @@ void GamePlayScene::showSettingsDlg()
 			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
 			dlg->close();
 			this->restartGame();
+		});
+		dlg->btn_music->addClickEventListener([=](Ref*) {
+			soundController->toggleBgMusicOn();
+			if(soundController->isBgMusicOn())
+			{
+				imgMusicOn->setVisible(true);
+				imgMusicOff->setVisible(false);
+			}
+			else
+			{
+				imgMusicOn->setVisible(false);
+				imgMusicOff->setVisible(true);
+			}
+		});
+		dlg->btn_sound->addClickEventListener([=](Ref*) {
+			soundController->toggleEffectsOn();
+			if (soundController->isEffectsOn())
+			{
+				imgSoundOn->setVisible(true);
+				imgSoundOff->setVisible(false);
+			}
+			else
+			{
+				imgSoundOn->setVisible(false);
+				imgSoundOff->setVisible(true);
+			}
 		});
 		dlg->setOnCloseHandler([this, dlg]() {
 			//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);

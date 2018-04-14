@@ -155,6 +155,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controllers\PathBoardController.cpp" />
     <ClCompile Include="..\Classes\Controllers\PoolController.cpp" />
     <ClCompile Include="..\Classes\Controllers\PopsicleBoardController.cpp" />
+    <ClCompile Include="..\Classes\Controllers\ScoreController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SoundController.cpp" />
     <ClCompile Include="..\Classes\Controllers\SpawnController.cpp" />
     <ClCompile Include="..\Classes\Controllers\THopplingBoardController.cpp" />
@@ -174,6 +175,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\BoardModels\HolesQueue.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\Match.cpp" />
     <ClCompile Include="..\Classes\Models\BoardModels\PieceSwapper.cpp" />
+    <ClCompile Include="..\Classes\Models\BoardModels\Score.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\BoardLayerData.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\CustomSpawnTableItem.cpp" />
     <ClCompile Include="..\Classes\Models\DataModels\Level.cpp" />
@@ -219,6 +221,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Controllers\PathBoardController.h" />
     <ClInclude Include="..\Classes\Controllers\PoolController.h" />
     <ClInclude Include="..\Classes\Controllers\PopsicleBoardController.h" />
+    <ClInclude Include="..\Classes\Controllers\ScoreController.h" />
     <ClInclude Include="..\Classes\Controllers\SoundController.h" />
     <ClInclude Include="..\Classes\Controllers\SpawnController.h" />
     <ClInclude Include="..\Classes\Controllers\THopplingBoardController.h" />
@@ -243,6 +246,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\BoardModels\HolesQueue.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\Match.h" />
     <ClInclude Include="..\Classes\Models\BoardModels\PieceSwapper.h" />
+    <ClInclude Include="..\Classes\Models\BoardModels\Score.h" />
     <ClInclude Include="..\Classes\Models\DataModels\BoardLayerData.h" />
     <ClInclude Include="..\Classes\Models\DataModels\CustomSpawnTableItem.h" />
     <ClInclude Include="..\Classes\Models\DataModels\Level.h" />

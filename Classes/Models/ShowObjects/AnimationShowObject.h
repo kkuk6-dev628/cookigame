@@ -56,6 +56,17 @@ public:
 	void recycle() { removeFromParent(); }
 };
 
+class LabelShowObject : public Label
+{
+public:
+	LabelShowObject() {};
+	~LabelShowObject() {};
+
+	CREATE_FUNC(LabelShowObject);
+
+	void recycle() { removeFromParent(); }
+};
+
 class ParticleShowObject: public AnimationShowObject
 {
 public:

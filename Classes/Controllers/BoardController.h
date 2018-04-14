@@ -11,6 +11,8 @@
 #include "PoolController.h"
 #include "ui/UIText.h"
 #include "Models/BoardModels/BoardModel.h"
+#include "ScoreController.h"
+#include "SoundController.h"
 
 class ActionController;
 class BoardModel;
@@ -61,6 +63,7 @@ public:
 	float getBoardHeight() const { return boardModel->getHeight(); }
 
 	void showGameWinDlg();
+	void showGameFailedDlg();
 
 protected:
 
@@ -113,6 +116,8 @@ protected:
 	void crushMatch(Match* match);
 	void crushAllCells();
 
+	void addScore(ScoreType type, ScoreUnit val, char matchNumber, Vec2 pos) const;
+
 	void showLineCrushEffect(Cell* cell, float rotation);
 	void showBombAndLineCrushEffect(Cell* cell);
 	void showBombCrushEffect(Cell* cell);
@@ -152,6 +157,7 @@ protected:
 
 	void initHintAction();
 	void countDownMoveNumber();
+	void updateMoveCountText();
 	void fillLiquid(bool inverse = false);
 
 	void moveConveyors();
@@ -165,6 +171,8 @@ protected:
 
 	void moveSwappers();
 
+	void playCreateBonusSoundEffect(MovingTileTypes bonusType);
+
 	void endGame();
 	////////////////////
 
@@ -175,6 +183,8 @@ protected:
 	SpawnController* spawnController;
 	ActionController* actionController;
 	PoolController* poolController;
+	ScoreController* scoreController;
+	SoundController* soundController;
 
 	Node* rootNode = nullptr;
 	Node* effectNode = nullptr;

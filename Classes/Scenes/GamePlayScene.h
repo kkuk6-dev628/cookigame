@@ -21,6 +21,9 @@ public:
 	virtual bool init();
 	void initEffectNode();
 
+	void onEnterTransitionDidFinish();
+	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+
 	// implement the "static create()" method manually
 	CREATE_FUNC(GamePlayScene)
 
