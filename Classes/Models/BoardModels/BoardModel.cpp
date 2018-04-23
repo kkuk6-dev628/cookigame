@@ -438,35 +438,41 @@ void BoardModel::initSpawners()
 {
 	for(char j = 0; j < width; j++)
 	{
-		for(char i = height - 1; i >= 0; i--)
+		if (currentLiquidLevel == 0)
 		{
-			auto cell = cells[i][j];
-			if(!cell->isOutCell)
+			for (char i = height - 1; i >= 0; i--)
 			{
-				if(!cell->containsSpawner() && !cell->inWater)
+				auto cell = cells[i][j];
+				if (!cell->isOutCell)
 				{
-					auto spawner = SpawnerObject::create();
-					spawner->initSpawner();
-					cell->setTileToLayer(spawner, LayerId::Spawner);
-					SpawnController::getInstance()->addSpawner(spawner);
+					if (!cell->containsSpawner() && !cell->inWater)
+					{
+						auto spawner = SpawnerObject::create();
+						spawner->initSpawner();
+						cell->setTileToLayer(spawner, LayerId::Spawner);
+						SpawnController::getInstance()->addSpawner(spawner);
+					}
+					break;
 				}
-				break;
 			}
 		}
-		for (char i = 0; i < height; i++)
+		else 
 		{
-			auto cell = cells[i][j];
-			if (!cell->isOutCell)
+			for (char i = 0; i < height; i++)
 			{
-				if (!cell->containsSpawner() && cell->inWater)
+				auto cell = cells[i][j];
+				if (!cell->isOutCell)
 				{
-					auto spawner = SpawnerObject::create();
-					spawner->initSpawner();
-					spawner->setDirection(Direction::N);
-					cell->setTileToLayer(spawner, LayerId::Spawner);
-					SpawnController::getInstance()->addSpawner(spawner);
+					if (!cell->containsSpawner() && cell->inWater)
+					{
+						auto spawner = SpawnerObject::create();
+						spawner->initSpawner();
+						spawner->setDirection(Direction::N);
+						cell->setTileToLayer(spawner, LayerId::Spawner);
+						SpawnController::getInstance()->addSpawner(spawner);
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
@@ -906,6 +912,7 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 				auto tile = PoolController::getInstance()->getCookieTile(typeName);
 				if (tile != nullptr)
 				{
+					cell->isOutCell = false;
 					tile->initWithGrid(gridPos.Col, gridPos.Row);
 					tile->initWithJson(itr->value);
 

@@ -184,7 +184,7 @@ bool Cell::crushCell(bool showCrushEffect)
 	}
 
 	auto thopplerTile = getTileAtLayer(LayerId::Toppling);
-	if (thopplerTile != nullptr)
+	if (thopplerTile != nullptr && (thopplerTile->getType() == TOPPLINGOBJECT || thopplerTile->getType() == HOPPLINGOBJECT))
 	{
 		if (ret)
 		{
@@ -207,7 +207,7 @@ bool Cell::crushUnderTiles(LayerId layerId)
 			case LayerId::Waffle:
 			{
 				auto waffleTile = static_cast<WaffleObject*>(underTile);
-				if(waffleTile != nullptr)
+				if(waffleTile != nullptr && waffleTile->getType() == WAFFLEOBJECT)
 				{
 					if(waffleTile->crush(true))
 					{
@@ -226,7 +226,7 @@ bool Cell::crushUnderTiles(LayerId layerId)
 			case LayerId::Cover:
 			{
 				auto iceCoverTile = static_cast<IceCoverObject*>(underTile);
-				if(iceCoverTile != nullptr)
+				if(iceCoverTile != nullptr && iceCoverTile->getType() == ICECOVEROBJECT)
 				{
 					if(iceCoverTile->crush(true))
 					{
@@ -334,6 +334,8 @@ void Cell::fillDisplayCase()
 Cell* Cell::findPortalInCell(std::list<PortalInletObject*>* portalInData) const
 {
 	auto portalOut = getPortalOut();
+	if (portalOut == nullptr) return nullptr;
+
 	for(auto portal : *portalInData)
 	{
 		if(portal->getTileColor() == portalOut->getTileColor())
@@ -346,7 +348,7 @@ Cell* Cell::findPortalInCell(std::list<PortalInletObject*>* portalInData) const
 
 PortalOutletObject* Cell::getPortalOut() const
 {
-	if(layers->find(LayerId::Portal) != layers->end())
+	if(layers->find(LayerId::Portal) == layers->end())
 	{
 		return nullptr;
 	}
@@ -365,7 +367,7 @@ bool Cell::containsDisplayCase() const
 
 bool Cell::containsPortalOut() const
 {
-	if(layers->find(LayerId::Portal) != layers->end())
+	if(layers->size() > 0 && layers->find(LayerId::Portal) != layers->end())
 	{
 		auto portal = static_cast<FixTiles*>(layers->at(LayerId::Portal));
 		return strcmp(portal->getType().c_str(), PORTALOUTLETOBJECT) == 0;
@@ -375,7 +377,7 @@ bool Cell::containsPortalOut() const
 
 bool Cell::containsPortalIn() const
 {
-	if (layers->find(LayerId::Portal) != layers->end())
+	if (layers->size() > 0 && layers->find(LayerId::Portal) != layers->end())
 	{
 		auto portal = static_cast<FixTiles*>(layers->at(LayerId::Portal));
 		return strcmp(portal->getType().c_str(), PORTALINLETOBJECT) == 0;

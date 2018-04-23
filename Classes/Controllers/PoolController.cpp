@@ -786,6 +786,7 @@ AnimationShowObject* PoolController::getLavaCakeEffect() const
 	{
 		show = new AnimationShowObject;
 		show->initWithCSB("res/particle/CK_particle.csb");
+		//show->setScale(3.0f);
 	}
 	show->reuse([=]()
 	{

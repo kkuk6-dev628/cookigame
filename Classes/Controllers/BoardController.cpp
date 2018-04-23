@@ -1843,7 +1843,10 @@ FallPath* BoardController::findFallPath(Cell* cell)
 			}
 		}
 		fallCell = fallCell->getFallDownCell();
-	} while (fallCell != nullptr && fallCell->gridPos.Row >= cell->gridPos.Row && fallCell->canFill());
+	} while (fallCell != nullptr 
+		&& fallCell->inWater == cell->inWater
+		&& fallCell->gridPos.Row * (fallCell->inWater ? -1 : 1 )>= cell->gridPos.Row * (fallCell->inWater ? -1 : 1) // In water the direction of fall is negative.
+		&& (fallCell->canFill() || fallCell->canPass));
 
 	return fallPath;
 }
@@ -1949,7 +1952,7 @@ void BoardController::crushCell(Cell* cell)
 
 void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
 {
-	if (targets == nullptr || targets->size() > 0)
+	if (targets == nullptr || targets->size() == 0)
 	{
 		return;
 	}
@@ -1959,8 +1962,10 @@ void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
 		auto spawnColor = spawnController->getSpawnColor();
 		auto lavaCakeTile = cell->getSourceTile();
 		auto spawnType = lavaCakeTile->getSpawnType();
+		auto spawnData = lavaCakeTile->getSpawnData();
 		auto spawnTile = poolController->getCookieTile(spawnType);
 		spawnTile->setTileColor(spawnColor);
+		spawnTile->setLayers(spawnData.Layers);
 		spawnTile->initWithGrid(targetCell->gridPos.Col, targetCell->gridPos.Row);
 		spawnTile->setPosition(cell->getBoardPos());
 		spawnTile->initWithType(spawnType, spawnColor);
@@ -1970,11 +1975,21 @@ void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
 		ckAction.node = spawnTile;
 	
 		ckAction.action = actionController->createJumpAction(spawnTile, targetCell->getBoardPos(), CellSize, [=] {
-			crushCell(targetCell);
-			targetCell->setSourceTile(spawnTile);
-			spawnTile->removeFromParent();
-			layeredMatchLayer->addChild(spawnTile);
-			spawnTile->setPosition(targetCell->getBoardPos());
+			auto originTile = targetCell->getSourceTile();
+			if (originTile->getType() == CHOCOLATEOBJECT && spawnTile->getType() == CHOCOLATEOBJECT)
+			{
+				auto lavaTile = (LavaCakeObject*)originTile;
+				lavaTile->addLayers(spawnTile->getLayers());
+				poolController->recycleCookieTile(spawnTile);
+			}
+			else
+			{
+				crushCell(targetCell);
+				targetCell->setSourceTile(spawnTile);
+				spawnTile->removeFromParent();
+				layeredMatchLayer->addChild(spawnTile);
+				spawnTile->setPosition(targetCell->getBoardPos());
+			}
 			fallingTileCount--;
 		});
 		fallingTileCount++;

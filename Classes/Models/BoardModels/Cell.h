@@ -40,13 +40,13 @@ public:
 	bool canFill() const { return !isOutCell && !isFixed && isEmpty; }
 	bool canFall() const { return !isOutCell && !isFixed && !isEmpty; }
 
-	bool containsSpawner() const { return layers->find(LayerId::Spawner) != layers->end(); }
+	bool containsSpawner() const { return layers->size() > 0 && layers->find(LayerId::Spawner) != layers->end(); }
 	bool containsDisplayCase() const;
 	bool containsPortalOut() const;
 	bool containsPortalIn() const;
-	bool containsThoppler() const { return layers->find(LayerId::Toppling) != layers->end() || pSourceTile->getType() == TOPPLINGOBJECT || pSourceTile->getType() == HOPPLINGOBJECT; }
-	bool containsPopsicle() const { return layers->find(LayerId::UnderCover) != layers->end(); }
-	bool containsIceCover() const { return layers->find(LayerId::Cover) != layers->end(); }
+	bool containsThoppler() const { return layers->size() > 0 && layers->find(LayerId::Toppling) != layers->end() || pSourceTile->getType() == TOPPLINGOBJECT || pSourceTile->getType() == HOPPLINGOBJECT; }
+	bool containsPopsicle() const { return layers->size() > 0 && layers->find(LayerId::UnderCover) != layers->end(); }
+	bool containsIceCover() const { return layers->size() > 0 && layers->find(LayerId::Cover) != layers->end(); }
 	bool containsWaffle() const;
 	bool isReceiveNearbyAffect();
 	bool isNoShuffleCell();

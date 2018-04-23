@@ -55,6 +55,8 @@
 #define PRETZELOBJECT "PretzelObject"
 #define SPAWNEROBJECT "SpawnerObject"
 #define DISPLAYCASEOBJECT "DisplayCaseObject"
+#define CHOCOLATEOBJECT "ChocolateObject"
+#define ICECOVEROBJECT "IceCoverObject"
 
 //////////////////////////////////////////////////
 

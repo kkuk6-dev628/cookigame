@@ -14,6 +14,7 @@ public:
 	void initTexture() override;
 	void initWithJson(rapidjson::Value& json) override;
 	void setIncreaseLavaCakeFlag(bool increase);
+	void addLayers(char layerCount);
 
 private:
 	bool increaseLevel;

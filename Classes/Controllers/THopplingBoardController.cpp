@@ -266,7 +266,7 @@ void THopplingBoardController::showHopplerMoveEffect(Cell* cell)
 		return;
 	}
 
-	auto topplerShow = poolController->getTopplerShow();
+	auto topplerShow = poolController->getHopplerShow();
 	topplerShow->setPosition(cell->getBoardPos());
 	showObjectsLayer->addChild(topplerShow);
 	topplerTile->setVisible(false);
@@ -277,7 +277,7 @@ void THopplingBoardController::showHopplerMoveEffect(Cell* cell)
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(topplerShow);
 	ckAction.action = actionController->createJumpAction(ckAction.node, targetCell->getBoardPos(), 2 * CellSize, [=] {
-		PoolController::getInstance()->recycleTopplerShow(topplerShow);
+		PoolController::getInstance()->recycleHopplerShow(topplerShow);
 		topplerTile->setVisible(true);
 		targetCell->setTileToLayer(topplerTile, LayerId::Toppling);
 		topplerTile->setPosition(targetCell->getBoardPos());

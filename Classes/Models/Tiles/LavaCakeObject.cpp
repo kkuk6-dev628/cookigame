@@ -7,6 +7,12 @@ void LavaCakeObject::setIncreaseLavaCakeFlag(bool flag)
 	increaseLevel = flag;
 }
 
+void LavaCakeObject::addLayers(char layerCount)
+{
+	layers += layerCount;
+	initTexture();
+}
+
 LavaCakeObject::LavaCakeObject()
 	:LargeTile()
 {
@@ -67,9 +73,14 @@ bool LavaCakeObject::crush(bool showEffect)
 	}
 
 	auto effect = poolController->getLavaCakeEffect();
-	effect->setPosition(Vec2(CellSize, CellSize));
+	effect->setPosition(Vec2(CellSize, CellSize * 0.5));
 	addChild(effect);
 
-	initTexture();
+	auto scheduler = Director::getInstance()->getScheduler();
+	scheduler->schedule([=](float dt)
+	{
+		this->initTexture();
+	}, this, 1.0f, false, "lavacake");
+
 	return ret;
 }

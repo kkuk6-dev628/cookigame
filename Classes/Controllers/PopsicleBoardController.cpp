@@ -275,6 +275,14 @@ void PopsicleBoardController::showPopRainbowCollectingAction(Cell* cell)
 	actionController->pushAction(ckAction, true);
 	auto match = Match::create();
 	match->refCell = cell;
-	match->color = cell->getMovingTile()->getTileColor();
+	auto movingTile = cell->getMovingTile();
+	if (movingTile != nullptr) 
+	{
+		match->color = cell->getMovingTile()->getTileColor();
+	}
+	else 
+	{
+		match->color = spawnController->getSpawnColor();
+	}
 	crushRainbowMatch(match);
 }
