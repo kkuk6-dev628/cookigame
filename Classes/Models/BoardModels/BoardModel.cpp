@@ -340,15 +340,26 @@ void BoardModel::setCurrentLiquidLevel(const float liquidLevel)
 	{
 		for (char j = 0; j < width; j++)
 		{
+			auto cell = cells[i][j];
 			if(i < currentLiquidLevel && !liquidSystem->containsIgnorePos(j, i) && !liquidSystem->containsIgnoreColumn(j) && !liquidSystem->containsIgnoreRow(i))
 			{
-				cells[i][j]->inWater = true;
-				cells[i][j]->fallDirection = Direction::N;
+				cell->inWater = true;
+				cell->fallDirection = Direction::N;
+				if (cell->containsPortalIn()) 
+				{
+					auto portalInTile = cell->getPortalIn();
+					portalInTile->setInWater();
+				}
+				if (cell->containsPortalOut())
+				{
+					auto portalOutTile = cell->getPortalOut();
+					portalOutTile->setInWater();
+				}
 			}
 			else
 			{
-				cells[i][j]->inWater = false;
-				cells[i][j]->fallDirection = Direction::S;
+				cell->inWater = false;
+				cell->fallDirection = Direction::S;
 			}
 		}
 	}
@@ -438,7 +449,7 @@ void BoardModel::initSpawners()
 {
 	for(char j = 0; j < width; j++)
 	{
-		if (currentLiquidLevel == 0)
+		if (liquidSystem == nullptr || liquidSystem->FillerToggle == 0)
 		{
 			for (char i = height - 1; i >= 0; i--)
 			{
@@ -456,7 +467,7 @@ void BoardModel::initSpawners()
 				}
 			}
 		}
-		else 
+		if(liquidSystem != nullptr && liquidSystem->DrainerToggle == 0)
 		{
 			for (char i = 0; i < height; i++)
 			{
@@ -782,7 +793,17 @@ CellsList* BoardModel::getLavaCakeTargets()
 {
 	if(lavaCakeTargets == nullptr || lavaCakeTargets->size() == 0)
 	{
-		return nullptr;
+		auto ret = new CellsList;
+		for (char i = 0; i < 4; i++) 
+		{
+			auto target = getRandomCell();
+			while (!target->canMove() || std::find(ret->begin(), ret->end(), target) != ret->end())
+			{
+				target = getRandomCell();
+			}
+			ret->push_back(target);
+		}
+		return ret;
 	}
 	else
 	{

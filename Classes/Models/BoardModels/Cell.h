@@ -70,6 +70,8 @@ public:
 	Cell* findPortalInCell(std::list<PortalInletObject*>* portalInData) const;
 	PortalOutletObject* getPortalOut() const;
 
+	PortalInletObject * getPortalIn() const;
+
 	void setGridPos(const char col, const char row) { gridPos.Col = col; gridPos.Row = row; boardPos = Utils::Grid2BoardPos(gridPos); }
 	void setNearbyCrushColor(TileColors color) const { if (pSourceTile != nullptr) pSourceTile->setNearbyColor(color); }
 	void clear();

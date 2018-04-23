@@ -85,6 +85,11 @@ void PortalInletObject::initTexture()
 	textureSprite->setPosition(Vec2(CellSize / 2, -PORTALLETHEIGHT / 2.f));
 }
 
+void PortalInletObject::setInWater()
+{
+	textureSprite->setPosition(Vec2(CellSize / 2, CellSize + PORTALLETHEIGHT / 2.f));
+}
+
 void PortalOutletObject::initTexture()
 {
 	auto textureName = StringUtils::format("%s_%s.png", type.c_str(), color._to_string());
@@ -93,3 +98,7 @@ void PortalOutletObject::initTexture()
 	textureSprite->setPosition(Vec2(CellSize / 2, CellSize + PORTALLETHEIGHT / 2.f));
 }
 
+void PortalOutletObject::setInWater()
+{
+	textureSprite->setPosition(Vec2(CellSize / 2, -PORTALLETHEIGHT / 2.f));
+}

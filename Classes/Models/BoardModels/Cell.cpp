@@ -355,6 +355,15 @@ PortalOutletObject* Cell::getPortalOut() const
 	return static_cast<PortalOutletObject*>(layers->at(LayerId::Portal));
 }
 
+PortalInletObject* Cell::getPortalIn() const
+{
+	if (layers->find(LayerId::Portal) == layers->end())
+	{
+		return nullptr;
+	}
+	return static_cast<PortalInletObject*>(layers->at(LayerId::Portal));
+}
+
 bool Cell::containsDisplayCase() const
 {
 	auto dispCase = getTileAtLayer(LayerId::Toppling);
@@ -370,7 +379,7 @@ bool Cell::containsPortalOut() const
 	if(layers->size() > 0 && layers->find(LayerId::Portal) != layers->end())
 	{
 		auto portal = static_cast<FixTiles*>(layers->at(LayerId::Portal));
-		return strcmp(portal->getType().c_str(), PORTALOUTLETOBJECT) == 0;
+		return portal->getType() == PORTALOUTLETOBJECT;
 	}
 	return false;
 }

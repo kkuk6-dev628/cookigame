@@ -20,6 +20,7 @@ public:
 	CREATE_FUNC(PortalInletObject)
 	void initTexture() override;
 	char passedCount = 0;
+	void setInWater();
 };
 
 class PortalOutletObject : public FixTiles
@@ -27,6 +28,7 @@ class PortalOutletObject : public FixTiles
 public:
 	CREATE_FUNC(PortalOutletObject)
 	void initTexture() override;
+	void setInWater();
 	char passedCount = 0;
 };
 

@@ -1976,7 +1976,7 @@ void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
 	
 		ckAction.action = actionController->createJumpAction(spawnTile, targetCell->getBoardPos(), CellSize, [=] {
 			auto originTile = targetCell->getSourceTile();
-			if (originTile->getType() == CHOCOLATEOBJECT && spawnTile->getType() == CHOCOLATEOBJECT)
+			if (originTile != nullptr && originTile->getType() == CHOCOLATEOBJECT && spawnTile->getType() == CHOCOLATEOBJECT)
 			{
 				auto lavaTile = (LavaCakeObject*)originTile;
 				lavaTile->addLayers(spawnTile->getLayers());
@@ -2023,6 +2023,10 @@ void BoardController::moveSwappers()
 void BoardController::fillLiquid(bool inverse)
 {
 	auto curretLiquidLevel = boardModel->getCurrentLiquidLevel();
+	if (curretLiquidLevel >= boardModel->getLiquidSystem()->LevelMax)
+	{
+		return;
+	}
 	if(!inverse) // fill
 	{
 		boardModel->setCurrentLiquidLevel(curretLiquidLevel + 1);

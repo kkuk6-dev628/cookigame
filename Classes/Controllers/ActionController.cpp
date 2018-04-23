@@ -325,22 +325,22 @@ Action* ActionController::createMoveThroughAction(FallPath* path, std::function<
 	auto actions = Vector<FiniteTimeAction*>();
 	actions.pushBack(DelayTime::create(0.05f));
 	auto pathPos = node->getPosition();
-	//if (path->startCell->containsPortalIn())
-	//{
-	//	auto firstPath = path->fallPath.size() > 0 ? path->fallPath.front() : path->endCell;
-	//	actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
-	//	actions.pushBack(Hide::create());
-	//	actions.pushBack(Place::create(firstPath->boardPos + Vec2(0, CellSize)));
-	//	actions.pushBack(Show::create());
-	//	pathPos = firstPath->boardPos + Vec2(0, CellSize);
-	//}
+	if (path->startCell->containsPortalIn())
+	{
+		//auto firstPath = path->fallPath.size() > 0 ? path->fallPath.front() : path->endCell;
+		char moveSign = path->startCell->inWater ? -1 : 1;
+		actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -moveSign*CellSize)));
+		actions.pushBack(Hide::create());
+		//actions.pushBack(Place::create(firstPath->boardPos + Vec2(0, CellSize)));
+		//actions.pushBack(Show::create());
+		//pathPos = firstPath->boardPos + Vec2(0, CellSize);
+	}
 	for (auto cell : path->fallPath)
 	{
-		if (cell->containsPortalOut() && pathPos.y < cell->getBoardPos().y)
+		char moveSign = cell->inWater ? -1 : 1;
+		if (cell->containsPortalOut()) // && pathPos.y < cell->getBoardPos().y)
 		{
-			actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
-			actions.pushBack(Hide::create());
-			actions.pushBack(Place::create(cell->boardPos + Vec2(0, CellSize)));
+			actions.pushBack(Place::create(cell->boardPos + Vec2(0, moveSign * CellSize)));
 			actions.pushBack(Show::create());
 			pathPos = cell->boardPos;
 		}
@@ -352,13 +352,19 @@ Action* ActionController::createMoveThroughAction(FallPath* path, std::function<
 		auto tileMovingTime = calcTileMovingTime(pathPos.distance(cell->boardPos));
 		actions.pushBack(MoveTo::create(tileMovingTime, cell->boardPos));
 		pathPos = cell->boardPos;
+		if (cell->containsPortalIn()) 
+		{
+			actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0,  - moveSign * CellSize)));
+			actions.pushBack(Hide::create());
+		}
 	}
 
-	if (path->endCell->containsPortalOut() && pathPos.y < path->endCell->getBoardPos().y)
+	if (path->endCell->containsPortalOut()) // && pathPos.y < path->endCell->getBoardPos().y)
 	{
-		pathPos = path->endCell->boardPos + Vec2(0, CellSize);
-		actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
-		actions.pushBack(Hide::create());
+		char moveSign = path->endCell->inWater ? -1 : 1;
+		pathPos = path->endCell->boardPos + Vec2(0, moveSign * CellSize);
+		//actions.pushBack(MoveBy::create(calcTileMovingTime(CellSize / 2), Vec2(0, -CellSize)));
+		//actions.pushBack(Hide::create());
 		actions.pushBack(Place::create(pathPos));
 		actions.pushBack(Show::create());
 	}
