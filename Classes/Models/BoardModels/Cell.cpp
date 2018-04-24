@@ -112,6 +112,7 @@ void Cell::clear()
 		isFixed = false;
 		canPass = true;
 	}
+	//if (pSourceTile != nullptr && pSourceTile->getParent() != nullptr) PoolController::getInstance()->recycleCookieTile(pSourceTile);
 	pSourceTile = nullptr;
 	removeTileAtLayer(LayerId::Match);
 }
@@ -362,6 +363,24 @@ PortalInletObject* Cell::getPortalIn() const
 		return nullptr;
 	}
 	return static_cast<PortalInletObject*>(layers->at(LayerId::Portal));
+}
+
+bool Cell::containsSpawner() const
+{
+	if (layers->size() > 0 && layers->find(LayerId::Spawner) != layers->end())
+	{
+		auto spawner = (SpawnerObject*)layers->at(LayerId::Spawner);
+		auto spawnDir = spawner->getDirection();
+		if (inWater) 
+		{
+			return spawnDir == +Direction::N;
+		}
+		else
+		{
+			return spawnDir == +Direction::S;
+		}
+	}
+	return false;
 }
 
 bool Cell::containsDisplayCase() const

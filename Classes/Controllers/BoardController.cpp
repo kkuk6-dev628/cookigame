@@ -537,8 +537,8 @@ void BoardController::initBoardElements()
 	initLiquidLayer();
 	boardModel->buildConveyors();
 
-	//addTile(3, 3, MovingTileTypes::SeekerObject, TileColors::red);
-	//addTile(3, 4, MovingTileTypes::ColumnBreakerObject, TileColors::blue);
+	//addTile(4, 3, MovingTileTypes::LayeredMatchObject, TileColors::red);
+	//addTile(5, 3, MovingTileTypes::RowBreakerObject, TileColors::red);
 	//addTile(1, 0, MovingTileTypes::SeekerObject, TileColors::yellow);
 }
 
@@ -1280,6 +1280,7 @@ void BoardController::crushNormalMatch(Match* match)
 		auto bonusTile = poolController->getCookieTile(bonusType._to_string());
 		bonusTile->initWithType(bonusType._to_string(), color);
 		match->refCell->setSourceTile(bonusTile);
+		bonusTile->setPosition(match->refCell->getBoardPos());
 		match->refCell->reserveCount = 1;
 		playCreateBonusSoundEffect(bonusType);
 		addScore(ScoreType::additive, ScoreUnit::rainbow, match->matchId, match->refCell->getBoardPos());
@@ -1881,7 +1882,7 @@ void BoardController::crushUnderCells(Cell* cell)
 }
 
 
-void BoardController::crushCell(Cell* cell)
+void BoardController::crushCell(Cell* cell, bool forceClear)
 {
 	if (cell == nullptr || cell->isEmpty || cell->getMovingTile() == nullptr)
 	{
@@ -1895,9 +1896,11 @@ void BoardController::crushCell(Cell* cell)
 	auto tileColor = tile->getTileColor();
 	if(!cell->crushCell())
 	{
+		//if (forceClear) cell->clear();
 		return;
 	}
 
+	//if (forceClear) cell->clear();
 	if(canMatch)
 	{
 		crushUnderCells(cell);
@@ -1984,7 +1987,11 @@ void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
 			}
 			else
 			{
-				crushCell(targetCell);
+				crushCell(targetCell, true);
+				if (targetCell->getSourceTile() != nullptr && targetCell->getSourceTile()->getParent() != nullptr)
+				{
+					poolController->recycleCookieTile(targetCell->getSourceTile());
+				}
 				targetCell->setSourceTile(spawnTile);
 				spawnTile->removeFromParent();
 				layeredMatchLayer->addChild(spawnTile);

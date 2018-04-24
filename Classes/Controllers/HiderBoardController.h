@@ -16,7 +16,7 @@ public:
 protected:
 	void addCellToBoard(char col, char row) override;
 	void crushUnderCells(Cell* cell) override;
-	void crushCell(Cell* pCell) override;
+	void crushCell(Cell* pCell, bool forceClear=false) override;
 	void processCustomLogic(float dt) override;
 	Cell* findSeekerTarget(CellsList* targetsList) const override;
 

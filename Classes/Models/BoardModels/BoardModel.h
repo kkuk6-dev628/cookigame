@@ -88,7 +88,7 @@ private:
 	int width;
 	int height;
 	std::string transitionOut;
-	SpawnTablesList spawnTable;
+	SpawnTablesList spawnTable = nullptr;
 	SpawnTablesList conveyorSpawnTable;
 	TileColorsTable colors;
 	TileColorsTable colorsEasy;
@@ -98,7 +98,7 @@ private:
 
 	CellsList* lavaCakeTargets = nullptr;
 
-	SpawnTablesList liquidSpawnTable;
+	SpawnTablesList liquidSpawnTable = nullptr;
 	cocos2d::__Array* data;
 	LiquidSystem* liquidSystem = nullptr;
 	std::list<ConveyorInfo*>* conveyorInfo = nullptr;

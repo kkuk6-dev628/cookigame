@@ -40,7 +40,7 @@ public:
 	bool canFill() const { return !isOutCell && !isFixed && isEmpty; }
 	bool canFall() const { return !isOutCell && !isFixed && !isEmpty; }
 
-	bool containsSpawner() const { return layers->size() > 0 && layers->find(LayerId::Spawner) != layers->end(); }
+	bool containsSpawner() const;
 	bool containsDisplayCase() const;
 	bool containsPortalOut() const;
 	bool containsPortalIn() const;

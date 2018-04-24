@@ -133,6 +133,8 @@ void SpawnController::addSpawner(SpawnerObject* spawner)
 
 void SpawnController::resetSpawners()
 {
+	if (spawnersList == nullptr) return;
+
 	for(auto spawner : *spawnersList)
 	{
 		spawner->initSpawnedCount();

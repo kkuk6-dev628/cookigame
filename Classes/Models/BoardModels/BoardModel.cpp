@@ -449,7 +449,7 @@ void BoardModel::initSpawners()
 {
 	for(char j = 0; j < width; j++)
 	{
-		if (liquidSystem == nullptr || liquidSystem->FillerToggle == 0)
+		if (spawnTable != nullptr || liquidSystem == nullptr)
 		{
 			for (char i = height - 1; i >= 0; i--)
 			{
@@ -467,14 +467,14 @@ void BoardModel::initSpawners()
 				}
 			}
 		}
-		if(liquidSystem != nullptr && liquidSystem->DrainerToggle == 0)
+		if(liquidSpawnTable != nullptr)
 		{
 			for (char i = 0; i < height; i++)
 			{
 				auto cell = cells[i][j];
 				if (!cell->isOutCell)
 				{
-					if (!cell->containsSpawner() && cell->inWater)
+					if (!cell->containsSpawner())
 					{
 						auto spawner = SpawnerObject::create();
 						spawner->initSpawner();
@@ -518,7 +518,7 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	SpawnController::getInstance()->setCustomSpawnTable(CreateCustomSpawnTablesListFromJson(json["custom_spawn_table"]));
 	CreateSpawnTableFromJson(json["spawn_table"]);
 
-	auto liquidSpawnTable = CustomSpawnTableItem::CreateSpawnTablesFromJson(json["liquid_spawn_table"]);
+	liquidSpawnTable = CustomSpawnTableItem::CreateSpawnTablesFromJson(json["liquid_spawn_table"]);
 	SpawnController::getInstance()->setLiquidSpawnTable(liquidSpawnTable);
 
 

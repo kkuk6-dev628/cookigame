@@ -369,6 +369,8 @@ Action* ActionController::createMoveThroughAction(FallPath* path, std::function<
 		actions.pushBack(Show::create());
 	}
 
+	actions.pushBack(Show::create());
+
 	auto lastPos = path->endCell->getBoardPos();
 	auto t = calcTileMovingTime(pathPos.distance(lastPos));
 	actions.pushBack(MoveTo::create(t, lastPos));

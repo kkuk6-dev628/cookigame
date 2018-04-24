@@ -141,7 +141,7 @@ protected:
 	void landingSeeker(AnimationShowObject* seekerShow, Cell* targetCell);
 	void crushBonusManually(Cell* cell, std::string bonusString);
 
-	virtual void crushCell(Cell* pCell);
+	virtual void crushCell(Cell* pCell, bool forceClear = false);
 	void crushBombBreaker(Cell* cell);
 	void crushTwoBomb(Cell* cell);
 	void crushRowBreaker(Cell* cell, bool showEffect = true);

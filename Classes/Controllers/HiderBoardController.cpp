@@ -231,7 +231,7 @@ void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 	//headSeg->showShakeAction();
 }
 
-void HiderBoardController::crushCell(Cell* pCell)
+void HiderBoardController::crushCell(Cell* pCell, bool forceClear)
 {
 	if (pCell == nullptr || pCell->isOutCell) return;
 	
@@ -242,6 +242,6 @@ void HiderBoardController::crushCell(Cell* pCell)
 	}
 	else
 	{
-		BoardController::crushCell(pCell);
+		BoardController::crushCell(pCell, forceClear);
 	}
 }

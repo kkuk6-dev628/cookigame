@@ -121,7 +121,7 @@ Cell* THopplingBoardController::findThopplerTarget()
 	return nullptr;
 }
 
-void THopplingBoardController::crushCell(Cell* cell)
+void THopplingBoardController::crushCell(Cell* cell, bool forceClear)
 {
 	if (cell == nullptr || cell->isEmpty || cell->getSourceTile() == nullptr)
 	{
@@ -160,12 +160,12 @@ void THopplingBoardController::crushCell(Cell* cell)
 	}
 	else if(sourceTile->getType() == TOPPLINGOBJECT || sourceTile->getType() == HOPPLINGOBJECT)
 	{
-		showThopplerCollectingEffect(cell);
+		showThopplerCollectingEffect(cell, sourceTile->getType());
 		cell->crushCell(true);
 	}
 	else
 	{
-		BoardController::crushCell(cell);
+		BoardController::crushCell(cell, forceClear);
 	}
 }
 
@@ -285,15 +285,30 @@ void THopplingBoardController::showHopplerMoveEffect(Cell* cell)
 	actionController->pushAction(ckAction, true);
 }
 
-void THopplingBoardController::showThopplerCollectingEffect(Cell* startCell)
+void THopplingBoardController::showThopplerCollectingEffect(Cell* startCell, std::string type)
 {
-	auto topplerShow = poolController->getTopplerShow();
+	SpriteShowObject* topplerShow;
+	if (type == TOPPLINGOBJECT)
+	{
+		topplerShow = poolController->getTopplerShow();
+	}
+	else
+	{
+		topplerShow = poolController->getHopplerShow();
+	}
 	topplerShow->setPosition(startCell->getBoardPos());
 	effectNode->addChild(topplerShow);
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(topplerShow);
 	ckAction.action = actionController->createJumpAction(ckAction.node, objectTargetPos, 2 * CellSize, [=] {
-		this->poolController->recycleTopplerShow(topplerShow);
+		if (type == TOPPLINGOBJECT)
+		{
+			this->poolController->recycleTopplerShow(topplerShow);
+		}
+		else
+		{
+			this->poolController->recycleHopplerShow(topplerShow);
+		}
 		this->increaseObjectCount();
 	});
 	actionController->pushAction(ckAction, true);

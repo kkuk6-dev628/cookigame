@@ -17,7 +17,7 @@ protected:
 
 	void initThopplingGame();
 
-	void crushCell(Cell* cell) override;
+	void crushCell(Cell* cell, bool forceClear = false) override;
 	Cell* findThopplerTarget();
 	CellsList* findHopplingTarget(Cell* cell);
 	Cell* findNextCrackerCell(Cell* cell, char* inIndent, char** indent);
@@ -28,7 +28,7 @@ protected:
 	virtual void movePendingThopplers();
 	void showHopplerMoveEffect(Cell* startCell);
 	void showTopplerMoveEffect(Cell* cell);
-	void showThopplerCollectingEffect(Cell* );
+	void showThopplerCollectingEffect(Cell* , std::string typeString);
 
 private:
 	std::vector<Cell*>* crackerCells = nullptr;
