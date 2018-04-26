@@ -65,6 +65,12 @@ void BoardController::processLogic(float dt)
 	crushPendingCells();
 	fallTilesLoop();
 	checkMatchesInBoard();
+
+	if (pendingCrushCells->count() > 0)
+	{
+		initHintAction();
+		return;
+	}
 	processPendingSeekers();
 	processCustomLogic(dt);
 	moveConveyors();
@@ -537,9 +543,9 @@ void BoardController::initBoardElements()
 	initLiquidLayer();
 	boardModel->buildConveyors();
 
-	//addTile(4, 3, MovingTileTypes::LayeredMatchObject, TileColors::red);
+	//addTile(4, 3, MovingTileTypes::SeekerObject, TileColors::red);
 	//addTile(5, 3, MovingTileTypes::RowBreakerObject, TileColors::red);
-	//addTile(1, 0, MovingTileTypes::SeekerObject, TileColors::yellow);
+	//addTile(4, 4, MovingTileTypes::ColumnBreakerObject, TileColors::yellow);
 }
 
 void BoardController::addCellToBoard(char col, char row)
@@ -714,16 +720,23 @@ void BoardController::initLiquidLayer()
 	
 }
 
-void BoardController::showLineCrushEffect(Cell* cell, float rotation)
+void BoardController::showLineCrushEffect(Cell* cell, float rotation, char side)
 {
-	auto right = poolController->getLineCrushShow();
-	auto left = poolController->getLineCrushShow();
-	right->setPosition(cell->getBoardPos());
-	left->setPosition(cell->getBoardPos());
-	right->setRotation(rotation);
-	left->setRotation(rotation + 180);
-	showObjectsLayer->addChild(right);
-	showObjectsLayer->addChild(left);
+	if (side > -1)
+	{
+		auto right = poolController->getLineCrushShow();
+		right->setPosition(cell->getBoardPos());
+		right->setRotation(rotation);
+		showObjectsLayer->addChild(right);
+	}
+
+	if (side < 1) 
+	{
+		auto left = poolController->getLineCrushShow();
+		left->setPosition(cell->getBoardPos());
+		left->setRotation(rotation + 180);
+		showObjectsLayer->addChild(left);
+	}
 }
 
 void BoardController::showBombAndLineCrushEffect(Cell* cell)
@@ -869,6 +882,23 @@ void BoardController::moveConveyors()
 void BoardController::showHintAction()
 {
 	if (boardModel->availableMove == nullptr) return;
+	auto color = TileColors::any;
+	for (auto cell : *boardModel->availableMove)
+	{
+		auto tile = cell->getMovingTile();
+		if (tile == nullptr)
+		{
+			return;
+		}
+		if (color == TileColors::any)
+		{
+			color = tile->getTileColor();
+		}
+		if (+color != tile->getTileColor())
+		{
+			return;
+		}
+	}
 	for (auto cell : *boardModel->availableMove)
 	{
 		if (cell->getMovingTile() == nullptr || cell->isFixed)
@@ -1181,7 +1211,6 @@ void BoardController::doSomethingPerMove()
 {
 	countDownMoveNumber();
 	boardModel->setIncreaseLavaCakeFlag(true);
-	initHintAction();
 	moveConveyorsFlag = true;
 	moveSpinnerFlag = true;
 	moveSwappersFlag = true;
@@ -2134,7 +2163,7 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 		case Direction::E:
 		{
 			rot = 0;
-			auto rightCell = cell->upCell;
+			auto rightCell = cell->rightCell;
 			while (rightCell != nullptr)
 			{
 				if (!rightCell->isEmpty && rightCell->getMovingTile() != nullptr)
@@ -2145,7 +2174,7 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 					}
 					crushCell(rightCell);
 				}
-				rightCell = rightCell->upCell;
+				rightCell = rightCell->rightCell;
 			}
 			break;
 		}
@@ -2163,7 +2192,7 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 		case Direction::S:
 		{
 			rot = 90;
-			auto downCell = cell->upCell;
+			auto downCell = cell->downCell;
 			while (downCell != nullptr)
 			{
 				if (!downCell->isEmpty && downCell->getMovingTile() != nullptr)
@@ -2174,7 +2203,7 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 					}
 					crushCell(downCell);
 				}
-				downCell = downCell->upCell;
+				downCell = downCell->downCell;
 			}
 			break;
 		}
@@ -2192,7 +2221,7 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 		case Direction::W:
 		{
 			rot = 180;
-			auto leftCell = cell->upCell;
+			auto leftCell = cell->leftCell;
 			while (leftCell != nullptr)
 			{
 				if (!leftCell->isEmpty && leftCell->getMovingTile() != nullptr)
@@ -2203,7 +2232,7 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 					}
 					crushCell(leftCell);
 				}
-				leftCell = leftCell->upCell;
+				leftCell = leftCell->leftCell;
 			}
 			break;
 		}
@@ -2219,7 +2248,7 @@ void BoardController::crushDirectionalBreaker(Cell* cell, Direction direction)
 			break;
 		}
 	}
-	showLineCrushEffect(cell, rot);
+	showLineCrushEffect(cell, rot, 1);
 	soundController->playEffectSound(SoundEffects::sound_explode_row_column);
 }
 
@@ -2337,7 +2366,7 @@ void BoardController::crushSeeker(Cell* cell, MovingTileTypes bonusType)
 {
 	auto randomPos = boardModel->getRandomBoardPosition();
 	auto seekerShow = poolController->getSeekerShow(cell->tileColor);
-	seekerShow->customData->insert(std::pair<std::string, std::string>("bonusType", bonusType._to_string()));
+	seekerShow->strData = bonusType;
 	showObjectsLayer->addChild(seekerShow);
 	seekerShow->setPosition(cell->getBoardPos());
 	CKAction ckAction;
@@ -2353,7 +2382,9 @@ void BoardController::crushSeekerAndBonus(Cell* seekerCell, Cell* bonusCell)
 {
 	auto randomPos = boardModel->getRandomBoardPosition();
 	auto seekerShow = poolController->getSeekerShow(seekerCell->tileColor);
-	seekerShow->customData->insert(std::pair<std::string, std::string>("bonusType", bonusCell->getMovingTile()->getType()));
+	auto bonusType = bonusCell->getMovingTile()->getType();
+	seekerShow->strData = bonusType;
+	cocos2d::log("crush seeker and bonus: %s", bonusType.c_str());
 	showObjectsLayer->addChild(seekerShow);
 	seekerShow->setPosition(seekerCell->getBoardPos());
 	CKAction ckAction;
@@ -2414,7 +2445,7 @@ void BoardController::landingSeeker(AnimationShowObject* seekerShow, Cell* targe
 	//auto recycleSeeker = seekerShow;
 	ckAction.action = actionController->createSeekerLandingAction(ckAction.node, targetPos, [=]()
 	{
-		auto bonusString = seekerShow->customData->at("bonusType");
+		auto bonusString = seekerShow->strData;
 		this->crushCell(targetCell);
 		this->crushBonusManually(targetCell, bonusString);
 		poolController->recycleSeekerShow(seekerShow);
@@ -2425,6 +2456,11 @@ void BoardController::landingSeeker(AnimationShowObject* seekerShow, Cell* targe
 
 void BoardController::crushBonusManually(Cell* cell, std::string bonusString)
 {
+	cocos2d::log("seeker bonus: %s", bonusString.c_str());
+	if (!MovingTileTypes::_is_valid(bonusString.c_str()))
+	{
+		return;
+	}
 	auto bonusType = MovingTileTypes::_from_string(bonusString.c_str());
 	if (bonusType == +MovingTileTypes::BombBreakerObject)
 	{

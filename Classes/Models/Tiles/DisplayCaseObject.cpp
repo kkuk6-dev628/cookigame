@@ -54,14 +54,20 @@ bool DisplayCaseObject::refill()
 		auto spawnController = SpawnController::getInstance();
 		spawnController->countSpawnedTiles();
 		auto spawnColor = spawnController->getSpawnColor();
-		auto spawnType = spawnController->getSpawnType(spawnTableName, totalSpawnedCount, pCell->inWater);
-		auto spawnTile = static_cast<MovingTile*>(poolController->getCookieTile(spawnType._to_string()));
+		std::string spawnType = ((MovingTileTypes)(MovingTileTypes::LayeredMatchObject))._to_string();
+
+		auto spawnTable = spawnController->getSpawnTable(spawnTableName, totalSpawnedCount, pCell->inWater);
+		if (spawnTable != nullptr)
+		{
+			spawnType = *spawnTable->Type;
+		}
+		auto spawnTile = static_cast<MovingTile*>(poolController->getCookieTile(spawnType));
 
 		auto spawnedPos = Utils::Grid2BoardPos(gridPos);
 
 		spawnTile->initWithGrid(gridPos.Col, gridPos.Row);
 		spawnTile->setPosition(spawnedPos);
-		spawnTile->initWithType(spawnType._to_string(), spawnColor);
+		spawnTile->initWithType(spawnType, spawnColor);
 		pCell->setSourceTile(spawnTile);
 		totalSpawnedCount++;
 		return false;

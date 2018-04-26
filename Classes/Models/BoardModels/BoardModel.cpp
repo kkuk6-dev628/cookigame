@@ -169,20 +169,28 @@ Cell* BoardModel::getInclinedFallCell(Cell* cell)
 
 	auto leftCell = col - 1 >= 0 ?  cells[row][col - 1] : nullptr;
 	auto rightCell = col + 1 < width ? cells[row][col + 1] : nullptr;
+	auto upCell = cells[row][col];
 
-	if (leftCell != nullptr && leftCell->canFall())
+	if (leftCell != nullptr && leftCell->canFall()
+		&& !containsPortalOutInCol(leftCell)
+		&& !(cell->containsEmptyObject() && cell->leftCell->containsBreaker() && upCell->containsBreaker()))
 	{
 		return leftCell;
 	}
-	if (rightCell != nullptr && rightCell->canFall())
+	if (rightCell != nullptr && rightCell->canFall() 
+		&& !(cell->containsEmptyObject() && cell->rightCell->containsBreaker() && upCell->containsBreaker()))
 	{
 		return rightCell;
 	}
-	if (leftCell != nullptr && leftCell->canFill())
+
+	if (leftCell != nullptr && leftCell->canFill() 
+		&& !containsPortalOutInCol(leftCell)
+		&& !(cell->containsEmptyObject() && cell->leftCell->containsBreaker() && upCell->containsBreaker()))
 	{
 		return leftCell;
 	}
-	if (rightCell != nullptr && rightCell->canFill())
+	if (rightCell != nullptr && rightCell->canFill() 
+		&& !(cell->containsEmptyObject() && cell->rightCell->containsBreaker() && upCell->containsBreaker()))
 	{
 		return rightCell;
 	}
@@ -305,6 +313,15 @@ char BoardModel::getPathMoversCount()
 	return count;
 }
 
+bool BoardModel::containsPortalOutInCol(Cell* cell) const
+{
+	Cell* checkCell = getCell(cell->gridPos.Col, cell->inWater ? 0 : height - 1);
+	while ((checkCell == nullptr || checkCell->isOutCell) && checkCell != cell)
+	{
+		checkCell = cell->inWater ? checkCell->upCell : checkCell->downCell;
+	}
+	return checkCell->containsPortalOut();
+}
 
 Cell* BoardModel::getRandomCell()
 {
@@ -451,8 +468,9 @@ void BoardModel::initSpawners()
 	{
 		if (spawnTable != nullptr || liquidSystem == nullptr)
 		{
-			for (char i = height - 1; i >= 0; i--)
+			//for (char i = height - 1; i >= 0; i--)
 			{
+				char i = height - 1;
 				auto cell = cells[i][j];
 				if (!cell->isOutCell)
 				{
@@ -463,14 +481,15 @@ void BoardModel::initSpawners()
 						cell->setTileToLayer(spawner, LayerId::Spawner);
 						SpawnController::getInstance()->addSpawner(spawner);
 					}
-					break;
+					//break;
 				}
 			}
 		}
-		if(liquidSpawnTable != nullptr)
+		if(liquidSystem != nullptr)
 		{
-			for (char i = 0; i < height; i++)
+			//for (char i = 0; i < height; i++)
 			{
+				char i = 0;
 				auto cell = cells[i][j];
 				if (!cell->isOutCell)
 				{
@@ -482,7 +501,7 @@ void BoardModel::initSpawners()
 						cell->setTileToLayer(spawner, LayerId::Spawner);
 						SpawnController::getInstance()->addSpawner(spawner);
 					}
-					break;
+					//break;
 				}
 			}
 		}
@@ -936,7 +955,7 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 					cell->isOutCell = false;
 					tile->initWithGrid(gridPos.Col, gridPos.Row);
 					tile->initWithJson(itr->value);
-
+					tile->retain();
 					cell->setTileToLayer(tile, layerNumber);
 
 					if(strcmp(typeName, SEEKERPRIORITYOBJECT) == 0)

@@ -144,6 +144,10 @@ void PathBoardController::movePathFollower()
 				movingTile->showMoveAction(moveToCell);
 				moveToCell->setSourceTile(movingTile);
 			}
+			else
+			{
+				moveToCell->isEmpty = true;
+			}
 			moveToCell = cell;
 			lastCell = cell;
 		}

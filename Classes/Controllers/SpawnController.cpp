@@ -6,7 +6,7 @@ SpawnController* SpawnController::instance = nullptr;
 SpawnController::SpawnController()
 {
 	colorTable = new std::map<TileColors, float>();
-	pendingSpawnTypes = new std::list<std::string>;
+	pendingSpawnTypes = new std::list<SpawnTable*>;
 }
 
 
@@ -52,35 +52,35 @@ TileColors SpawnController::getSpawnColor() const
 	return TileColors::_from_integral(rnd * 6);
 }
 
-MovingTileTypes SpawnController::getSpawnType(std::string spawnerName, int spawnedCount, bool inWater) const
+SpawnTable* SpawnController::getSpawnTable(std::string spawnerName, int spawnedCount, bool inWater) const
 {
-	std::string spawnTypeString = "LayeredMatchObject";
+	SpawnTable* spawnTypeString = nullptr;
 
 	if(inWater && liquidSpawnTable != nullptr)
 	{
-		for (auto table : *liquidSpawnTable)
+		for (auto table = liquidSpawnTable->begin(); table != liquidSpawnTable->end(); table++)
 		{
-			if (Utils::checkSpawn(spawnedCount, table.Percent))
+			if (Utils::checkSpawn(spawnedCount, table->Percent))
 			{
-				return MovingTileTypes::_from_string((*table.Type).c_str());
+				return &(*table);
 			}
 		}
 	}
-	if(spawnerName == "normal")
+	if(spawnerName == "normal" || spawnerName == "")
 	{
 		if (pendingSpawnTypes->size() > 0)
 		{
 			spawnTypeString = pendingSpawnTypes->front();
 			pendingSpawnTypes->pop_front();
-			return MovingTileTypes::_from_string(spawnTypeString.c_str());
+			return spawnTypeString;
 		}
 		if (spawnTable != nullptr && spawnTable->size() > 0)
 		{
-			for (auto table : *spawnTable)
+			for (auto table = spawnTable->begin(); table != spawnTable->end(); table++)
 			{
-				if (Utils::checkSpawn(spawnedTilesCount, table.Percent))
+				if (Utils::checkSpawn(spawnedTilesCount, table->Percent))
 				{
-					pendingSpawnTypes->push_back(*table.Type);
+					pendingSpawnTypes->push_back(&*table);
 				}
 			}
 
@@ -88,7 +88,7 @@ MovingTileTypes SpawnController::getSpawnType(std::string spawnerName, int spawn
 			{
 				spawnTypeString = pendingSpawnTypes->front();
 				pendingSpawnTypes->pop_front();
-				return MovingTileTypes::_from_string(spawnTypeString.c_str());
+				return spawnTypeString;
 			}
 		}
 	}
@@ -100,18 +100,18 @@ MovingTileTypes SpawnController::getSpawnType(std::string spawnerName, int spawn
 			auto spt = spawnTable.getSpawnTable();
 			if(spt != nullptr)
 			{
-				for (auto table : *spt)
+				for (auto table = spt->begin(); table != spt->end(); table++)
 				{
-					if (Utils::checkSpawn(spawnedCount, table.Percent))
+					if (Utils::checkSpawn(spawnedCount, table->Percent))
 					{
-						return MovingTileTypes::_from_string((*table.Type).c_str());
+						return &*table;
 					}
 				}
 			}
 
 		}
 	}
-	return MovingTileTypes::LayeredMatchObject;
+	return nullptr;
 }
 
 void SpawnController::clearSpawners()

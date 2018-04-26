@@ -48,6 +48,8 @@ public:
 	bool containsPopsicle() const { return layers->size() > 0 && layers->find(LayerId::UnderCover) != layers->end(); }
 	bool containsIceCover() const { return layers->size() > 0 && layers->find(LayerId::Cover) != layers->end(); }
 	bool containsWaffle() const;
+	bool containsBreaker() const;
+	bool containsEmptyObject() const;
 	bool isReceiveNearbyAffect();
 	bool isNoShuffleCell();
 	bool canMatch() const

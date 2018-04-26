@@ -422,3 +422,23 @@ bool Cell::containsWaffle() const
 	}
 	return false;
 }
+
+bool Cell::containsBreaker() const 
+{
+	auto tile = getSourceTile();
+	if (tile != nullptr && tile->getType() == INVISIBLEBRICKOBJECT)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool Cell::containsEmptyObject() const 
+{
+	auto tile = getSourceTile();
+	if (tile != nullptr && tile->getType() == EMPTYOBJECT)
+	{
+		return true;
+	}
+	return false;
+}

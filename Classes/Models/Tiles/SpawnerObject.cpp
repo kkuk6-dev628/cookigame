@@ -18,13 +18,31 @@ MovingTile* SpawnerObject::spawnMovingTile()
 {
 	spawnController->countSpawnedTiles();
 	auto spawnColor = spawnController->getSpawnColor();
-	auto spawnType = spawnController->getSpawnType(name, totalSpawnedCount, pCell->inWater);
-	if(spawnType == +MovingTileTypes::DonutObject)
-	{
-		cocos2d::log("Spawn DonutObject");
-	}
-	auto spawnTile = static_cast<MovingTile*>(poolController->getCookieTile(spawnType._to_string()));
+	std::string spawnType = ((MovingTileTypes)(MovingTileTypes::LayeredMatchObject))._to_string();
 
+	auto spawnTable = spawnController->getSpawnTable(name, totalSpawnedCount, pCell->inWater);
+	if (spawnTable != nullptr)
+	{
+		spawnType = *spawnTable->Type;
+	}
+
+	//if(spawnType == +MovingTileTypes::DonutObject)
+	//{
+	//	cocos2d::log("Spawn DonutObject");
+	//}
+	auto spawnTile = static_cast<MovingTile*>(poolController->getCookieTile(spawnType));
+
+	if (spawnTable != nullptr)
+	{
+		auto dir = spawnTable->direction;
+		if (dir == +Direction::any)
+		{
+			char nDir = rand_0_1() * 8;
+			dir = Direction::_from_integral(nDir);
+		}
+		spawnTile->setDirection(dir);
+		spawnTile->setLayers(spawnTable->Layers);
+	}
 	spawnTile->setTileColor(spawnColor);
 	auto spawnedPos = Utils::Grid2BoardPos(gridPos);
 
@@ -33,7 +51,7 @@ MovingTile* SpawnerObject::spawnMovingTile()
 	spawnedCount++;
 	spawnTile->initWithGrid(gridPos.Col, gridPos.Row);
 	spawnTile->setPosition(spawnedPos);
-	spawnTile->initWithType(spawnType._to_string(), spawnColor);
+	spawnTile->initWithType(spawnType, spawnColor);
 	totalSpawnedCount++;
 	//spawnTile->setContentSize(Size(CellSize, CellSize));
 	return spawnTile;

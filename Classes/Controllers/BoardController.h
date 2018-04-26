@@ -118,7 +118,8 @@ protected:
 
 	void addScore(ScoreType type, ScoreUnit val, char matchNumber, Vec2 pos) const;
 
-	void showLineCrushEffect(Cell* cell, float rotation);
+	void showLineCrushEffect(Cell* cell, float rotation, char side = 0); // 0 : left and right, 1 : right, -1 : left
+
 	void showBombAndLineCrushEffect(Cell* cell);
 	void showBombCrushEffect(Cell* cell);
 

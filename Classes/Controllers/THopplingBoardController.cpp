@@ -326,7 +326,7 @@ CellsList* THopplingBoardController::findHopplingTarget(Cell* cell)
 	{
 		oldCell = newCell;
 		newCell = findNextCrackerCell(oldCell, oldIndent, &newIndent);
-		if(oldIndent != nullptr && oldIndent != newIndent)
+		if(oldIndent != newIndent)
 		{
 			hopplingPath->push_back(oldCell);
 		}

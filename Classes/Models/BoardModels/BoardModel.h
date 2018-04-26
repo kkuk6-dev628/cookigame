@@ -82,6 +82,7 @@ public:
 	char getPathMoversCount();
 
 	Vec2 getBoardCenterPos() const { return Vec2(CellSize * width / 2, CellSize * height / 2); }
+	bool containsPortalOutInCol(Cell* cell) const;
 
 private:
 	cocos2d::__Dictionary* boardLayers;

@@ -38,6 +38,7 @@ struct Goal
 struct SpawnTable
 {
 	char Layers;
+	Direction direction = Direction::E;
 	TileColors Color = TileColors::any;
 	float Percent;
 	char IntMin;
@@ -51,6 +52,12 @@ struct SpawnTable
 			if (itr != json.MemberEnd() && itr->value.IsInt())
 			{
 				this->Layers = itr->value.GetInt();
+			}
+
+			itr = json.FindMember("direction");
+			if (itr != json.MemberEnd() && itr->value.IsString())
+			{
+				this->direction = Direction::_from_string(itr->value.GetString());
 			}
 
 			itr = json.FindMember("color");
