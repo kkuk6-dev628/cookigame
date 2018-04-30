@@ -91,6 +91,10 @@ SpawnTable* SpawnController::getSpawnTable(std::string spawnerName, int spawnedC
 				return spawnTypeString;
 			}
 		}
+		if (spawnOnCollectSystem != nullptr)
+		{
+
+		}
 	}
 	else if(customSpawnTable != nullptr)
 	{

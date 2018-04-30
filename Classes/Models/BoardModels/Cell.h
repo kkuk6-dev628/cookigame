@@ -88,6 +88,8 @@ public:
 
 	void spawnMatchTile();
 	void spawnPathMover();
+	void spawnSpecialTile(MovingTileTypes tileType);
+
 	MovingTile* getSpawnedTile() const;
 	void resetSpawnedTile() { spawnedTile = nullptr; }
 

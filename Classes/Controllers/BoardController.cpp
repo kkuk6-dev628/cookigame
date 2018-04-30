@@ -76,6 +76,7 @@ void BoardController::processLogic(float dt)
 	moveConveyors();
 	moveSpinners();
 	moveSwappers();
+	spreedHoneyModifier();
 	spawnController->resetSpawners();
 
 	checkObjective();
@@ -739,6 +740,26 @@ void BoardController::showLineCrushEffect(Cell* cell, float rotation, char side)
 	}
 }
 
+void BoardController::toggleLiquidFiller(std::string fillerType)
+{
+	for (char i = 0; i < boardModel->getHeight(); i++)
+	{
+		for (char j = 0; j < boardModel->getWidth(); j++)
+		{
+			auto cell = getMatchCell(j, i);
+			if (cell == nullptr || cell->isOutCell || cell->isEmpty)
+			{
+				continue;
+			}
+			auto fillerTile = cell->getMovingTile();
+			if (fillerTile->getType() == fillerType)
+			{
+				fillerTile->initWithType((+MovingTileTypes::LayeredMatchObject)._to_string(), fillerTile->getTileColor());
+			}
+		}
+	}
+}
+
 void BoardController::showBombAndLineCrushEffect(Cell* cell)
 {
 	auto effect = poolController->getBombAndLineCrushShow();
@@ -1214,6 +1235,7 @@ void BoardController::doSomethingPerMove()
 	moveConveyorsFlag = true;
 	moveSpinnerFlag = true;
 	moveSwappersFlag = true;
+	spreedHoneyModifierFlag = true;
 }
 
 void BoardController::crushPendingCells()
@@ -1594,6 +1616,26 @@ void BoardController::crushAllCells()
 
 void BoardController::spawnNewTile(Cell* cell)
 {
+	auto spawnSys = boardModel->getSpawnOnCollectSystem();
+	auto spawner = cell->getSpawner();
+	auto spawnerName = spawner->getTileName();
+	if (spawnSys != nullptr && (spawnerName == "normal" || spawnerName == ""))
+	{
+		auto tileCount = boardModel->getLiquidFillersCount(spawnSys->ObjectType == (+MovingTileTypes::LiquidFillerMatchObject)._to_string());
+		if (tileCount < spawnSys->EnsureOne)
+		{
+			if ((spawnSys->ObjectType == (+MovingTileTypes::LiquidFillerMatchObject)._to_string() && boardModel->getLiquidSystem()->LevelMax <= boardModel->getCurrentLiquidLevel())
+				|| (spawnSys->ObjectType == (+MovingTileTypes::LiquidDrainerMatchObject)._to_string() && boardModel->getLiquidSystem()->LevelMin >= boardModel->getCurrentLiquidLevel()))
+			{
+				cell->spawnMatchTile();
+			}
+			else
+			{
+				cell->spawnSpecialTile(MovingTileTypes::_from_string(spawnSys->ObjectType.c_str()));
+			}
+			return;
+		}
+	}
 	cell->spawnMatchTile();
 }
 
@@ -1923,8 +1965,14 @@ void BoardController::crushCell(Cell* cell, bool forceClear)
 	auto strType = tile->getType();
 	auto canMatch = tile->canMatch;
 	auto tileColor = tile->getTileColor();
+	auto containsHoneyModifier = tile->containsHoneyModifier();
+
 	if(!cell->crushCell())
 	{
+		if (containsHoneyModifier)
+		{
+			spreedHoneyModifierFlag = false;
+		}
 		//if (forceClear) cell->clear();
 		return;
 	}
@@ -1998,6 +2046,7 @@ void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
 		auto spawnTile = poolController->getCookieTile(spawnType);
 		spawnTile->setTileColor(spawnColor);
 		spawnTile->setLayers(spawnData.Layers);
+		spawnTile->setDirection(spawnData.direction);
 		spawnTile->initWithGrid(targetCell->gridPos.Col, targetCell->gridPos.Row);
 		spawnTile->setPosition(cell->getBoardPos());
 		spawnTile->initWithType(spawnType, spawnColor);
@@ -2055,11 +2104,29 @@ void BoardController::moveSwappers()
 	boardModel->runSwappers();
 }
 
+void BoardController::spreedHoneyModifier()
+{
+	if (fallingTileCount > 0 || gameState != Idle || pendingCrushCells->count() > 0 || !boardModel->containsHoneyModifier() || !spreedHoneyModifierFlag)
+	{
+		return;
+	}
+	spreedHoneyModifierFlag = false;
+	auto honeyTargetCell = boardModel->findHoneyTarget();
+	if (honeyTargetCell != nullptr && honeyTargetCell->getMovingTile() != nullptr)
+	{
+		honeyTargetCell->getMovingTile()->setHoneyModifier();
+	}
+}
+
 
 void BoardController::fillLiquid(bool inverse)
 {
 	auto curretLiquidLevel = boardModel->getCurrentLiquidLevel();
-	if (curretLiquidLevel >= boardModel->getLiquidSystem()->LevelMax)
+	if (curretLiquidLevel >= boardModel->getLiquidSystem()->LevelMax && !inverse)
+	{
+		return;
+	}
+	if (curretLiquidLevel <= 0 && inverse)
 	{
 		return;
 	}
@@ -2072,7 +2139,22 @@ void BoardController::fillLiquid(bool inverse)
 		boardModel->setCurrentLiquidLevel(curretLiquidLevel - 1);
 	}
 	
-	liquidNode->runAction(MoveTo::create(0.5, Vec2(0, boardModel->getCurrentLiquidLevel() * CellSize)));
+	curretLiquidLevel = boardModel->getCurrentLiquidLevel();
+	auto liquidSystem = boardModel->getLiquidSystem();
+	if(curretLiquidLevel >= liquidSystem->LevelMax && liquidSystem->FillerToggle)
+	{
+		toggleLiquidFiller((+MovingTileTypes::LiquidFillerMatchObject)._to_string());
+	}
+
+	if (curretLiquidLevel <= liquidSystem->LevelMin && liquidSystem->DrainerToggle)
+	{
+		toggleLiquidFiller((+MovingTileTypes::LiquidDrainerMatchObject)._to_string());
+	}
+	//liquidNode->stopAllActions();
+	auto action = MoveTo::create(0.5, Vec2(0, boardModel->getCurrentLiquidLevel() * CellSize));
+	action->setTag(6666);
+	liquidNode->stopActionByTag(6666);
+	liquidNode->runAction(action);
 }
 
 

@@ -1,6 +1,8 @@
 #include "UserData.h"
 #include "General/Constants.h"
 
+//#define TEST_UserDataClearOnInit
+
 USING_NS_CC;
 
 extern bool g_bDebugMode;
@@ -29,10 +31,10 @@ UserData::UserData()
 	}
 
 	topLevel = userDefault->getIntegerForKey("top_level", 1);
-	topLevel = MAX(topLevel, 235);
+	topLevel = MAX(topLevel, 695);
 
 	//topLevel = 1599;//test
-	//if (g_bDebugMode) topLevel = 45;
+	if (g_bDebugMode) topLevel = 695;
 #ifdef TEST_UserDataClearOnInit
 	clear();
 #endif

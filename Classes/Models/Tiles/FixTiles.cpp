@@ -82,7 +82,15 @@ void PortalInletObject::initTexture()
 	auto textureName = StringUtils::format("%s_%s.png", type.c_str(), color._to_string());
 	TileBase::initTexture(textureName);
 	textureSprite->setContentSize(Size(CellSize, PORTALLETHEIGHT));
-	textureSprite->setPosition(Vec2(CellSize / 2, -PORTALLETHEIGHT / 2.f));
+	
+	if (direction == +Direction::S)
+	{
+		textureSprite->setPosition(Vec2(CellSize / 2, -PORTALLETHEIGHT / 2.f));
+	}
+	else
+	{
+		textureSprite->setPosition(Vec2(CellSize / 2, CellSize + PORTALLETHEIGHT / 2.f));
+	}
 }
 
 void PortalInletObject::setInWater()
@@ -95,7 +103,15 @@ void PortalOutletObject::initTexture()
 	auto textureName = StringUtils::format("%s_%s.png", type.c_str(), color._to_string());
 	TileBase::initTexture(textureName);
 	textureSprite->setContentSize(Size(CellSize, PORTALLETHEIGHT));
-	textureSprite->setPosition(Vec2(CellSize / 2, CellSize + PORTALLETHEIGHT / 2.f));
+
+	if (direction == +Direction::N)
+	{
+		textureSprite->setPosition(Vec2(CellSize / 2, CellSize + PORTALLETHEIGHT / 2.f));
+	}
+	else
+	{
+		textureSprite->setPosition(Vec2(CellSize / 2, -PORTALLETHEIGHT / 2.f));
+	}
 }
 
 void PortalOutletObject::setInWater()

@@ -99,7 +99,7 @@ Cell* BoardModel::getDirectFallCell(Cell* cell)
 
 	while (loopCell != nullptr && (loopCell->canFill() || (loopCell->canPass && (loopCell->isOutCell || loopCell->isFixed))))
 	{
-		if (loopCell->canFall())
+		if (loopCell->canFall() && cell->inWater == loopCell->inWater)
 		{
 			return loopCell;
 		}
@@ -109,7 +109,7 @@ Cell* BoardModel::getDirectFallCell(Cell* cell)
 		//	loopCell = loopCell->findPortalInCell(portalInList);
 		//	continue;
 		//}
-		if (loopCell->containsSpawner())
+		if (loopCell->containsSpawner() && cell->inWater == loopCell->inWater)
 		{
 			return loopCell;
 		}
@@ -118,7 +118,7 @@ Cell* BoardModel::getDirectFallCell(Cell* cell)
 		loopCell = loopCell->getFallUpCell();
 	}
 
-	if (loopCell != nullptr && loopCell->canFall()) 
+	if (loopCell != nullptr && loopCell->canFall() && cell->inWater == loopCell->inWater) 
 	{
 		return loopCell;
 	}
@@ -172,28 +172,47 @@ Cell* BoardModel::getInclinedFallCell(Cell* cell)
 	auto upCell = cells[row][col];
 
 	if (leftCell != nullptr && leftCell->canFall()
+		&& cell->inWater == leftCell->inWater
 		&& !containsPortalOutInCol(leftCell)
 		&& !(cell->containsEmptyObject() && cell->leftCell->containsBreaker() && upCell->containsBreaker()))
 	{
 		return leftCell;
 	}
 	if (rightCell != nullptr && rightCell->canFall() 
+		&& cell->inWater == rightCell->inWater
 		&& !(cell->containsEmptyObject() && cell->rightCell->containsBreaker() && upCell->containsBreaker()))
 	{
 		return rightCell;
 	}
+	if (leftCell != nullptr && leftCell->canFall()
+		&& cell->inWater == leftCell->inWater
+		&& !(cell->containsEmptyObject() && cell->leftCell->containsBreaker() && upCell->containsBreaker()))
+	{
+		return leftCell;
+	}
+
+
 
 	if (leftCell != nullptr && leftCell->canFill() 
+		&& cell->inWater == leftCell->inWater
 		&& !containsPortalOutInCol(leftCell)
 		&& !(cell->containsEmptyObject() && cell->leftCell->containsBreaker() && upCell->containsBreaker()))
 	{
 		return leftCell;
 	}
 	if (rightCell != nullptr && rightCell->canFill() 
+		&& cell->inWater == rightCell->inWater
 		&& !(cell->containsEmptyObject() && cell->rightCell->containsBreaker() && upCell->containsBreaker()))
 	{
 		return rightCell;
 	}
+	if (leftCell != nullptr && leftCell->canFill()
+		&& cell->inWater == leftCell->inWater
+		&& !(cell->containsEmptyObject() && cell->leftCell->containsBreaker() && upCell->containsBreaker()))
+	{
+		return leftCell;
+	}
+
 	return nullptr;
 }
 
@@ -305,6 +324,29 @@ char BoardModel::getPathMoversCount()
 			auto tile = cell->getSourceTile();
 			if (tile == nullptr) continue;
 			if(tile->getMovingTileType() == +MovingTileTypes::PathMoverMatchObject)
+			{
+				count++;
+			}
+		}
+	}
+	return count;
+}
+
+char BoardModel::getLiquidFillersCount(bool isFiller /* = true */) const
+{
+	char count = 0;
+	auto tileType = isFiller ? MovingTileTypes::LiquidFillerMatchObject : MovingTileTypes::LiquidDrainerMatchObject;
+
+	for (char i = 0; i < height; i++)
+	{
+		for (char j = 0; j < width; j++)
+		{
+			if (cells[i][j] == nullptr || cells[i][j]->isEmpty) continue;
+
+			auto cell = cells[i][j];
+			auto tile = cell->getSourceTile();
+			if (tile == nullptr) continue;
+			if (tile->getMovingTileType() == +tileType)
 			{
 				count++;
 			}
@@ -466,32 +508,32 @@ void BoardModel::initSpawners()
 {
 	for(char j = 0; j < width; j++)
 	{
-		if (spawnTable != nullptr || liquidSystem == nullptr)
+		if (spawnTop)
 		{
-			//for (char i = height - 1; i >= 0; i--)
+			for (char i = height - 1; i >= 0; i--)
 			{
-				char i = height - 1;
+				//char i = height - 1;
 				auto cell = cells[i][j];
 				if (!cell->isOutCell)
 				{
-					if (!cell->containsSpawner() && !cell->inWater)
+					if (!cell->containsSpawner() && !cell->containsPortalIn() && !cell->containsPortalOut() && !cell->inWater)
 					{
 						auto spawner = SpawnerObject::create();
 						spawner->initSpawner();
 						cell->setTileToLayer(spawner, LayerId::Spawner);
 						SpawnController::getInstance()->addSpawner(spawner);
 					}
-					//break;
+					break;
 				}
 			}
 		}
-		if(liquidSystem != nullptr)
+		if(liquidSystem != nullptr && spawnBottom)
 		{
-			//for (char i = 0; i < height; i++)
+			for (char i = 0; i < height; i++)
 			{
-				char i = 0;
+				//char i = 0;
 				auto cell = cells[i][j];
-				if (!cell->isOutCell)
+				if (!cell->isOutCell && cell->inWater)
 				{
 					if (!cell->containsSpawner())
 					{
@@ -501,7 +543,7 @@ void BoardModel::initSpawners()
 						cell->setTileToLayer(spawner, LayerId::Spawner);
 						SpawnController::getInstance()->addSpawner(spawner);
 					}
-					//break;
+					break;
 				}
 			}
 		}
@@ -516,6 +558,8 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	this->transitionOut = json["transitionOut"].GetString();
 	this->width = json["width"].GetInt();
 	this->height = json["height"].GetInt();
+	this->spawnTop = json["spawnTop"].GetBool();
+	this->spawnBottom = json["spawnBottom"].GetBool();
 	if (width > 0 && height > 0)
 	{
 		initCells();
@@ -623,6 +667,19 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 					conveyorInfoItem->ToColumn = customData["to_column"].GetInt();
 					conveyorInfoItem->ToRow = customData["to_row"].GetInt();
 					conveyorInfo->push_back(conveyorInfoItem);
+				}
+				else if (strcmp(dataType, "SpawnOnCollectSystem") == 0)
+				{
+					if (spawnOnCollectSystem == nullptr)
+					{
+						spawnOnCollectSystem = new SpawnOnCollectSystem;
+					}
+					spawnOnCollectSystem->IntervalMax = customData["interval_max"].GetInt();
+					spawnOnCollectSystem->IntervalMin = customData["interval_min"].GetInt();
+					spawnOnCollectSystem->ObjectType = customData["object_type"].GetString();
+					spawnOnCollectSystem->EnsureOne = customData["ensure_one"].GetInt();
+					spawnOnCollectSystem->Type = customData["type"].GetString();
+					SpawnController::getInstance()->setSpawnOnCollectSystem(spawnOnCollectSystem);
 				}
 			}
 		}
@@ -791,7 +848,14 @@ void BoardModel::moveConveyors()
 
 void BoardModel::conveyTile(MovingTile* from, Cell* to) const
 {
-	if (from == nullptr || to == nullptr) return;
+	if (from == nullptr) 
+	{
+		to->clear();
+	}
+	if (from == nullptr || to == nullptr)
+	{
+		return;
+	}
 
 	auto colIndent = abs(from->gridPos.Col - to->gridPos.Col);
 	auto rowIndent = abs(from->gridPos.Row - to->gridPos.Row);
@@ -881,6 +945,61 @@ void BoardModel::runObjectSpinner()
 	}
 }
 
+Cell* BoardModel::findHoneyTarget()
+{
+	std::vector<Cell*> targets;
+	for (char i = 0; i < height; i++)
+	{
+		for (char j = 0; j < width; j++)
+		{
+			auto cell = getCell(j, i);
+			if (cell == nullptr) continue;
+			auto movingTile = cell->getMovingTile();
+			if (movingTile == nullptr)
+			{
+				continue;
+			}
+			if (movingTile->containsHoneyModifier())
+			{
+				auto nearbyMovingCells = findNearbyMovingTiles(cell);
+				if (nearbyMovingCells.size() > 0)
+				{
+					targets.insert(targets.end(), nearbyMovingCells.begin(), nearbyMovingCells.end());
+				}
+			}
+		}
+	}
+
+	if (targets.size() > 0)
+	{
+		return targets.at((int)(rand_0_1() * targets.size()));
+	}
+	return nullptr;
+}
+
+CellsList BoardModel::findNearbyMovingTiles(Cell* cell)
+{
+	CellsList ret;
+	if (cell->upCell != nullptr && cell->upCell->canFall())
+	{
+		ret.push_back(cell->upCell);
+	}
+	if (cell->leftCell != nullptr && cell->leftCell->canFall())
+	{
+		ret.push_back(cell->leftCell);
+	}
+	if (cell->downCell != nullptr && cell->downCell->canFall())
+	{
+		ret.push_back(cell->downCell);
+	}
+	if (cell->rightCell != nullptr && cell->rightCell->canFall())
+	{
+		ret.push_back(cell->rightCell);
+	}
+
+	return ret;
+}
+
 void BoardModel::rotateSpinner(Cell* cell, bool isClockWise)
 {
 	if(cell->isFixed || cell->rightCell->isFixed || cell->rightCell->downCell->isFixed || cell->downCell->isFixed)
@@ -958,6 +1077,15 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 					tile->retain();
 					cell->setTileToLayer(tile, layerNumber);
 
+					if (MovingTileTypes::_is_valid(typeName))
+					{
+						auto movingTile = (MovingTile*)tile;
+						if (movingTile != nullptr && movingTile->containsHoneyModifier())
+						{
+							containsHoney = true;
+							movingTile->receiveNearbyAffect = true;
+						}
+					}
 					if(strcmp(typeName, SEEKERPRIORITYOBJECT) == 0)
 					{
 						if(seekerPriorityList == nullptr)

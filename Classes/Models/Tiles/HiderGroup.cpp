@@ -116,6 +116,7 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 				iceCover->removeFromParent();
 				headCell->removeTileAtLayer(LayerId::Cover);
 				headCell->setSourceTile(segment);
+				headCell->canPass = true;
 			}
 		}
 	}, segment);

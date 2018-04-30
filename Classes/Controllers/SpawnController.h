@@ -12,6 +12,8 @@ public:
 	void setSpawnTable(SpawnTablesList ct) { spawnTable = ct; }
 	void setLiquidSpawnTable(SpawnTablesList ct) { liquidSpawnTable = ct; }
 	void setCustomSpawnTable(std::map<std::string, CustomSpawnTableItem>* ct) { customSpawnTable = ct; }
+	void setSpawnOnCollectSystem(SpawnOnCollectSystem* spawnSys) { spawnOnCollectSystem = spawnSys; }
+
 	TileColors getSpawnColor() const;
 	SpawnTable* getSpawnTable(std::string spawnerName, int spawnedCount, bool inWater = false) const;
 	void countSpawnedTiles() { spawnedTilesCount++; }
@@ -28,6 +30,7 @@ private:
 	SpawnTablesList liquidSpawnTable;
 	std::map<std::string, CustomSpawnTableItem>* customSpawnTable = nullptr;
 
+	SpawnOnCollectSystem* spawnOnCollectSystem;
 	int spawnedTilesCount = 0;
 	std::list<SpawnerObject*>* spawnersList = nullptr;
 	std::list<SpawnTable*>* pendingSpawnTypes = nullptr;

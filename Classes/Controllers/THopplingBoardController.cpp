@@ -5,11 +5,13 @@
 
 THopplingBoardController::THopplingBoardController()
 {
+	thoplerTargets = new CellsList;
 }
 
 
 THopplingBoardController::~THopplingBoardController()
 {
+	delete thoplerTargets;
 }
 
 void THopplingBoardController::initWithModel(BoardModel* model)
@@ -115,8 +117,14 @@ Cell* THopplingBoardController::findThopplerTarget()
 {
 	if(crackerCells->size() > 0)
 	{
-		auto random = rand_0_1() * crackerCells->size();
-		return crackerCells->at(random);
+		Cell* target = nullptr;
+		do {
+			auto random = rand_0_1() * crackerCells->size();
+			target = crackerCells->at(random);
+		} while (std::find(thoplerTargets->begin(), thoplerTargets->end(), target) != thoplerTargets->end());
+
+		thoplerTargets->push_back(target);
+		return target;
 	}
 	return nullptr;
 }
@@ -194,6 +202,14 @@ void THopplingBoardController::movePendingThopplers()
 			continue;
 		}
 		auto typeString = thoppler->getType();
+
+		auto sourceTile = cell->getSourceTile();
+		if (sourceTile->getType() != CRACKEROBJECT && sourceTile->getType() != PRETZELOBJECT)
+		{
+			static_cast<ThopplerTile*>(thoppler)->moveDown();
+			cell->setSourceTile(thoppler);
+			cell->removeTileAtLayer(LayerId::Toppling);
+		}
 		if (strcmp(typeString.c_str(), TOPPLINGOBJECT) == 0)
 		{
 			showTopplerMoveEffect(cell);
@@ -205,6 +221,7 @@ void THopplingBoardController::movePendingThopplers()
 
 	}
 	pendingThopplers->clear();
+	thoplerTargets->clear();
 }
 
 void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
@@ -212,6 +229,10 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 	auto hopplerTile = cell->getTileAtLayer(LayerId::Toppling);
 
 	auto hopplingPath = findHopplingTarget(cell);
+	//while (std::find(thoplerTargets->begin(), thoplerTargets->end(), hopplingPath->back()) != thoplerTargets->end())
+	//{
+	//	hopplingPath = findHopplingTarget(cell);
+	//}
 	if(hopplingPath == nullptr || hopplingPath->size() < 2)
 	{
 		return;
@@ -333,7 +354,11 @@ CellsList* THopplingBoardController::findHopplingTarget(Cell* cell)
 		oldIndent = newIndent;
 		loopCount++;
 	} while (newCell != nullptr && loopCount < 5);
-	hopplingPath->push_back(oldCell);
+
+	if (oldCell != nullptr && std::find(thoplerTargets->begin(), thoplerTargets->end(), oldCell) == thoplerTargets->end())
+	{
+		hopplingPath->push_back(oldCell);
+	}
 	return hopplingPath;
 }
 

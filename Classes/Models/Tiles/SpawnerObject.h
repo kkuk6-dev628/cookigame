@@ -14,6 +14,8 @@ public:
 
 	MovingTile* spawnMovingTile();
 	MovingTile* spawnPathMover();
+	MovingTile* spawnSpecialTile(MovingTileTypes tileType);
+
 	void initSpawnedCount() { spawnedCount = 0; }
 	void initSpawner() { direction = Direction::S; }
 

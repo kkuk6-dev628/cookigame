@@ -33,5 +33,6 @@ protected:
 private:
 	std::vector<Cell*>* crackerCells = nullptr;
 	std::vector<Cell*>* pendingThopplers = nullptr;
+	CellsList* thoplerTargets = nullptr;
 };
 

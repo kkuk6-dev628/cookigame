@@ -143,7 +143,15 @@ bool MovingTile::crush(bool showEffect)
 		}
 		modifierType = ModifierTypes::None;
 		if(pCell != nullptr) pCell->isFixed = false;
-		canMatch = true;
+		if (movingTileType != +MovingTileTypes::DonutObject && movingTileType != +MovingTileTypes::ChocolateChipObject)
+		{
+			canMatch = true;
+		}
+
+		if (movingTileType != +MovingTileTypes::DonutObject && movingTileType != +MovingTileTypes::ChocolateChipObject)
+		{
+			receiveNearbyAffect = false;
+		}
 		return false;
 	default:
 		return CookieTile::crush(showEffect);
@@ -248,6 +256,22 @@ void MovingTile::initMovingTile()
 	setScale(1.0f, 1.0f);
 }
 
+bool MovingTile::containsHoneyModifier()
+{
+	return modifierType == +ModifierTypes::HoneyModifier;
+}
+
+void MovingTile::setHoneyModifier()
+{
+	modifierType = ModifierTypes::HoneyModifier;
+	if (pCell != nullptr)
+	{
+		pCell->isFixed = true;
+		receiveNearbyAffect = true;
+	}
+	setModifierTexture();
+}
+
 void MovingTile::setModifierTexture()
 {
 	if(modifierType == +ModifierTypes::CageModifier || modifierType == +ModifierTypes::HoneyModifier)
@@ -266,6 +290,7 @@ void MovingTile::setModifierTexture()
 		modifierSprite->setContentSize(Size(CellSize, CellSize));
 		modifierSprite->setAnchorPoint(Vec2(0.5, 0.5));
 		modifierSprite->setPosition(CellSize / 2, CellSize / 2);
+		modifierSprite->setVisible(true);
 
 		if (modifierType == +ModifierTypes::HoneyModifier)
 		{

@@ -78,6 +78,26 @@ MovingTile* SpawnerObject::spawnPathMover()
 	return spawnTile;
 }
 
+MovingTile* SpawnerObject::spawnSpecialTile(MovingTileTypes tileType)
+{
+	spawnController->countSpawnedTiles();
+	auto spawnColor = spawnController->getSpawnColor();
+	auto spawnTile = static_cast<MovingTile*>(poolController->getCookieTile(tileType._to_string()));
+
+	spawnTile->setTileColor(spawnColor);
+	auto spawnedPos = Utils::Grid2BoardPos(gridPos);
+
+	auto dir = direction == +Direction::S ? 1 : -1;
+	spawnedPos.add(Vec2(0, (spawnedCount + 1) * dir * CellSize));
+	spawnedCount++;
+	spawnTile->initWithGrid(gridPos.Col, gridPos.Row);
+	spawnTile->setPosition(spawnedPos);
+	spawnTile->initWithType(tileType._to_string(), spawnColor);
+	totalSpawnedCount++;
+	//spawnTile->setContentSize(Size(CellSize, CellSize));
+	return spawnTile;
+}
+
 char SpawnerObject::fallDirection() const
 {
 	return getCell()->fallDirection;

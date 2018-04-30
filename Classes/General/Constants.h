@@ -57,6 +57,7 @@
 #define DISPLAYCASEOBJECT "DisplayCaseObject"
 #define CHOCOLATEOBJECT "ChocolateObject"
 #define ICECOVEROBJECT "IceCoverObject"
+#define HIDERSEGMENTOBJECT "HiderSegmentObject"
 
 //////////////////////////////////////////////////
 

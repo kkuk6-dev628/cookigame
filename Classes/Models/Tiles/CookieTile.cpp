@@ -110,6 +110,7 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	itr = data.FindMember("modifier_type");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
+		layers = 1;
 		try
 		{
 			this->modifierType = ModifierTypes::_from_string(itr->value.GetString());

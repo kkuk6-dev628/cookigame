@@ -27,6 +27,8 @@ public:
 	void initWithJson(rapidjson::Value& json) override;
 	void initTexture() override;
 	void initMovingTile();
+	bool containsHoneyModifier();
+	void setHoneyModifier();
 
 	void setModifierTexture();
 	SpriteFrame* getMainSpriteFrame() const

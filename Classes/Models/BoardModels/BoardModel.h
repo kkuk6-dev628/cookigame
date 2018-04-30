@@ -79,15 +79,24 @@ public:
 
 	void addPieceSwapperCell(std::string color, Cell* cell);
 	void runSwappers();
+
 	char getPathMoversCount();
+	char getLiquidFillersCount(bool isFiller = true) const;
 
 	Vec2 getBoardCenterPos() const { return Vec2(CellSize * width / 2, CellSize * height / 2); }
 	bool containsPortalOutInCol(Cell* cell) const;
+
+	bool containsHoneyModifier() const { return containsHoney; }
+	Cell* findHoneyTarget();
+	CellsList findNearbyMovingTiles(Cell* cell);
 
 private:
 	cocos2d::__Dictionary* boardLayers;
 	int width;
 	int height;
+
+	bool spawnTop = true;
+	bool spawnBottom = false;
 	std::string transitionOut;
 	SpawnTablesList spawnTable = nullptr;
 	SpawnTablesList conveyorSpawnTable;
@@ -113,6 +122,9 @@ private:
 	std::list<LavaCakeObject*>* lavaCakeTiles = nullptr;
 	CellsList* objectSpinnerCells = nullptr;
 	std::map<std::string, PieceSwapper*> * pieceSwappers = nullptr;
+	SpawnOnCollectSystem* spawnOnCollectSystem = nullptr;
+
+	bool containsHoney = false;
 
 public:
 	rapidjson::Document LayersJson;
@@ -257,6 +269,14 @@ public:
 		currentLiquidLevel = current_liquid_level;
 	}
 
+	SpawnOnCollectSystem* getSpawnOnCollectSystem() const
+	{
+		return spawnOnCollectSystem;
+	}
 
+	void setSpawnOnCollectSystem(SpawnOnCollectSystem* spawnSys)
+	{
+		spawnOnCollectSystem = spawnSys;
+	}
 };
 

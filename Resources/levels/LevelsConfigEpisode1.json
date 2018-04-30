@@ -8,8 +8,9 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "3_1": {
                   "type": "WaffleObject",
@@ -66,8 +67,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -315,8 +314,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {
                 "6_4": {
                   "type": "SpawnerObject",
@@ -1158,12 +1158,15 @@
               "2_4": true,
               "1_4": true,
               "1_3": true
-            }
+            },
+            "spawnTop": true,
+            "spawnBottom": false
           },
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "3_1": {
                   "type": "WaffleObject",
@@ -1244,8 +1247,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "EmptyObject",
@@ -1555,8 +1556,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {
                 "6_6": {
                   "type": "SpawnerObject",
@@ -2416,8 +2418,9 @@
           },
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "3_1": {
                   "type": "WaffleObject",
@@ -2504,8 +2507,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "EmptyObject",
@@ -2779,8 +2780,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -2879,7 +2881,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -2888,8 +2891,9 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "3_3": {
                   "type": "WaffleObject",
@@ -2958,8 +2962,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -3281,8 +3283,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {
                 "6_6": {
                   "type": "SpawnerObject",
@@ -4134,12 +4137,15 @@
               "2_4": true,
               "1_4": true,
               "1_3": true
-            }
+            },
+            "spawnTop": true,
+            "spawnBottom": false
           },
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "3_1": {
                   "type": "WaffleObject",
@@ -4268,8 +4274,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -4517,8 +4521,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {
                 "6_4": {
                   "type": "SpawnerObject",
@@ -5374,8 +5379,9 @@
           },
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "6_4": {
                   "type": "WaffleObject",
@@ -5558,8 +5564,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -5974,8 +5978,9 @@
                   "data": {}
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -6070,7 +6075,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -6079,8 +6085,9 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "0_3": {
                   "type": "WaffleObject",
@@ -6095,8 +6102,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "InvisibleBrickObject",
@@ -6437,8 +6442,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {
                 "6_6": {
                   "type": "SpawnerObject",
@@ -7295,12 +7301,15 @@
               "2_4": true,
               "1_4": true,
               "1_3": true
-            }
+            },
+            "spawnTop": true,
+            "spawnBottom": false
           },
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "6_5": {
                   "type": "WaffleObject",
@@ -7429,8 +7438,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -7761,8 +7768,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {
                 "6_5": {
                   "type": "SpawnerObject",
@@ -8406,8 +8414,9 @@
           },
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "3_1": {
                   "type": "WaffleObject",
@@ -8536,8 +8545,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -8847,8 +8854,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -8943,7 +8951,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -8952,8 +8961,9 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "6_1": {
                   "type": "WaffleObject",
@@ -9118,8 +9128,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -9448,7 +9456,7 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {
                 "5_1": {
                   "type": "SeekerPriorityObject",
@@ -9458,6 +9466,7 @@
                   }
                 }
               },
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -9518,7 +9527,9 @@
             "custom_spawn_table": [],
             "liquid_spawn_table": [],
             "data": [],
-            "noReshuffle": {}
+            "noReshuffle": {},
+            "spawnTop": true,
+            "spawnBottom": false
           }
         ],
         "title": "Level 4 - Waf 1",
@@ -9544,7 +9555,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -9553,8 +9565,9 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
+              "1": {},
+              "2": {},
               "3": {
                 "6_4": {
                   "type": "WaffleObject",
@@ -9851,8 +9864,6 @@
                   }
                 }
               },
-              "2": {},
-              "5": {},
               "4": {
                 "6_4": {
                   "type": "ChocolateObject",
@@ -10352,7 +10363,7 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {
                 "4_4": {
                   "type": "SeekerPriorityObject",
@@ -10362,6 +10373,7 @@
                   }
                 }
               },
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -10422,7 +10434,9 @@
             "custom_spawn_table": [],
             "liquid_spawn_table": [],
             "data": [],
-            "noReshuffle": {}
+            "noReshuffle": {},
+            "spawnTop": true,
+            "spawnBottom": false
           }
         ],
         "title": "Level 5 - Waf 1",
@@ -10448,7 +10462,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -10457,9 +10472,8 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
-              "3": {},
+              "1": {},
               "2": {
                 "3_3": {
                   "type": "PathObject",
@@ -10516,7 +10530,7 @@
                   }
                 }
               },
-              "5": {},
+              "3": {},
               "4": {
                 "6_4": {
                   "type": "ChocolateObject",
@@ -10896,8 +10910,9 @@
                   "data": {}
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {
                 "6_6": {
                   "type": "SpawnerObject",
@@ -11047,7 +11062,9 @@
                 "interval_min": 0
               }
             ],
-            "noReshuffle": {}
+            "noReshuffle": {},
+            "spawnTop": true,
+            "spawnBottom": false
           }
         ],
         "title": "Level 6 - Path 1",
@@ -11073,7 +11090,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -11082,9 +11100,8 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
-              "3": {},
+              "1": {},
               "2": {
                 "3_3": {
                   "type": "PathObject",
@@ -11141,7 +11158,7 @@
                   }
                 }
               },
-              "5": {},
+              "3": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -11461,8 +11478,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -11554,7 +11572,9 @@
                 "type": "SparkleHintsSystem"
               }
             ],
-            "noReshuffle": {}
+            "noReshuffle": {},
+            "spawnTop": true,
+            "spawnBottom": false
           }
         ],
         "title": "Level 7 - Path 1",
@@ -11580,7 +11600,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -11589,9 +11610,8 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
-              "3": {},
+              "1": {},
               "2": {
                 "6_5": {
                   "type": "PathObject",
@@ -11666,7 +11686,7 @@
                   }
                 }
               },
-              "5": {},
+              "3": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -12075,8 +12095,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -12131,7 +12152,9 @@
                 "interval_min": 0
               }
             ],
-            "noReshuffle": {}
+            "noReshuffle": {},
+            "spawnTop": true,
+            "spawnBottom": false
           }
         ],
         "title": "Level 8 - Path 1",
@@ -12157,7 +12180,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -12166,9 +12190,8 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
-              "3": {},
+              "1": {},
               "2": {
                 "3_2": {
                   "type": "PathObject",
@@ -12249,7 +12272,7 @@
                   }
                 }
               },
-              "5": {},
+              "3": {},
               "4": {
                 "6_4": {
                   "type": "LayeredMatchObject",
@@ -12729,8 +12752,9 @@
                   "data": {}
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -12814,7 +12838,9 @@
                 "interval_min": 0
               }
             ],
-            "noReshuffle": {}
+            "noReshuffle": {},
+            "spawnTop": true,
+            "spawnBottom": false
           }
         ],
         "title": "Level 9 - Path 2",
@@ -12840,7 +12866,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       },
       {
         "version": 5,
@@ -12849,9 +12876,8 @@
         "boards": [
           {
             "layers": {
-              "1": {},
               "0": {},
-              "3": {},
+              "1": {},
               "2": {
                 "3_0": {
                   "type": "PathObject",
@@ -12920,7 +12946,7 @@
                   }
                 }
               },
-              "5": {},
+              "3": {},
               "4": {
                 "6_4": {
                   "type": "ChocolateObject",
@@ -13420,8 +13446,9 @@
                   }
                 }
               },
-              "7": {},
+              "5": {},
               "6": {},
+              "7": {},
               "8": {}
             },
             "gravityDirections": {},
@@ -13494,7 +13521,9 @@
                 "interval_min": 0
               }
             ],
-            "noReshuffle": {}
+            "noReshuffle": {},
+            "spawnTop": true,
+            "spawnBottom": false
           }
         ],
         "title": "Level 10 - Path 2",
@@ -13522,7 +13551,8 @@
         ],
         "guid": "",
         "type": 0,
-        "ignoreEveryoneHardDelta": false
+        "ignoreEveryoneHardDelta": false,
+        "spawnTop": true
       }
     ]
   }

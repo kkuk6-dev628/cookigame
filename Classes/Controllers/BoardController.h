@@ -119,6 +119,8 @@ protected:
 	void addScore(ScoreType type, ScoreUnit val, char matchNumber, Vec2 pos) const;
 
 	void showLineCrushEffect(Cell* cell, float rotation, char side = 0); // 0 : left and right, 1 : right, -1 : left
+	
+	void toggleLiquidFiller(std::string fillerType);
 
 	void showBombAndLineCrushEffect(Cell* cell);
 	void showBombCrushEffect(Cell* cell);
@@ -171,6 +173,8 @@ protected:
 	void moveSpinners();
 
 	void moveSwappers();
+
+	void spreedHoneyModifier();
 
 	void playCreateBonusSoundEffect(MovingTileTypes bonusType);
 
@@ -246,6 +250,7 @@ protected:
 	bool moveConveyorsFlag = false;
 	bool moveSpinnerFlag = false;
 	bool moveSwappersFlag = false;
+	bool spreedHoneyModifierFlag = false;
 
 	char checkFallingCount = 0;
 

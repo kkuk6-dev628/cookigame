@@ -75,7 +75,7 @@ void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 			isFixed = !pTile->isMovable();
 			canPass = !isFixed;
 		}
-		if(pTile->getType() == PRETZELOBJECT || pTile->getType() == EMPTYOBJECT)
+		if(pTile->getType() == PRETZELOBJECT || pTile->getType() == EMPTYOBJECT || pTile->getType() == HIDERSEGMENTOBJECT)
 		{
 			canPass = true;
 		}
@@ -289,6 +289,23 @@ void Cell::spawnPathMover()
 	if (spawnerObject != nullptr)
 	{
 		spawnedTile = spawnerObject->spawnPathMover();
+		if (spawnedTile->getParent() == nullptr)
+		{
+			boardLayer->addChild(spawnedTile);
+		}
+		if (!isFixed)
+		{
+			setSourceTile(spawnedTile);
+		}
+	}
+}
+
+void Cell::spawnSpecialTile(MovingTileTypes tileType)
+{
+	auto spawnerObject = static_cast<SpawnerObject*>(layers->at(LayerId::Spawner));
+	if (spawnerObject != nullptr)
+	{
+		spawnedTile = spawnerObject->spawnSpecialTile(tileType);
 		if (spawnedTile->getParent() == nullptr)
 		{
 			boardLayer->addChild(spawnedTile);
