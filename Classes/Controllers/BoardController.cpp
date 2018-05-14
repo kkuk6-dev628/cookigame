@@ -1717,7 +1717,7 @@ void BoardController::crushAllCells()
 void BoardController::findAndCrushBonus()
 {
 	//if (fallingTileCount > 0 || gameState != Idle || !isBonusTime) return;
-
+	auto loopCount = 2;
 	for (char i = 0; i < boardModel->getHeight(); i++)
 	{
 		for (char j = 0; j < boardModel->getWidth(); j++)
@@ -1726,6 +1726,12 @@ void BoardController::findAndCrushBonus()
 			if (cell != nullptr && !cell->isOutCell && cell->containsBonus())
 			{
 				crushCell(cell);
+				loopCount--;
+				if (loopCount <= 0)
+				{
+					isBonusTime = false;
+					return;
+				}
 				//return;
 			}
 		}

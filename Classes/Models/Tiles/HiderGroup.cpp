@@ -98,12 +98,12 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 	CKAction ckAction;
 	auto actionController = ActionController::getInstance();
 	ckAction.node = segment;
+	auto headCell = movePath->back();
 	ckAction.action = actionController->createHiderSegmentMoveAction(movePath, [=]()
 	{
 		segment->initTexture();
 		if(segment->isHead())
 		{
-			auto headCell = movePath->back();
 			auto oldTile = headCell->getSourceTile();
 			if(oldTile != nullptr && oldTile->getParent() != nullptr)
 			{
@@ -115,9 +115,9 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 			{
 				iceCover->removeFromParent();
 				headCell->removeTileAtLayer(LayerId::Cover);
-				headCell->setSourceTile(segment);
-				headCell->canPass = true;
 			}
+			headCell->setSourceTile(segment);
+			headCell->canPass = true;
 		}
 	}, segment);
 	actionController->pushAction(ckAction, false);

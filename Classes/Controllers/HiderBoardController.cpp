@@ -57,8 +57,8 @@ Cell* HiderBoardController::findSeekerTarget(CellsList* targetsList) const
 		{
 			retCell = coveredSegmentCells.at(coveredSegmentCells.size() * rand_0_1());
 			loopCount--;
-		} while (Utils::containsCell(targetsList, retCell) && loopCount > 0);
-		if (!Utils::containsCell(targetsList, retCell))
+		} while (Utils::containsCell(targetsList, retCell) && loopCount > 0 && retCell->isEmpty);
+		if (!Utils::containsCell(targetsList, retCell) && !retCell->isEmpty)
 		{
 			return retCell;
 		}
@@ -261,7 +261,10 @@ void HiderBoardController::crushCell(Cell* pCell, bool forceClear)
 	auto hiderHead = reinterpret_cast<HiderSegmentObject*>(pCell->getMovingTile());
 	if(hiderHead != nullptr && hiderHead->isHead())
 	{
-		pendingHiders->push_back(hiderHead);
+		if (std::find(pendingHiders->begin(), pendingHiders->end(), hiderHead) == pendingHiders->end())
+		{
+			pendingHiders->push_back(hiderHead);
+		}
 	}
 	else
 	{
