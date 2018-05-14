@@ -3,7 +3,7 @@
 #include "enum.h"
 
 enum GameState {
-	Idle, SwappingTile, Shuffling, Completed, Failed, Paused
+	Idle, SwappingTile, Shuffling, Completed, Failed, Paused, Booster
 };
 
 enum MatchType
@@ -15,10 +15,11 @@ enum BoosterType
 {
 	BoosterHor,
 	BoosterVer,
-	BoosterCross,
-	BoosterBomb,
-	BoosterRainbow,
-	BoosterCount
+	BoosterSingle,
+	BoosterSwap,
+	//BoosterRainbow,
+	BoosterCount,
+	None
 };
 
 enum ScoreUnit

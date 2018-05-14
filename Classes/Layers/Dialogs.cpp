@@ -2,14 +2,14 @@
 #include "Models/DataModels/Level.h"
 #include "Models/DataModels/UserData.h"
 //#include "UI/BoosterPot.h"
-//#include "GamePlayScene.h"
+#include "Scenes/GamePlayScene.h"
 //#include "SoundManager.h"
+//#include "Controllers/BoardController.h"
 #include "cocostudio/CocoStudio.h"
-//#include "Native/AdsControl.h"
 #include "spine/spine-cocos2dx.h"
-//#include "Native/GGBridge.h"
-//#include "Native/AdsControl.h"
-//#include "Layer/LevelSelectScene.h"
+#include "Scenes/LevelMapScene.h"
+#include "Native/AdsControl.h"
+#include "Native/GGBridge.h"
 
 using namespace spine;
 
@@ -426,22 +426,22 @@ void GameWinDialog::setStar(int count)
 					nullptr));
 			}
 		}
-		if (count == 3) {
+		//if (count == 3) {
 
-			for (int i = 0; i < 5; i++) {
-				auto particle = (ParticleSystemQuad*)m_pUiNode->getChildByName(__String::createWithFormat("Particle_%d",i+1)->getCString());
-				particle->stopSystem();				
-				this->runAction(Sequence::create(
-					DelayTime::create(0.1+i*t),
-					CallFunc::create([&, particle]() {
-					particle->setAutoRemoveOnFinish(true);
-					particle->start();
-					
-				}),
-					nullptr));
-				
-			}
-		}
+		//	for (int i = 0; i < 5; i++) {
+		//		auto particle = (ParticleSystemQuad*)m_pUiNode->getChildByName(__String::createWithFormat("Particle_%d",i+1)->getCString());
+		//		particle->stopSystem();				
+		//		this->runAction(Sequence::create(
+		//			DelayTime::create(0.1+i*t),
+		//			CallFunc::create([&, particle]() {
+		//			particle->setAutoRemoveOnFinish(true);
+		//			particle->start();
+		//			
+		//		}),
+		//			nullptr));
+		//		
+		//	}
+		//}
 	}
 }
 
@@ -501,144 +501,144 @@ void ShopDialog::resetShopState(int adType)
 	auto rootNode = dlgRoot->getChildByName("rootNode");
 
 
-	//auto btnRoot = rootNode->getChildByName(__String::createWithFormat("ad_panel%d", adType + 1)->getCString());
-	//auto btnPlay = (Button*)btnRoot->getChildByName("btn_playads");
+	auto btnRoot = rootNode->getChildByName(__String::createWithFormat("ad_panel%d", adType + 1)->getCString());
+	auto btnPlay = (Button*)btnRoot->getChildByName("btn_playads");
 
 
-	//auto image_total = (ImageView*)btnPlay->getChildByName("image_total");
-	//auto lbl_total = (Text*)image_total->getChildByName("lbl_total");
-	//auto todayAds = GameData::getInstance()->getTodayAvailableAds(adType);
-	//lbl_total->setString(ITOA(todayAds));
-	//if (todayAds <= 0) {
-	//	btnPlay->setEnabled(false);
-	//	image_total->stopAllActions();
-	//}
-	//else {
-	//	btnPlay->setEnabled(true);
-	//	image_total->stopAllActions();
-	//	image_total->runAction(RepeatForever::create(Sequence::create(DelayTime::create(RandomHelper::random_real(0.5, 1.5)), ScaleTo::create(0.08, 1.2, 0.8),
-	//		ScaleTo::create(0.08, 0.8, 1.2), ScaleTo::create(0.1, 1.15, 0.85),
-	//		ScaleTo::create(0.1, 0.9, 1.1), ScaleTo::create(0.13, 1.1, 0.9),
-	//		ScaleTo::create(0.13, 0.9, 1.1), ScaleTo::create(0.16, 1.05, 0.95),
-	//		ScaleTo::create(0.16, 1, 1), nullptr)));
-	//}
+	auto image_total = (ImageView*)btnPlay->getChildByName("image_total");
+	auto lbl_total = (Text*)image_total->getChildByName("lbl_total");
+	auto todayAds = UserData::getInstance()->getTodayAvailableAds(adType);
+	lbl_total->setString(StringUtils::toString(todayAds));
+	if (todayAds <= 0) {
+		btnPlay->setEnabled(false);
+		image_total->stopAllActions();
+	}
+	else {
+		btnPlay->setEnabled(true);
+		image_total->stopAllActions();
+		image_total->runAction(RepeatForever::create(Sequence::create(DelayTime::create(RandomHelper::random_real(0.5, 1.5)), ScaleTo::create(0.08, 1.2, 0.8),
+			ScaleTo::create(0.08, 0.8, 1.2), ScaleTo::create(0.1, 1.15, 0.85),
+			ScaleTo::create(0.1, 0.9, 1.1), ScaleTo::create(0.13, 1.1, 0.9),
+			ScaleTo::create(0.13, 0.9, 1.1), ScaleTo::create(0.16, 1.05, 0.95),
+			ScaleTo::create(0.16, 1, 1), nullptr)));
+	}
 }
 
 ShopDialog::ShopDialog()
 {
 	_instance = this;
 	Popup::initWithMask(true);
-	//setTouchMode(kCCTouchesOneByOne);
-	//dlgRoot = CSLoader::getInstance()->createNode("res/ShopDlg.csb");
-	//addChild(dlgRoot);
+	setTouchMode(kCCTouchesOneByOne);
+	dlgRoot = CSLoader::getInstance()->createNode("res/ShopDlg.csb");
+	addChild(dlgRoot);
 
-	//auto rootNode = dlgRoot->getChildByName("rootNode");
+	auto rootNode = dlgRoot->getChildByName("rootNode");
 
-	//((Button*)rootNode->getChildByName("btn_close"))->addClickEventListener([this](Ref*) {
-	//	this->close();
-	//});
+	((Button*)rootNode->getChildByName("btn_close"))->addClickEventListener([this](Ref*) {
+		this->close();
+	});
 
-	//int goldCount[] = { REWARDED_VIDEO,REWARDED_ADS };
+	int goldCount[] = { REWARDED_VIDEO,REWARDED_ADS };
 
-	//for (int i = 1; i <= 2; i++) {
-	//	auto btnRoot = rootNode->getChildByName(__String::createWithFormat("ad_panel%d", i)->getCString());
-	//	((Text*)btnRoot->getChildByName("lbl_coin"))->setString(ITOA(goldCount[i - 1]));
-	//	auto btnPlay = (Button*)btnRoot->getChildByName("btn_playads");
-	//	btnPlay->setTag(i);
-	//	int goldBuyCount = goldCount[i - 1];
-	//	int adType = i - 1;
-	//	btnPlay->addClickEventListener([this, goldBuyCount, adType](Ref*) {
-	//		onClickBtnBuy(goldBuyCount, adType);
-	//	});
+	for (int i = 1; i <= 2; i++) {
+		auto btnRoot = rootNode->getChildByName(__String::createWithFormat("ad_panel%d", i)->getCString());
+		((Text*)btnRoot->getChildByName("lbl_coin"))->setString(StringUtils::toString(goldCount[i - 1]));
+		auto btnPlay = (Button*)btnRoot->getChildByName("btn_playads");
+		btnPlay->setTag(i);
+		int goldBuyCount = goldCount[i - 1];
+		int adType = i - 1;
+		btnPlay->addClickEventListener([this, goldBuyCount, adType](Ref*) {
+			onClickBtnBuy(goldBuyCount, adType);
+		});
 
-	//	auto image_total = (ImageView*)btnPlay->getChildByName("image_total");
-	//	auto lbl_total = (Text*)image_total->getChildByName("lbl_total");
-	//	auto todayAds = GameData::getInstance()->getTodayAvailableAds(i - 1);
-	//	lbl_total->setString(ITOA(todayAds));
-	//	if (todayAds <= 0) {
-	//		btnPlay->setEnabled(false);
-	//		image_total->stopAllActions();
-	//	}
-	//	else {
-	//		btnPlay->setEnabled(true);
-	//		image_total->stopAllActions();
-	//		image_total->runAction(RepeatForever::create(Sequence::create(DelayTime::create(RandomHelper::random_real(0.5, 1.5)), ScaleTo::create(0.08, 1.2, 0.8),
-	//			ScaleTo::create(0.08, 0.8, 1.2), ScaleTo::create(0.1, 1.15, 0.85),
-	//			ScaleTo::create(0.1, 0.9, 1.1), ScaleTo::create(0.13, 1.1, 0.9),
-	//			ScaleTo::create(0.13, 0.9, 1.1), ScaleTo::create(0.16, 1.05, 0.95),
-	//			ScaleTo::create(0.16, 1, 1), nullptr)));
-	//	}
-	//}
+		auto image_total = (ImageView*)btnPlay->getChildByName("image_total");
+		auto lbl_total = (Text*)image_total->getChildByName("lbl_total");
+		auto todayAds = UserData::getInstance()->getTodayAvailableAds(i - 1);
+		lbl_total->setString(StringUtils::toString(todayAds));
+		if (todayAds <= 0) {
+			btnPlay->setEnabled(false);
+			image_total->stopAllActions();
+		}
+		else {
+			btnPlay->setEnabled(true);
+			image_total->stopAllActions();
+			image_total->runAction(RepeatForever::create(Sequence::create(DelayTime::create(RandomHelper::random_real(0.5, 1.5)), ScaleTo::create(0.08, 1.2, 0.8),
+				ScaleTo::create(0.08, 0.8, 1.2), ScaleTo::create(0.1, 1.15, 0.85),
+				ScaleTo::create(0.1, 0.9, 1.1), ScaleTo::create(0.13, 1.1, 0.9),
+				ScaleTo::create(0.13, 0.9, 1.1), ScaleTo::create(0.16, 1.05, 0.95),
+				ScaleTo::create(0.16, 1, 1), nullptr)));
+		}
+	}
 }
 
 void ShopDialog::onClickBtnBuy(int gCount, int adType)
 {
 	auto messageBox = MessageDialog::create();
 
-//	int nAds = GameData::getInstance()->getTodayAvailableAds(adType);
-//	if (nAds <= 0) {
-//		
-//		
-//		messageBox->setTitle("Error");
-//		messageBox->setMessage("Today you can not click on ads to get diamonds.");
-//		messageBox->show(this,2);
-//
-//		return;
-//	}
-//	switch (adType) {
-//	case 1:
-//		if (GGBridge::hasInterstitialAd()) {
-//			AdsControl::delayFullAds(0);
-//			GameData::getInstance()->setTodayAdsClick(adType);
-//			GameData::getInstance()->changeGold(gCount);
-//			GameData::getInstance()->saveGold();
-//			LevelSelectScene::getInstance()->setGoldLabel();
-//
-//			/*if (OutOfMovesLayer::getInstance()) {
-//				OutOfMovesLayer::getInstance()->updateCoin();
-//			}*/
-//			if (BoosterBuyDialog::getInstance())
-//				BoosterBuyDialog::getInstance()->updateCoin();
-//		}
-//		else {
-//			messageBox->setTitle("Error");
-//			messageBox->setMessage("Ads not ready!");
-//			messageBox->show(this, 2);
-//			
-//		}
-//		break;
-//	case 0:
-//		if (GGBridge::hasRewardVideoAds()) {
-//			GGBridge::showRewardVideoAds();
-//			GameData::getInstance()->setTodayAdsClick(adType);
-//#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-//			rewardedVideoFinish();
-//#endif
-//		}
-//		else {
-//			messageBox->setTitle("Error");
-//			messageBox->setMessage("Ads not ready!");
-//			messageBox->show(this, 2);
-//		}
-//		break;
-//	default:break;
-//	}
-//	resetShopState(adType);
+	int nAds = UserData::getInstance()->getTodayAvailableAds(adType);
+	if (nAds <= 0) {
+		
+		
+		messageBox->setTitle("Error");
+		messageBox->setMessage("Today you can not click on ads to get diamonds.");
+		messageBox->show(this,2);
+
+		return;
+	}
+	switch (adType) {
+	case 1:
+		if (GGBridge::hasInterstitialAd()) {
+			AdsControl::delayFullAds(0);
+			UserData::getInstance()->setTodayAdsClick(adType);
+			UserData::getInstance()->changeGold(gCount);
+			UserData::getInstance()->saveGold();
+			LevelMapScene::getInstance()->setGoldLabel();
+
+			/*if (OutOfMovesLayer::getInstance()) {
+				OutOfMovesLayer::getInstance()->updateCoin();
+			}*/
+			if (BoosterBuyDialog::getInstance())
+				BoosterBuyDialog::getInstance()->updateCoin();
+		}
+		else {
+			messageBox->setTitle("Error");
+			messageBox->setMessage("Ads not ready!");
+			messageBox->show(this, 2);
+			
+		}
+		break;
+	case 0:
+		if (GGBridge::hasRewardVideoAds()) {
+			GGBridge::showRewardVideoAds();
+			UserData::getInstance()->setTodayAdsClick(adType);
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+			rewardedVideoFinish();
+#endif
+		}
+		else {
+			messageBox->setTitle("Error");
+			messageBox->setMessage("Ads not ready!");
+			messageBox->show(this, 2);
+		}
+		break;
+	default:break;
+	}
+	resetShopState(adType);
 }
 void ShopDialog::rewardedVideoFinish() {
 
 	
-	//GameData::getInstance()->changeGold(REWARDED_VIDEO);
-	//GameData::getInstance()->saveGold();
+	UserData::getInstance()->changeGold(REWARDED_VIDEO);
+	UserData::getInstance()->saveGold();
 
-	//if (LevelSelectScene::getInstance())
-	//	LevelSelectScene::getInstance()->setGoldLabel();
+	if (LevelMapScene::getInstance())
+		LevelMapScene::getInstance()->setGoldLabel();
 
-	///*if (OutOfMovesLayer::getInstance()) {
-	//OutOfMovesLayer::getInstance()->updateCoin();
-	//}*/
-	//if (BoosterBuyDialog::getInstance())
-	//	BoosterBuyDialog::getInstance()->updateCoin();
+	/*if (OutOfMovesLayer::getInstance()) {
+	OutOfMovesLayer::getInstance()->updateCoin();
+	}*/
+	if (BoosterBuyDialog::getInstance())
+		BoosterBuyDialog::getInstance()->updateCoin();
 
 }
 
@@ -677,92 +677,92 @@ BoosterBuyDialog::BoosterBuyDialog()
 	_instance = this;
 	nFee = 0;
 	Popup::initWithMask(true);
-	//setTouchMode(kCCTouchesOneByOne);
-	//auto dlgRoot = CSLoader::getInstance()->createNode("res/BoosterBuyDlg.csb");
-	//addChild(dlgRoot);
+	setTouchMode(kCCTouchesOneByOne);
+	auto dlgRoot = CSLoader::getInstance()->createNode("res/BoosterBuyDlg.csb");
+	addChild(dlgRoot);
 
-	//this->setOnCloseHandler([this]() {
-	//	this->close();
-	//});
+	this->setOnCloseHandler([this]() {
+		this->close();
+	});
 
-	//auto rootNode = dlgRoot->getChildByName("rootNode");
+	auto rootNode = dlgRoot->getChildByName("rootNode");
 
-	//((Button*)rootNode->getChildByName("btn_close"))->addClickEventListener([this](Ref*) {
-	//	setOnCloseHandler(nullptr);
-	//	this->close();
-	//});
+	((Button*)rootNode->getChildByName("btn_close"))->addClickEventListener([this](Ref*) {
+		setOnCloseHandler(nullptr);
+		this->close();
+	});
 
-	//((Button*)rootNode->getChildByName("btn_buy"))->addClickEventListener([this](Ref*) {
-	//	onClickBuy();
-	//});
-	//text_fee = (Text*)rootNode->getChildByName("btn_buy")->getChildByName("txt_fee");
+	((Button*)rootNode->getChildByName("btn_buy"))->addClickEventListener([this](Ref*) {
+		onClickBuy();
+	});
+	text_fee = (Text*)rootNode->getChildByName("btn_buy")->getChildByName("txt_fee");
 
-	//mImageBooster = (ImageView*)rootNode->getChildByName("img_boosterpic");
+	mImageBooster = (ImageView*)rootNode->getChildByName("img_boosterpic");
 
-	//Button* btn_coin = (Button*)rootNode->getChildByName("btn_coin");
-	//btn_coin->addClickEventListener([this](Ref*) {
-	//	ShopDialog::create()->show(this,10);
-	//	
-	//});
+	Button* btn_coin = (Button*)rootNode->getChildByName("btn_coin");
+	btn_coin->addClickEventListener([this](Ref*) {
+		ShopDialog::create()->show(this,10);
+		
+	});
 
-	//Vec2 pos = btn_coin->getPosition();
-	//btn_coin->setPositionX(-btn_coin->getContentSize().width / 2);
-	//btn_coin->runAction(Sequence::create(DelayTime::create(0.5f), MoveTo::create(0.8, pos), NULL));
+	Vec2 pos = btn_coin->getPosition();
+	btn_coin->setPositionX(-btn_coin->getContentSize().width / 2);
+	btn_coin->runAction(Sequence::create(DelayTime::create(0.5f), MoveTo::create(0.8, pos), NULL));
 
-	//text_coin = (Text*)btn_coin->getChildByName("lbl_coin");
-	//updateCoin();
+	text_coin = (Text*)btn_coin->getChildByName("lbl_coin");
+	updateCoin();
 }
 BoosterBuyDialog::~BoosterBuyDialog()
 {
 	_instance = nullptr;
 }
 void BoosterBuyDialog::updateCoin() {
-	//text_coin->setString(ITOA(GameData::getInstance()->getGold()));
+	text_coin->setString(StringUtils::toString(UserData::getInstance()->getGold()));
 }
-void BoosterBuyDialog::initWithBoosterNumber(int boosterIdx)
+void BoosterBuyDialog::initWithBoosterNumber(BoosterType boosterType)
 {
-	nBoosterNum = boosterIdx;
 	nFee = 0;
-	//switch (nBoosterNum)
-	//{
-	//case 0:
-	//	mImageBooster->loadTexture("res/ui/Booster/boost_test_1.png");
-	//	nFee = FEE_BUYHOR;
-	//	break;
-	//case 1:
-	//	mImageBooster->loadTexture("res/ui/Booster/boost_test_2.png");
-	//	nFee = FEE_BUYVER;
-	//	break;
-	//case 2:
-	//	mImageBooster->loadTexture("res/ui/Booster/boost_test_3.png");
-	//	nFee = FEE_BUYCROSS;
-	//	break;
-	//case 3:
-	//	mImageBooster->loadTexture("res/ui/Booster/boost_test_4.png");
-	//	nFee = FEE_BUYBOMB;
-	//	break;
+	nBoosterNum = boosterType;
+	switch (boosterType)
+	{
+	case BoosterType::BoosterHor:
+		mImageBooster->loadTexture("banner_10.png", TextureResType::PLIST);
+		nFee = FEE_BUYHOR;
+		break;
+	case BoosterType::BoosterVer:
+		mImageBooster->loadTexture("banner_14.png", TextureResType::PLIST);
+		nFee = FEE_BUYVER;
+		break;
+	case BoosterType::BoosterSingle:
+		mImageBooster->loadTexture("banner_13.png", TextureResType::PLIST);
+		nFee = FEE_BUYSINGLE;
+		break;
+	case BoosterType::BoosterSwap:
+		mImageBooster->loadTexture("banner_11.png", TextureResType::PLIST);
+		nFee = FEE_BUYSWAP;
+		break;
 	//case 4:
 	//	mImageBooster->loadTexture("res/ui/Booster/boost_test_5.png");
 	//	nFee = FEE_SAMECOLOR;
 	//	break;
-	//}
-	//text_fee->setString(ITOA(nFee));
+	}
+	text_fee->setString(StringUtils::toString(nFee));
 }
 
 void BoosterBuyDialog::onClickBuy()
 {
 	int goldCount = nFee;
 	
-	//if (GameData::getInstance()->getGold() >= goldCount)
-	//{
-	//	GameData::getInstance()->changeGold(-goldCount);
-	//	GameData::getInstance()->nBoosterCount[nBoosterNum] += 3;
-	//	GameData::getInstance()->saveGold();
-	//	GameData::getInstance()->saveBooster();
-	//	GamePlayScene::getInstance()->updateBoosterInfo();
-	//	this->close();
-	//}
-	//else {
-	//	ShopDialog::create()->show(this, 10);
-	//}
+	if (UserData::getInstance()->getGold() >= goldCount)
+	{
+		UserData::getInstance()->changeGold(-goldCount);
+		UserData::getInstance()->nBoosterCount[nBoosterNum] += 3;
+		UserData::getInstance()->saveGold();
+		UserData::getInstance()->saveBooster();
+		GamePlayScene::getInstance()->updateBoosterCount();
+		this->close();
+	}
+	else {
+		ShopDialog::create()->show(this, 10);
+	}
 }

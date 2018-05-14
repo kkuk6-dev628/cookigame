@@ -5,6 +5,7 @@
 #include "cocos-ext.h"
 #include "Ext/Popup.h"
 #include "ui/CocosGUI.h"
+#include "General/EnumTypes.h"
 
 class Level;
 class BoosterPot;
@@ -195,7 +196,7 @@ public:
 	static BoosterBuyDialog* _instance;
 	static BoosterBuyDialog* getInstance() { return _instance; }
 
-	void initWithBoosterNumber(int boosterIdx);
+	void initWithBoosterNumber(BoosterType boosterIdx);
 	void onClickBuy();
 	void updateCoin();
 };

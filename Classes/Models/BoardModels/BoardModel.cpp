@@ -332,10 +332,9 @@ char BoardModel::getPathMoversCount()
 	return count;
 }
 
-char BoardModel::getLiquidFillersCount(bool isFiller /* = true */) const
+char BoardModel::getSpecialTilesCount(MovingTileTypes tileType) const
 {
 	char count = 0;
-	auto tileType = isFiller ? MovingTileTypes::LiquidFillerMatchObject : MovingTileTypes::LiquidDrainerMatchObject;
 
 	for (char i = 0; i < height; i++)
 	{
@@ -369,8 +368,10 @@ Cell* BoardModel::getRandomCell()
 {
 	auto col = static_cast<char>(rand_0_1() * width);
 	auto row = static_cast<char>(rand_0_1() * height);
-	while(cells[row][col] == nullptr || cells[row][col]->isOutCell || cells[row][col]->isEmpty)
+	char loopCount = 10;
+	while(loopCount > 0 && (cells[row][col] == nullptr || cells[row][col]->isOutCell || cells[row][col]->isEmpty))
 	{
+		loopCount--;
 		col = static_cast<char>(rand_0_1() * width);
 		row = static_cast<char>(rand_0_1() * height);
 	}
@@ -394,7 +395,7 @@ void BoardModel::setCurrentLiquidLevel(const float liquidLevel)
 		currentLiquidLevel = 0;
 		return;
 	}
-	currentLiquidLevel = liquidLevel;
+	currentLiquidLevel = liquidSystem->LevelMax >= liquidLevel ? liquidLevel : liquidSystem->LevelMax;
 	for (char i = 0; i < height; i++)
 	{
 		for (char j = 0; j < width; j++)
@@ -533,7 +534,7 @@ void BoardModel::initSpawners()
 			{
 				//char i = 0;
 				auto cell = cells[i][j];
-				if (!cell->isOutCell && cell->inWater)
+				if (!cell->isOutCell && (cell->inWater || i == 0))
 				{
 					if (!cell->containsSpawner())
 					{
@@ -723,20 +724,32 @@ void BoardModel::buildConveyors()
 			if (containedInConveyors(startCell)) continue;
 			auto itrCell = startCell;
 			auto prevCell = startCell;
+			std::string prevDir = "";
 			do
 			{
 				auto conveyorTile = static_cast<ConveyorBeltObject*>(itrCell->getTileAtLayer(LayerId::PathConveyor));
-				if(conveyorTile == nullptr)
+				auto strDir = conveyorTile->getDirectionString();
+				if(conveyorTile == nullptr || strDir.find(prevDir) == std::string::npos)
 				{
-					break;
+					auto nextSectionInfo = findConveyorInfo(prevCell);
+					if (nextSectionInfo != nullptr)
+					{
+						itrCell = getCell(nextSectionInfo->ToColumn, nextSectionInfo->ToRow);
+						prevDir = ConveyorOutDirMap.at(strDir);
+						continue;
+					}
+					else
+					{
+						break;
+					}
 				}
 				conveyor->push_back(itrCell);
 				
-				auto strDir = conveyorTile->getDirectionString();
+				if (strDir == "") strDir = prevDir;
 				auto indent = MoveDirectionsMap.at(strDir);
 				prevCell = itrCell;
 				itrCell = getCell(itrCell->gridPos.Col + indent.at(1), itrCell->gridPos.Row + indent.at(0));
-				if(itrCell == nullptr || itrCell->isOutCell)
+				if(itrCell == nullptr || itrCell->isOutCell )
 				{
 					auto nextSectionInfo = findConveyorInfo(prevCell);
 					if(nextSectionInfo != nullptr)
@@ -748,6 +761,7 @@ void BoardModel::buildConveyors()
 						break;
 					}
 				}
+				prevDir = ConveyorOutDirMap.at(strDir);
 			}while (itrCell != startCell);
 			if(conveyor->size() > 1)
 			{

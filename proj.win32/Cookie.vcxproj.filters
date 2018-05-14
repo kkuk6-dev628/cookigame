@@ -43,13 +43,13 @@
     <Filter Include="src\Ext">
       <UniqueIdentifier>{1eba3ce1-f918-484d-a356-740db91f84e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Native">
+      <UniqueIdentifier>{47b56969-f301-4fad-a44d-c892c36b4e34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\AppDelegate.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Controllers\SpawnController.cpp">
       <Filter>src\Controllers</Filter>
@@ -236,6 +236,15 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Models\BoardModels\Score.cpp">
       <Filter>src\Models\BoardModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Native\AdsControl.cpp">
+      <Filter>src\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Native\GGBridge.cpp">
+      <Filter>src\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\AppDelegate.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -451,6 +460,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Models\BoardModels\Score.h">
       <Filter>src\Models\BoardModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Native\AdsControl.h">
+      <Filter>src\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Native\GGBridge.h">
+      <Filter>src\Native</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

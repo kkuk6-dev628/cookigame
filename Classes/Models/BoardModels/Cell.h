@@ -47,6 +47,7 @@ public:
 	bool containsThoppler() const { return layers->size() > 0 && layers->find(LayerId::Toppling) != layers->end() || pSourceTile->getType() == TOPPLINGOBJECT || pSourceTile->getType() == HOPPLINGOBJECT; }
 	bool containsPopsicle() const { return layers->size() > 0 && layers->find(LayerId::UnderCover) != layers->end(); }
 	bool containsIceCover() const { return layers->size() > 0 && layers->find(LayerId::Cover) != layers->end(); }
+	bool containsBonus() const { return pSourceTile != nullptr && (pSourceTile->getMovingTileType() == +MovingTileTypes::BombBreakerObject || pSourceTile->getMovingTileType() == +MovingTileTypes::RowBreakerObject || pSourceTile->getMovingTileType() == +MovingTileTypes::ColumnBreakerObject); }
 	bool containsWaffle() const;
 	bool containsBreaker() const;
 	bool containsEmptyObject() const;

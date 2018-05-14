@@ -75,7 +75,7 @@ public:
 	void reuse(const std::function<void()> callback) override;
 	std::function<void()> recycleCallback;
 	void scheduleToRecycle(float);
-	ParticleSystem* colorParticle;
-	ParticleSystem* normalParticle;
+	ParticleSystem* colorParticle = nullptr;
+	ParticleSystem* normalParticle = nullptr;
 	float originSpeed;
 };

@@ -18,6 +18,7 @@
 #include "GameController.h"
 #include "Models/Tiles/LavaCakeObject.h"
 #include "Scenes/GamePlayScene.h"
+#include "Models/Tiles/LayeredCrackerTile.h"
 
 char BoardController::cellSize = 79;
 GameState BoardController::gameState;
@@ -87,6 +88,7 @@ void BoardController::processLogic(float dt)
 	doShuffle();
 
 	checkFallingTileCount();
+	//findAndCrushBonus();
 }
 
 void BoardController::checkFallingTileCount()
@@ -96,8 +98,8 @@ void BoardController::checkFallingTileCount()
 		checkFallingCount++;
 		if(checkFallingCount > 300)
 		{
-			fallingTileCount = 0;
-			checkFallingCount = 0;
+			//fallingTileCount = 0;
+			//checkFallingCount = 0;
 		}
 	}
 }
@@ -112,6 +114,18 @@ void BoardController::initWithNode(Node* node, Node* effect)
 	scoreController->setStarScores(currentLevel->getScores()->at(0), currentLevel->getScores()->at(1), currentLevel->getScores()->at(2));
 
 	bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
+	boosterMaskNode = bottomMenuArea->getChildByName("boosterMask");
+	boosterMaskNode->setVisible(false);
+	for (auto child : bottomMenuArea->getChildren())
+	{
+		auto particleNode = child->getChildByName("Particle");
+		if (particleNode != nullptr)
+		{
+			particleNode->setVisible(false);
+		}
+	}
+	updateBoosterCount();
+
 	moveCountNode = static_cast<ui::Text*>(topMenuArea->getChildByName("move_number"));
 	updateMoveCountText();
 
@@ -206,6 +220,16 @@ void BoardController::showGameWinDlg()
 		buttonText->setString("Next");
 	}
 
+	char star = scoreController->getStar();
+	auto totalScore = scoreController->getTotalScore();
+	dlg->lbl_score->setString(StringUtils::toString(totalScore));
+
+	auto levelNumber = currentLevel->getLevelNumber();
+	auto userData = UserData::getInstance();
+	userData->onLevelPass(levelNumber, totalScore, star);
+	dlg->lbl_maxscore->setString(StringUtils::toString(userData->getLevelMaxScore(levelNumber)));
+
+	dlg->setStar(star);
 	dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
 		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
 		dlg->close();
@@ -241,13 +265,41 @@ void BoardController::showGameFailedDlg()
 	});
 	dlg->btn_playon->addClickEventListener([=](Ref*){
 		dlg->close();
-		moveCount -= 10;
+		moveCount -= 5;
 		updateMoveCountText();
 
 		gameState = Idle;
 	});
 	dlg->retain();
 	dlg->show(this->getParent(), LayerId::ShowLayer);
+}
+
+void BoardController::setBoosterActive(BoosterType boosterType)
+{
+	auto particleNode = bottomMenuArea->getChildren().at(boosterType + 2)->getChildByName("Particle");
+	if (activeBooster == None)
+	{
+		activeBooster = boosterType;
+		boosterMaskNode->setVisible(true);
+		particleNode->setVisible(true);
+		gameState = GameState::Booster;
+	} 
+	else
+	{
+		activeBooster = None;
+		gameState = GameState::Idle;
+		boosterMaskNode->setVisible(false);
+		particleNode->setVisible(false);
+	}
+}
+
+void BoardController::updateBoosterCount()
+{
+	for (char i = 0; i < BoosterCount; i++)
+	{
+		auto boosterCountNode = (ui::Text*)bottomMenuArea->getChildren().at(i + 2)->getChildByName("count");
+		boosterCountNode->setString(StringUtils::toString(UserData::getInstance()->nBoosterCount[i]));
+	}
 }
 
 void BoardController::increaseObjectCount()
@@ -267,7 +319,8 @@ void BoardController::checkObjective()
 
 void BoardController::checkMoveCount()
 {
-	if(gameState == Idle && currentLevel->getMoveCount() <= moveCount)
+	if (fallingTileCount > 0 || gameState != Idle) return;
+	if(currentLevel->getMoveCount() <= moveCount)
 	{
 		gameState = Failed;
 		showGameFailedDlg();
@@ -276,11 +329,52 @@ void BoardController::checkMoveCount()
 
 void BoardController::finishLevel()
 {
-	gameState = GameState::Completed;
-	UserData::getInstance()->setTopLevel(currentLevel->getLevelNumber() + 1);
-	showGameWinDlg();
+	auto delayTime = showRemainedMoveNumAction();
+	fallingTileCount++;
+	this->runAction(Sequence::create(DelayTime::create(delayTime), CallFunc::create([=]() {
+		UserData::getInstance()->setTopLevel(currentLevel->getLevelNumber() + 1);
+		isBonusTime = true;
+		findAndCrushBonus();
+		gameState = GameState::Completed;
+		showGameWinDlg();
+		fallingTileCount=0;
+		}),
+		nullptr));
 }
 
+float BoardController::showRemainedMoveNumAction()
+{
+	auto remainedMoveNumber = currentLevel->getMoveCount() - moveCount;
+	if (remainedMoveNumber <= 0)
+	{
+		return 0;
+	}
+	float delayTime = 0;
+	float interval = 0.2;
+	auto realPos = Utils::convertPos(moveCountNode, showObjectsLayer);
+
+	for (char i = 0; i < remainedMoveNumber; i++)
+	{
+		auto moveNumShow = poolController->getMoveNumEffect();
+		showObjectsLayer->addChild(moveNumShow);
+		moveNumShow->setPosition(realPos);
+		auto targetCell = boardModel->getRandomCell();
+		CKAction ckAction;
+		ckAction.node = moveNumShow;
+		ckAction.action = actionController->createMoveNumAction(moveNumShow, targetCell->boardPos, delayTime, interval, [=]() {
+			auto movingTile = targetCell->getMovingTile();
+			this->countDownMoveNumber();
+			this->fallingTileCount--;
+			addScore(ScoreType::normal, ScoreUnit::pathFollower, matchId, targetCell->getBoardPos());
+			poolController->recycleMoveNumEffect(moveNumShow);
+			this->addMovingTile(targetCell, rand_0_1() > 0.5 ? MovingTileTypes::RowBreakerObject : MovingTileTypes::ColumnBreakerObject, TileColors::_from_integral(rand_0_1() * 6));
+		});
+		delayTime += interval;
+		fallingTileCount++;
+		actionController->pushAction(ckAction, false);
+	}
+	return delayTime;
+}
 
 void BoardController::endGame()
 {
@@ -294,6 +388,12 @@ bool BoardController::onTouchBegan(Touch* touch, Event* unused_event)
 {
 	const auto pos = convertToNodeSpace(touch->getLocation());
 	const auto cell = getMatchCell(pos);
+
+	if (gameState == GameState::Booster && cell != nullptr && !cell->isEmpty)
+	{
+		executeBooster(cell);
+		return false;
+	}
 	if (cell == nullptr || cell->isEmpty || fallingTileCount > 0 || gameState != GameState::Idle)
 	{
 		selectedTile = nullptr;
@@ -711,7 +811,7 @@ void BoardController::initLiquidLayer()
 		action->gotoFrameAndPlay(0, true);
 		
 		liquidNode->runAction(action);
-		liquidNode->setPosition(0, liquidSys->LevelStart * CellSize);
+		liquidNode->setPosition(0, boardModel->getCurrentLiquidLevel() * CellSize);
 		liquidMask->setPosition(0, 0);
 		liquidMask->setAnchorPoint(Vec2(0, 0));
 		liquidMask->addChild(liquidNode);
@@ -1614,14 +1714,33 @@ void BoardController::crushAllCells()
 	}
 }
 
+void BoardController::findAndCrushBonus()
+{
+	//if (fallingTileCount > 0 || gameState != Idle || !isBonusTime) return;
+
+	for (char i = 0; i < boardModel->getHeight(); i++)
+	{
+		for (char j = 0; j < boardModel->getWidth(); j++)
+		{
+			auto cell = getMatchCell(j, i);
+			if (cell != nullptr && !cell->isOutCell && cell->containsBonus())
+			{
+				crushCell(cell);
+				//return;
+			}
+		}
+	}
+	isBonusTime = false;
+}
+
 void BoardController::spawnNewTile(Cell* cell)
 {
 	auto spawnSys = boardModel->getSpawnOnCollectSystem();
 	auto spawner = cell->getSpawner();
 	auto spawnerName = spawner->getTileName();
-	if (spawnSys != nullptr && (spawnerName == "normal" || spawnerName == ""))
+	if (spawnSys != nullptr && MovingTileTypes::_is_valid(spawnSys->ObjectType.c_str()) && (spawnerName == "normal" || spawnerName == ""))
 	{
-		auto tileCount = boardModel->getLiquidFillersCount(spawnSys->ObjectType == (+MovingTileTypes::LiquidFillerMatchObject)._to_string());
+		auto tileCount = boardModel->getSpecialTilesCount(MovingTileTypes::_from_string(spawnSys->ObjectType.c_str()));
 		if (tileCount < spawnSys->EnsureOne)
 		{
 			if ((spawnSys->ObjectType == (+MovingTileTypes::LiquidFillerMatchObject)._to_string() && boardModel->getLiquidSystem()->LevelMax <= boardModel->getCurrentLiquidLevel())
@@ -1633,10 +1752,20 @@ void BoardController::spawnNewTile(Cell* cell)
 			{
 				cell->spawnSpecialTile(MovingTileTypes::_from_string(spawnSys->ObjectType.c_str()));
 			}
+			auto newTile = cell->getMovingTile();
+			if (newTile != nullptr && newTile->getMovingTileType() == +MovingTileTypes::LiquidFillerMatchObject && boardModel->isLiquidFull())
+			{
+				newTile->initWithType(((MovingTileTypes)(MovingTileTypes::LayeredMatchObject))._to_string());
+			}
 			return;
 		}
 	}
 	cell->spawnMatchTile();
+	auto newTile = cell->getMovingTile();
+	if (newTile != nullptr && newTile->getMovingTileType() == +MovingTileTypes::LiquidFillerMatchObject && boardModel->isLiquidFull())
+	{
+		newTile->initWithType(((MovingTileTypes)(MovingTileTypes::LayeredMatchObject))._to_string());
+	}
 }
 
 
@@ -2059,8 +2188,8 @@ void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
 			auto originTile = targetCell->getSourceTile();
 			if (originTile != nullptr && originTile->getType() == CHOCOLATEOBJECT && spawnTile->getType() == CHOCOLATEOBJECT)
 			{
-				auto lavaTile = (LavaCakeObject*)originTile;
-				lavaTile->addLayers(spawnTile->getLayers());
+				auto chocolateTile = (ChocolateObject*)originTile;
+				chocolateTile->addLayers(spawnTile->getLayers());
 				poolController->recycleCookieTile(spawnTile);
 			}
 			else
@@ -2118,6 +2247,33 @@ void BoardController::spreedHoneyModifier()
 	}
 }
 
+void BoardController::executeBooster(Cell* cell)
+{
+	switch (activeBooster)
+	{
+	case BoosterHor:
+		crushRowBreaker(cell);
+		//setBoosterActive(activeBooster);
+		break;
+	case BoosterVer:
+		crushColumnBreaker(cell);
+		//setBoosterActive(activeBooster);
+		break;
+	case BoosterSingle:
+		crushCell(cell);
+		//setBoosterActive(activeBooster);
+		break;
+	case BoosterSwap:
+		crushXBreaker(cell);
+		break;
+	default:
+		break;
+	}
+	UserData::getInstance()->nBoosterCount[activeBooster]--;
+	UserData::getInstance()->saveBooster();
+	updateBoosterCount();
+	setBoosterActive(activeBooster);
+}
 
 void BoardController::fillLiquid(bool inverse)
 {

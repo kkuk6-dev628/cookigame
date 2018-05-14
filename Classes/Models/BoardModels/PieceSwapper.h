@@ -11,6 +11,7 @@ public:
 
 	void moveTileToCell(MovingTile* tile, Cell* lastCell);
 	void swap();
+	bool checkCells();
 	CellsList* swappingCells = nullptr;
 };
 

@@ -237,7 +237,7 @@ void PathBoardController::showPathFollowerMovingAction(Cell* cell)
 	ckAction.node = pathFollowerShow;
 	ckAction.action = actionController->createTileMoveAction(pathFollowerShow->getPosition(), cell->getBoardPos(), [=] {
 		pathFollowerShow->setVisible(false);
-		pathFollowerObject->setVisible(true);
+		if(cell != pathGoalCell) pathFollowerObject->setVisible(true);
 		gameState = Idle;
 	}, ckAction.node);
 

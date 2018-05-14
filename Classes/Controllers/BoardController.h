@@ -64,6 +64,11 @@ public:
 
 	void showGameWinDlg();
 	void showGameFailedDlg();
+	float showRemainedMoveNumAction();
+
+	void setBoosterActive(BoosterType boosterType);
+
+	void updateBoosterCount();
 
 protected:
 
@@ -115,6 +120,7 @@ protected:
 
 	void crushMatch(Match* match);
 	void crushAllCells();
+	void findAndCrushBonus();
 
 	void addScore(ScoreType type, ScoreUnit val, char matchNumber, Vec2 pos) const;
 
@@ -175,6 +181,7 @@ protected:
 	void moveSwappers();
 
 	void spreedHoneyModifier();
+	void executeBooster(Cell* cell);
 
 	void playCreateBonusSoundEffect(MovingTileTypes bonusType);
 
@@ -251,8 +258,12 @@ protected:
 	bool moveSpinnerFlag = false;
 	bool moveSwappersFlag = false;
 	bool spreedHoneyModifierFlag = false;
+	bool isBonusTime = false;
 
-	char checkFallingCount = 0;
+	BoosterType activeBooster = BoosterType::None;
+	Node* boosterMaskNode = nullptr;
+
+	int checkFallingCount = 0;
 
 #pragma endregion
 

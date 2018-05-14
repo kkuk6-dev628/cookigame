@@ -204,6 +204,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\Tiles\SpawnerObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\ThopplerTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\Tile.cpp" />
+    <ClCompile Include="..\Classes\Native\AdsControl.cpp" />
+    <ClCompile Include="..\Classes\Native\GGBridge.cpp" />
     <ClCompile Include="..\Classes\Scenes\GamePlayScene.cpp" />
     <ClCompile Include="..\Classes\Scenes\LevelMapScene.cpp" />
     <ClCompile Include="..\Classes\Scenes\MainMenuScene.cpp" />
@@ -276,6 +278,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\SpawnerObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\ThopplerTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\Tile.h" />
+    <ClInclude Include="..\Classes\Native\AdsControl.h" />
+    <ClInclude Include="..\Classes\Native\GGBridge.h" />
     <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
     <ClInclude Include="..\Classes\Scenes\LevelMapScene.h" />
     <ClInclude Include="..\Classes\Scenes\MainMenuScene.h" />

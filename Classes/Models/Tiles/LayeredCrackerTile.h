@@ -29,6 +29,7 @@ class ChocolateObject : public LayeredCrackerTile
 {
 public:
 	CREATE_FUNC(ChocolateObject)
+	void addLayers(char layerCount);
 };
 
 class WaffleObject : public LayeredCrackerTile
@@ -44,4 +45,6 @@ class IceCoverObject : public LayeredCrackerTile
 public:
 	IceCoverObject() : LayeredCrackerTile() { receiveNearbyAffect = false; }
 	CREATE_FUNC(IceCoverObject)
+
+	void showCrushEffect() override;
 };

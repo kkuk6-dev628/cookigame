@@ -39,6 +39,7 @@ PoolController::PoolController()
 	yellowSeekerShowPool = new NodePool<AnimationShowObject>;
 
 	chocolateCrushPool = new NodePool<AnimationShowObject>;
+	iceCrushPool = new NodePool<AnimationShowObject>;
 
 	chocolateChipPool = new NodePool<ChocolateChipObject>;
 	chocolateChipCrushPool = new NodePool<AnimationShowObject>;
@@ -50,6 +51,7 @@ PoolController::PoolController()
 	bombCrushShowPool = new NodePool<AnimationShowObject>;
 	bombAndLineCrushShowPool = new NodePool<AnimationShowObject>;
 	lavaCakeEffectPool = new NodePool<AnimationShowObject>;
+	moveNumEffectPool = new NodePool<SpriteShowObject>;
 
 	waffleShowPool = new NodePool<SpriteShowObject>;
 	powerShowPool = new NodePool<SpriteShowObject>;
@@ -625,6 +627,31 @@ void PoolController::recycleSeekerShow(AnimationShowObject* show) const
 	}
 }
 
+AnimationShowObject* PoolController::getIceCrushShow() const
+{
+	AnimationShowObject* show;
+	if (iceCrushPool->size() > 0)
+	{
+		show = iceCrushPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/ice.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleIceCrushShow(show);
+	});
+	return show;
+}
+
+void PoolController::recycleIceCrushShow(AnimationShowObject* show) const
+{
+	show->recycle();
+	iceCrushPool->recycleNode(show);
+}
+
 AnimationShowObject* PoolController::getChocolateCrushShow() const
 {
 	AnimationShowObject* show;
@@ -799,6 +826,29 @@ void PoolController::recycleLavaCakeEffect(AnimationShowObject* show) const
 {
 	show->recycle();
 	lavaCakeEffectPool->recycleNode(show);
+}
+
+SpriteShowObject* PoolController::getMoveNumEffect() const
+{
+	SpriteShowObject* show;
+	if (moveNumEffectPool->size() > 0)
+	{
+		show = moveNumEffectPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("star.png");
+	}
+	return show;
+}
+
+void PoolController::recycleMoveNumEffect(SpriteShowObject* show) const
+{
+	//show->removeFromParent();
+	show->recycle();
+	moveNumEffectPool->recycleNode(show);
 }
 
 SpriteShowObject* PoolController::getWaffleShow() const

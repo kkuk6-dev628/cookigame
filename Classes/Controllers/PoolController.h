@@ -53,6 +53,8 @@ public:
 	AnimationShowObject* getSeekerShow(TileColors color) const;
 	void recycleSeekerShow(AnimationShowObject* show) const;
 
+	AnimationShowObject* getIceCrushShow() const;
+	void recycleIceCrushShow(AnimationShowObject* show) const;
 	AnimationShowObject* getChocolateCrushShow() const;
 	void recycleChocolateCrushShow(AnimationShowObject* show) const;
 	AnimationShowObject* getChocolateChipCrushShow() const;
@@ -72,6 +74,9 @@ public:
 
 	AnimationShowObject* getLavaCakeEffect() const;
 	void recycleLavaCakeEffect(AnimationShowObject* show) const;
+
+	SpriteShowObject* getMoveNumEffect() const;
+	void recycleMoveNumEffect(SpriteShowObject* show) const;
 
 	SpriteShowObject* getWaffleShow() const;
 	void recycleWaffleShow(SpriteShowObject* waffleShow) const;
@@ -136,6 +141,8 @@ private:
 	NodePool<AnimationShowObject>* lavaCakeEffectPool;
 
 	NodePool<AnimationShowObject>* chocolateCrushPool;
+	NodePool<AnimationShowObject>* iceCrushPool;
+	NodePool<SpriteShowObject>* moveNumEffectPool;
 
 	NodePool<ChocolateChipObject>* chocolateChipPool;
 	NodePool<AnimationShowObject>* chocolateChipCrushPool;

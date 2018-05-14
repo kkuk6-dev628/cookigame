@@ -48,6 +48,10 @@ void ColorPieObject::initTexture()
 	char i = 0;
 	for(auto slotColor : *slotColors)
 	{
+		if (slotColor == +TileColors::any || slotColor == +TileColors::random)
+		{
+			slotColor = TileColors::_from_integral(rand_0_1() * 6);
+		}
 		i++;
 		auto slotNode1 = getSlotNodeWithColor(StringUtils::format("%s_%d", type.c_str(), i), slotColor);
 		if (slotNode1 != nullptr)

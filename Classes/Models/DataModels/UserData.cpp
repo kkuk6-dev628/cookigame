@@ -23,7 +23,7 @@ UserData::UserData()
 	userDefault = cocos2d::UserDefault::getInstance();
 	_nGold = userDefault->getIntegerForKey("gold", 0);
 
-	auto strTmp = UserDefault::getInstance()->getStringForKey("BoosterCount", "3,3,3,3,3");
+	auto strTmp = UserDefault::getInstance()->getStringForKey("BoosterCount", "3,3,3,3");
 	auto *arr = componentsSeparatedByString(__String::create(strTmp), ",");
 	for (int i = 0; i < arr->count(); i++)
 	{
@@ -31,10 +31,10 @@ UserData::UserData()
 	}
 
 	topLevel = userDefault->getIntegerForKey("top_level", 1);
-	topLevel = MAX(topLevel, 695);
+	topLevel = MAX(topLevel, 700);
 
 	//topLevel = 1599;//test
-	if (g_bDebugMode) topLevel = 695;
+	if (g_bDebugMode) topLevel = 26;
 #ifdef TEST_UserDataClearOnInit
 	clear();
 #endif
@@ -48,8 +48,9 @@ UserData::~UserData()
 void UserData::saveBooster() {
 	std::string strTmp = "";
 	for (int i = 0; i < BoosterCount; i++)
-		strTmp += __String::createWithFormat("%d", nBoosterCount[i])->getCString();
+		strTmp += __String::createWithFormat("%d,", nBoosterCount[i])->getCString();
 
+	//UserDefault::getInstance()->setStringForKey("BoosterCount", "0,0,0,0");
 	UserDefault::getInstance()->setStringForKey("BoosterCount", strTmp);
 }
 void UserData::clear()
@@ -96,6 +97,11 @@ int UserData::getLevelMaxScore(int level)
 
 void UserData::setLevelMaxScore(int level, int score)
 {
+	auto maxScore = userDefault->getIntegerForKey(__String::createWithFormat("score%d", level)->getCString());
+	if (score < maxScore)
+	{
+		return;
+	}
 	userDefault->setIntegerForKey(__String::createWithFormat("score%d", level)->getCString(), score);
 }
 

@@ -70,12 +70,50 @@ bool GamePlayScene::init()
 	ui::Button *m_btn_settings = static_cast<ui::Button*>(bottomMenuArea->getChildByName("setting_button"));
 	m_btn_settings->addClickEventListener([this](Ref*) {
 		this->showSettingsDlg();
-		//this->showGameWinDlg();
 	});
 	ui::Button *m_btn_spoon = static_cast<ui::Button*>(bottomMenuArea->getChildByName("spoon_button"));
 	m_btn_spoon->addClickEventListener([this](Ref*) {
-		//this->boardController->manualShuffle();
-		this->boardController->showGameWinDlg();
+		if (UserData::getInstance()->nBoosterCount[BoosterType::BoosterSingle] > 0) 
+		{
+			this->boardController->setBoosterActive(BoosterType::BoosterSingle);
+		}
+		else
+		{
+			showBoosterBuyDlg(BoosterType::BoosterSingle);
+		}
+	});
+	ui::Button *rowBooster = static_cast<ui::Button*>(bottomMenuArea->getChildByName("rod_button"));
+	rowBooster->addClickEventListener([this](Ref*) {
+		if (UserData::getInstance()->nBoosterCount[BoosterType::BoosterHor] > 0)
+		{
+			this->boardController->setBoosterActive(BoosterType::BoosterHor);
+		}
+		else
+		{
+			showBoosterBuyDlg(BoosterType::BoosterHor);
+		}
+	});
+	ui::Button *columnBooster = static_cast<ui::Button*>(bottomMenuArea->getChildByName("umbrella_button"));
+	columnBooster->addClickEventListener([this](Ref*) {
+		if (UserData::getInstance()->nBoosterCount[BoosterType::BoosterVer] > 0)
+		{
+			this->boardController->setBoosterActive(BoosterType::BoosterVer);
+		}
+		else
+		{
+			showBoosterBuyDlg(BoosterType::BoosterVer);
+		}
+	});
+	ui::Button *swapBooster = static_cast<ui::Button*>(bottomMenuArea->getChildByName("gloves_button"));
+	swapBooster->addClickEventListener([this](Ref*) {
+		if (UserData::getInstance()->nBoosterCount[BoosterType::BoosterSwap] > 0)
+		{
+			this->boardController->setBoosterActive(BoosterType::BoosterSwap);
+		}
+		else
+		{
+			showBoosterBuyDlg(BoosterType::BoosterSwap);
+		}
 	});
 
 	rootNode->addChild(boardController, kZBoard);
@@ -86,6 +124,18 @@ bool GamePlayScene::init()
 	levelTextNode->setString(StringUtils::format("Lev %d", LevelController::getInstance()->getCurrentLevel()->getLevelNumber()));
 
 	return true;
+}
+
+void GamePlayScene::showBoosterBuyDlg(BoosterType boosterType)
+{
+	auto boosterDlg = BoosterBuyDialog::create();
+	boosterDlg->initWithBoosterNumber(boosterType);
+	showPopup(boosterDlg);
+}
+
+void GamePlayScene::updateBoosterCount()
+{
+	boardController->updateBoosterCount();
 }
 
 void GamePlayScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)

@@ -29,6 +29,7 @@ public:
 
 	void restartCallback(Ref* pSender);
 	void restartGame();
+	void updateBoosterCount();
 
 private:
 	static GamePlayScene* instance;
@@ -42,5 +43,6 @@ private:
 	void showPopup(Popup* popup);
 	void endGame();
 	void showGameWinDlg();
+	void showBoosterBuyDlg(BoosterType boosterType);
 };
 

@@ -155,8 +155,9 @@ void THopplingBoardController::crushCell(Cell* cell, bool forceClear)
 					pendingThopplers = new std::vector<Cell*>;
 				}
 				auto findResult = std::find(pendingThopplers->begin(), pendingThopplers->end(), cell);
-				if(findResult == pendingThopplers->end())
+				if(!cell->dirty && findResult == pendingThopplers->end())
 				{
+					cell->dirty = true;
 					pendingThopplers->push_back(cell);
 				}
 			}
@@ -262,6 +263,11 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 	hopplerTile->setVisible(false);
 
 	Cell* targetCell = hopplingPath->back();
+	if (targetCell->dirty)
+	{
+		hopplingPath->pop_back();
+		targetCell = hopplingPath->back();
+	}
 	crackerCells->erase(std::remove(crackerCells->begin(), crackerCells->end(), targetCell), crackerCells->end());
 	crackerCells->push_back(cell);
 	cell->removeTileAtLayer(LayerId::Toppling);
@@ -271,6 +277,7 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 		PoolController::getInstance()->recycleHopplerShow(hopplerShow);
 		hopplerTile->setVisible(true);
 		targetCell->setTileToLayer(hopplerTile, LayerId::Toppling);
+		targetCell->dirty = false;
 		hopplerTile->setPosition(targetCell->getBoardPos());
 	}, ckAction.node);
 	actionController->pushAction(ckAction, true);
@@ -301,6 +308,7 @@ void THopplingBoardController::showHopplerMoveEffect(Cell* cell)
 		PoolController::getInstance()->recycleHopplerShow(topplerShow);
 		topplerTile->setVisible(true);
 		targetCell->setTileToLayer(topplerTile, LayerId::Toppling);
+		targetCell->dirty = false;
 		topplerTile->setPosition(targetCell->getBoardPos());
 	});
 	actionController->pushAction(ckAction, true);
@@ -355,7 +363,7 @@ CellsList* THopplingBoardController::findHopplingTarget(Cell* cell)
 		loopCount++;
 	} while (newCell != nullptr && loopCount < 5);
 
-	if (oldCell != nullptr && std::find(thoplerTargets->begin(), thoplerTargets->end(), oldCell) == thoplerTargets->end())
+	if (oldCell != nullptr && !oldCell->dirty && std::find(thoplerTargets->begin(), thoplerTargets->end(), oldCell) == thoplerTargets->end())
 	{
 		hopplingPath->push_back(oldCell);
 	}

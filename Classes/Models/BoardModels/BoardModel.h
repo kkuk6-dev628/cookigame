@@ -34,6 +34,7 @@ public:
 	BoardLayerModel* getMatchLayer() const { return reinterpret_cast<BoardLayerModel*>(boardLayers->objectForKey(LayerId::Match)); }
 
 	float getCurrentLiquidLevel() const { return currentLiquidLevel; }
+	bool isLiquidFull() const { return liquidSystem != nullptr ? currentLiquidLevel >= liquidSystem->LevelMax : false; }
 	void setCurrentLiquidLevel(float liquidLevel);
 
 	Cell* getCell(const char col, const char row) const;
@@ -81,7 +82,7 @@ public:
 	void runSwappers();
 
 	char getPathMoversCount();
-	char getLiquidFillersCount(bool isFiller = true) const;
+	char getSpecialTilesCount(MovingTileTypes tileType) const;
 
 	Vec2 getBoardCenterPos() const { return Vec2(CellSize * width / 2, CellSize * height / 2); }
 	bool containsPortalOutInCol(Cell* cell) const;

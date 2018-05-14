@@ -16,6 +16,8 @@ PieceSwapper::~PieceSwapper()
 
 void PieceSwapper::swap()
 {
+	if (!checkCells()) return;;
+
 	Cell* prevCell = swappingCells->back();
 	auto lastCell = prevCell;
 	auto lastTile = prevCell->getMovingTile();
@@ -23,18 +25,27 @@ void PieceSwapper::swap()
 	{
 		if(cell == lastCell) break;
 
-		if(cell->isFixed) continue;
 		moveTileToCell(cell->getMovingTile(), prevCell);
 		prevCell = cell;
 	}
 	moveTileToCell(lastTile, prevCell);
 }
 
+bool PieceSwapper::checkCells()
+{
+	for (auto cell : *swappingCells)
+	{
+		if (cell == nullptr || cell->isOutCell || cell->isFixed) return false;
+	}
+	return true;
+}
 
 void PieceSwapper::moveTileToCell(MovingTile* tile, Cell* cell)
 {
 	if(tile == nullptr)
 	{
+		cell->isEmpty = true;
+		cell->isFillable = true;
 		return;
 	}
 	tile->initMovingTile();

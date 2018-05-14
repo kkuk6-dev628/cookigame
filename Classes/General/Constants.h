@@ -23,6 +23,14 @@
 #define HINT_TIME 5.0F // second
 
 #define REWARDED_VIDEO_DEFAULT_TIME 900
+#define REWARDED_ADS 10
+#define REWARDED_VIDEO 50
+
+#define FEE_BUYHOR 38
+#define FEE_BUYVER 38
+#define FEE_BUYSINGLE 12
+#define FEE_BUYSWAP 49
+#define FEE_SAMECOLOR 98
 
 #define PORTALLETHEIGHT 23
 
@@ -58,6 +66,8 @@
 #define CHOCOLATEOBJECT "ChocolateObject"
 #define ICECOVEROBJECT "IceCoverObject"
 #define HIDERSEGMENTOBJECT "HiderSegmentObject"
+#define LIQUIDDRAINERMATCHOBJECT "LiquidDrainerMatchObject"
+#define LIQUIDFILLERMATCHOBJECT "LiquidDrainerMatchObject"
 
 //////////////////////////////////////////////////
 
@@ -137,7 +147,7 @@ static const char AvailableMoves[AVAILABLE_MOVES_COUNT][4][2] = {
 	},
 };
 
-static const std::map<std::string, std::vector<char>> MoveDirectionsMap = { // { col, row }
+static const std::map<std::string, std::vector<char>> MoveDirectionsMap = { // { row, col }
 	{ std::string("down"),{ -1, 0 } },
 	{ std::string("down-left"),{ -1, 0 } },
 	{ std::string("down-left (CW)"),{ 0, -1 } },
@@ -151,4 +161,20 @@ static const std::map<std::string, std::vector<char>> MoveDirectionsMap = { // {
 	{ std::string("up-right"),{ 1, 0 } },
 	{ std::string("up-right (CW)"),{ 0, 1 } },
 };
+
+static const std::map<std::string, std::string> ConveyorOutDirMap = { // { col, row }
+	{ std::string("down"),std::string("down") },
+	{ std::string("down-left"),std::string("down") },
+	{ std::string("down-left (CW)"),std::string("left") },
+	{ std::string("down-right"),std::string("right") },
+	{ std::string("down-right (CW)"),std::string("down") },
+	{ std::string("left"),std::string("left") },
+	{ std::string("right"),std::string("right") },
+	{ std::string("up"),std::string("up") },
+	{ std::string("up-left"),std::string("left") },
+	{ std::string("up-left (CW)"),std::string("up") },
+	{ std::string("up-right"),std::string("up") },
+	{ std::string("up-right (CW)"),std::string("right") },
+};
+
 #endif

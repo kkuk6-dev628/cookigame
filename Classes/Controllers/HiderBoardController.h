@@ -24,9 +24,11 @@ protected:
 
 private:
 	std::map<std::string, HiderGroup*>* hidersMap = nullptr;
+	std::list<HiderSegmentObject*>* pendingHiders = nullptr;
 	HiderSegmentObject* findNextSegment(HiderSegmentObject* seg, HiderSegmentObject* pastSeg) const;
 	CellsList* findHiderMoveCells(Cell* startCelll, char segmentsCount);
 	bool searchCoveredCells(Cell* cell, Cell* exceptCell, CellsList* coveredCells, char count);
+	void processPendingHiders();
 	void moveHider(HiderSegmentObject* headSeg);
 	void checkHiders();
 	void showHiderCollectingAction(Vec2& pos);

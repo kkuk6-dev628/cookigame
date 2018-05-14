@@ -33,3 +33,22 @@ void LayeredCrackerTile::initTexture()
 		TileBase::initTexture(textureName);
 	}
 }
+
+void ChocolateObject::addLayers(char layerCount)
+{
+	layers += layerCount;
+	if (layers > 6)
+	{
+		layers = 6;
+	}
+	initTexture();
+}
+
+void IceCoverObject::showCrushEffect()
+{
+	auto animationShow = poolController->getIceCrushShow();
+	animationShow->setPosition(getPosition());
+	animationShow->setAnchorPoint(Vec2(0.5f, 0.5f));
+	//animationShow->setScale(1.5);
+	if (getParent() != nullptr) getParent()->addChild(animationShow, 500);
+}

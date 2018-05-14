@@ -6,12 +6,14 @@
 HiderBoardController::HiderBoardController()
 {
 	hidersMap = new std::map<std::basic_string<char>, HiderGroup*>;
+	pendingHiders = new std::list<HiderSegmentObject *>;
 }
 
 
 HiderBoardController::~HiderBoardController()
 {
 	CC_SAFE_DELETE(hidersMap);
+	CC_SAFE_DELETE(pendingHiders);
 }
 
 void HiderBoardController::initWithModel(BoardModel* model)
@@ -35,6 +37,7 @@ void HiderBoardController::initHiderGame()
 void HiderBoardController::processCustomLogic(float dt)
 {
 	checkHiders();
+	processPendingHiders();
 }
 
 Cell* HiderBoardController::findSeekerTarget(CellsList* targetsList) const
@@ -185,6 +188,18 @@ void HiderBoardController::checkHiders()
 	}
 }
 
+void HiderBoardController::processPendingHiders()
+{
+	if (fallingTileCount > 0 || gameState != Idle) return;
+
+	for (auto hider : *pendingHiders)
+	{
+		moveHider(hider);
+	}
+
+	pendingHiders->clear();
+}
+
 void HiderBoardController::showHiderCollectingAction(Vec2& pos)
 {
 	auto showObj = poolController->getHiderShow();
@@ -203,7 +218,15 @@ void HiderBoardController::showHiderCollectingAction(Vec2& pos)
 void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 {
 	auto nextSeg = headSeg->getNextSegment();
-	auto segmentsCount = nextSeg->getGroup()->getSegmentsCount();
+	if (nextSeg == nullptr) return;
+
+	auto group = nextSeg->getGroup();
+	char segmentsCount = 2;
+	if (group != nullptr)
+	{
+		segmentsCount = group->getSegmentsCount();
+	}
+
 	Cell* iceCoverCell = nullptr;
 	do
 	{
@@ -238,7 +261,7 @@ void HiderBoardController::crushCell(Cell* pCell, bool forceClear)
 	auto hiderHead = reinterpret_cast<HiderSegmentObject*>(pCell->getMovingTile());
 	if(hiderHead != nullptr && hiderHead->isHead())
 	{
-		moveHider(hiderHead);
+		pendingHiders->push_back(hiderHead);
 	}
 	else
 	{

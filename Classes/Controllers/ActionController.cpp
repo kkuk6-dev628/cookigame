@@ -217,6 +217,18 @@ cocos2d::Action* ActionController::createJumpAction(cocos2d::Node* node, const c
 	return seq;
 }
 
+cocos2d::Action* ActionController::createMoveNumAction(cocos2d::Node* node, const cocos2d::Vec2& pos, float delayTime, float jumpTime, std::function<void()> callback)
+{
+	Sequence* seq = Sequence::create(
+		DelayTime::create(delayTime),
+		JumpTo::create(jumpTime, pos, CellSize, 1),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
 cocos2d::Action* ActionController::createFrontCrushAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> crushCallback, std::function<void()> lastCallback, char crushCount)
 {
 	auto originPos = node->getPosition();

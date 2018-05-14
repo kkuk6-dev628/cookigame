@@ -80,15 +80,7 @@ void SpriteShowObject::initWithTextureName(std::string textureName)
 void ParticleShowObject::initWithCSB(std::string csbFileName)
 {
 	AnimationShowObject::initWithCSB(csbFileName);
-	if (rootNode->getChildrenCount() == 2) 
-	{
-		colorParticle = static_cast<ParticleSystem*>(rootNode->getChildren().at(0));
-		normalParticle = static_cast<ParticleSystem*>(rootNode->getChildren().at(1));
-		if(normalParticle != nullptr)
-		{
-			originSpeed = normalParticle->getSpeed();
-		}
-	}
+	colorParticle = static_cast<ParticleSystem*>(rootNode->getChildren().at(0));
 }
 
 void ParticleShowObject::reuse(const std::function<void()> callback)
@@ -96,13 +88,7 @@ void ParticleShowObject::reuse(const std::function<void()> callback)
 	if (colorParticle != nullptr)
 	{
 		//colorParticle->setSpeed(colorParticle->getSpeed() * 2);
-		colorParticle->start();
-	}
-	if (normalParticle != nullptr)
-	{
-		//normalParticle->setTotalParticles(400);
-		//normalParticle->setSpeed(originSpeed * 3);
-		normalParticle->stop();
+		colorParticle->resetSystem();
 	}
 
 	recycleCallback = callback;

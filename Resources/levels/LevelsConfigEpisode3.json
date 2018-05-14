@@ -10868,7 +10868,7 @@
             "data": [
               {
                 "interval_max": 0,
-                "ensure_one": 4,
+                "ensure_one": 8,
                 "object_type": "PathMoverMatchObject",
                 "type": "SpawnOnCollectSystem",
                 "interval_min": 0
@@ -13457,7 +13457,7 @@
             ],
             "noReshuffle": {},
             "spawnTop": true,
-            "spawnBottom": false
+            "spawnBottom": true
           }
         ],
         "title": "Level 34 - Path 3 L",
@@ -15978,7 +15978,7 @@
             "data": [],
             "noReshuffle": {},
             "spawnTop": true,
-            "spawnBottom": false
+            "spawnBottom": true
           }
         ],
         "title": "Level 36 - Rev 2",

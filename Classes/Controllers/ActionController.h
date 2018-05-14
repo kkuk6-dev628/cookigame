@@ -34,6 +34,7 @@ public:
 	cocos2d::Action* createSeekerLandingAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> callback);
 	cocos2d::Action* createShuffleMoveAction(cocos2d::Vec2 boardCenter, const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
 	cocos2d::Action* createJumpAction(cocos2d::Node* node, const cocos2d::Vec2& pos, float jumpHeight, std::function<void()> callback);
+	cocos2d::Action* createMoveNumAction(cocos2d::Node* node, const cocos2d::Vec2& pos, float delayTime, float jumpTime, std::function<void()> callback);
 	//cocos2d::Action* createPowerCollectAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> callback);
 	cocos2d::Action* createFrontCrushAction(cocos2d::Node* node, const cocos2d::Vec2& pos, std::function<void()> crushCallback, std::function<void()> lastCallback, char crushCount);
 

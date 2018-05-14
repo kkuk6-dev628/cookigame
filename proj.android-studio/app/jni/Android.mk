@@ -75,6 +75,8 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/Tiles/SpawnerObject.cpp \
 ../../../Classes/Models/Tiles/ThopplerTile.cpp \
 ../../../Classes/Models/Tiles/Tile.cpp \
+../../../Classes/Native/AdsControl.cpp \
+../../../Classes/Native/GGBridge.cpp \
 ../../../Classes/Scenes/GamePlayScene.cpp \
 ../../../Classes/Scenes/LevelMapScene.cpp \
 ../../../Classes/Scenes/MainMenuScene.cpp \

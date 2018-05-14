@@ -41,6 +41,7 @@ bool StartScene::init()
 	/// load cocos studio scene
 	auto spriteFrameCache = SpriteFrameCache::getInstance();
 	spriteFrameCache->addSpriteFramesWithFile("res/texture/backgraund.plist");
+	spriteFrameCache->addSpriteFramesWithFile("res/texture/baner.plist");
 
 	auto rootNode = CSLoader::createNode("res/startScene.csb");
 	rootNode->setContentSize(visibleSize);

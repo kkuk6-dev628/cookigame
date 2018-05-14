@@ -56,7 +56,7 @@ void LevelButton::setLevel(int level)
 			_label->setString(StringUtils::toString(level));
 			int star = UserData::getInstance()->getLevelStar(level);
 			if (star > 0) {
-				_star->loadTexture(__String::createWithFormat("res/Map/star%d.png", star)->getCString(), cocos2d::ui::TextureResType::LOCAL);
+				_star->loadTexture(__String::createWithFormat("images/star%d.png", star)->getCString(), cocos2d::ui::TextureResType::LOCAL);
 				_star->setVisible(true);
 			}
 			else {
@@ -237,7 +237,7 @@ LevelMapScene::LevelMapScene()
 
 	auto btnCoin = (ui::Button*)rootNode->getChildByName("btn_coin");
 	btnCoin->addClickEventListener([this](Ref*) {
-		//ShopDialog::create()->show(this, kZPopup);
+		ShopDialog::create()->show(this, kZPopup);
 	});
 
 	int nGoldCount = UserData::getInstance()->getGold();
@@ -746,8 +746,7 @@ void LevelMapScene::updateDailyTime(float ca) {
 }
 void LevelMapScene::setGoldLabel()
 {
-
-	//mGoldLabel->setString(StringUtils::toString(UserData::getInstance()->getGold()));
+	mGoldLabel->setString(StringUtils::toString(UserData::getInstance()->getGold()));
 }
 void LevelMapScene::refreshDailyTime() {
 	long dt = UserData::getInstance()->getDailyTime();
