@@ -46,7 +46,7 @@ public:
 	cocos2d::Action* createHiderSegmentMoveAction(CellsList* path, std::function<void()> callback, cocos2d::Node* node);
 
 	cocos2d::Action* creatLightCircleShowAction(std::function<void()> callback, cocos2d::Node* node);
-	cocos2d::Action* createHopplerMoveAction(CellsList* path, std::function<void()> callback, cocos2d::Node* node);
+	cocos2d::Action* createTopplerMoveAction(CellsList* path, std::function<void()> callback, cocos2d::Node* node);
 
 	cocos2d::Action* createPopLineAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
 	cocos2d::Action* createPopCollectionAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);

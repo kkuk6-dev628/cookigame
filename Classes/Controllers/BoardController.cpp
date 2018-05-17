@@ -394,7 +394,7 @@ bool BoardController::onTouchBegan(Touch* touch, Event* unused_event)
 		executeBooster(cell);
 		return false;
 	}
-	if (cell == nullptr || cell->isEmpty || fallingTileCount > 0 || gameState != GameState::Idle)
+	if (cell == nullptr || cell->isEmpty || fallingTileCount > 0 || gameState != GameState::Idle || pendingSeekers->count() > 0)
 	{
 		selectedTile = nullptr;
 		return false;
@@ -2687,8 +2687,10 @@ void BoardController::landingSeeker(AnimationShowObject* seekerShow, Cell* targe
 	ckAction.node = seekerShow;
 	//auto crushingCell = targetCell;
 	//auto recycleSeeker = seekerShow;
+	fallingTileCount++;
 	ckAction.action = actionController->createSeekerLandingAction(ckAction.node, targetPos, [=]()
 	{
+		fallingTileCount--;
 		auto bonusString = seekerShow->strData;
 		this->crushCell(targetCell);
 		this->crushBonusManually(targetCell, bonusString);

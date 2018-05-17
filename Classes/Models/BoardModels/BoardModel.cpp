@@ -729,13 +729,13 @@ void BoardModel::buildConveyors()
 			{
 				auto conveyorTile = static_cast<ConveyorBeltObject*>(itrCell->getTileAtLayer(LayerId::PathConveyor));
 				auto strDir = conveyorTile->getDirectionString();
-				if(conveyorTile == nullptr || strDir.find(prevDir) == std::string::npos)
+				if(conveyorTile == nullptr || conveyorTile->getType() != CONVEYORBELTOBJECT || strDir.find(prevDir) == std::string::npos)
 				{
 					auto nextSectionInfo = findConveyorInfo(prevCell);
 					if (nextSectionInfo != nullptr)
 					{
 						itrCell = getCell(nextSectionInfo->ToColumn, nextSectionInfo->ToRow);
-						prevDir = ConveyorOutDirMap.at(strDir);
+						if(strDir != "") prevDir = ConveyorOutDirMap.at(strDir);
 						continue;
 					}
 					else

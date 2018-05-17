@@ -113,7 +113,7 @@ Cell* THopplingBoardController::findSeekerTarget(CellsList* targetsList) const
 }
 
 
-Cell* THopplingBoardController::findThopplerTarget()
+Cell* THopplingBoardController::findHopplerTarget()
 {
 	if(crackerCells->size() > 0)
 	{
@@ -229,10 +229,10 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 {
 	auto hopplerTile = cell->getTileAtLayer(LayerId::Toppling);
 
-	auto hopplingPath = findHopplingTarget(cell);
+	auto hopplingPath = findTopplingTarget(cell);
 	//while (std::find(thoplerTargets->begin(), thoplerTargets->end(), hopplingPath->back()) != thoplerTargets->end())
 	//{
-	//	hopplingPath = findHopplingTarget(cell);
+	//	hopplingPath = findTopplingTarget(cell);
 	//}
 	if(hopplingPath == nullptr || hopplingPath->size() < 2)
 	{
@@ -273,8 +273,8 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 	cell->removeTileAtLayer(LayerId::Toppling);
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(hopplerShow);
-	ckAction.action = actionController->createHopplerMoveAction(hopplingPath, [=] {
-		PoolController::getInstance()->recycleHopplerShow(hopplerShow);
+	ckAction.action = actionController->createTopplerMoveAction(hopplingPath, [=] {
+		PoolController::getInstance()->recycleTopplerShow(hopplerShow);
 		hopplerTile->setVisible(true);
 		targetCell->setTileToLayer(hopplerTile, LayerId::Toppling);
 		targetCell->dirty = false;
@@ -288,7 +288,7 @@ void THopplingBoardController::showHopplerMoveEffect(Cell* cell)
 {
 	auto topplerTile = cell->getTileAtLayer(LayerId::Toppling);
 
-	auto targetCell = findThopplerTarget();
+	auto targetCell = findHopplerTarget();
 	if (targetCell == nullptr)
 	{
 		return;
@@ -343,7 +343,7 @@ void THopplingBoardController::showThopplerCollectingEffect(Cell* startCell, std
 	actionController->pushAction(ckAction, true);
 }
 
-CellsList* THopplingBoardController::findHopplingTarget(Cell* cell)
+CellsList* THopplingBoardController::findTopplingTarget(Cell* cell)
 {
 	char* oldIndent = nullptr;
 	char* newIndent = nullptr;
@@ -377,7 +377,7 @@ Cell* THopplingBoardController::findNextCrackerCell(Cell* cell, char* inIndent, 
 		auto adjCell = getMatchCell(cell->gridPos.Col + indent[1], cell->gridPos.Row + indent[0]);
 		if(adjCell == nullptr || adjCell->isOutCell || adjCell->isEmpty || adjCell->containsThoppler()){continue;}
 		auto movingTile = adjCell->getSourceTile();
-		if(strcmp(movingTile->getType().c_str(), CRACKEROBJECT) == 0 && !(inIndent != nullptr && inIndent[0] * -1 == indent[0] && inIndent[1] * -1 == indent[1]))
+		if((movingTile->getType() == CRACKEROBJECT || movingTile->getType() == PRETZELOBJECT) && !(inIndent != nullptr && inIndent[0] * -1 == indent[0] && inIndent[1] * -1 == indent[1]))
 		{
 			*outIndent = indent;
 			return adjCell;

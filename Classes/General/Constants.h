@@ -68,6 +68,7 @@
 #define HIDERSEGMENTOBJECT "HiderSegmentObject"
 #define LIQUIDDRAINERMATCHOBJECT "LiquidDrainerMatchObject"
 #define LIQUIDFILLERMATCHOBJECT "LiquidDrainerMatchObject"
+#define CONVEYORBELTOBJECT "ConveyorBeltObject"
 
 //////////////////////////////////////////////////
 

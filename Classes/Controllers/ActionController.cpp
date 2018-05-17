@@ -458,7 +458,7 @@ cocos2d::Action* ActionController::creatLightCircleShowAction(std::function<void
 	return seq;
 }
 
-cocos2d::Action* ActionController::createHopplerMoveAction(CellsList* path, std::function<void()> callback, cocos2d::Node* node)
+cocos2d::Action* ActionController::createTopplerMoveAction(CellsList* path, std::function<void()> callback, cocos2d::Node* node)
 {
 	auto actions = Vector<FiniteTimeAction*>();
 	auto pathPos = node->getPosition();

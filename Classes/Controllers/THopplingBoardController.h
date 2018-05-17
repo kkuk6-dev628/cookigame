@@ -18,8 +18,8 @@ protected:
 	void initThopplingGame();
 
 	void crushCell(Cell* cell, bool forceClear = false) override;
-	Cell* findThopplerTarget();
-	CellsList* findHopplingTarget(Cell* cell);
+	Cell* findHopplerTarget();
+	CellsList* findTopplingTarget(Cell* cell);
 	Cell* findNextCrackerCell(Cell* cell, char* inIndent, char** indent);
 
 	void processCustomLogic(float dt) override;

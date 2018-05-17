@@ -12739,7 +12739,7 @@
               "4_0": true
             },
             "spawnTop": true,
-            "spawnBottom": false
+            "spawnBottom": true
           }
         ],
         "title": "Level 670 - Hider 4 L",
