@@ -61,6 +61,7 @@ void GameController::goGamePlay(int levelNumber)
 	levelController->setCurrentLevel(levelNumber);
 	this->currentLevel = levelController->getCurrentLevel();
 	this->boardData = this->currentLevel->BoardsJson;
+
 	Director::getInstance()->pushScene(TransitionFade::create(0.6f, GamePlayScene::createScene()));
 }
 

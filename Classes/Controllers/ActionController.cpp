@@ -558,6 +558,17 @@ cocos2d::Action* ActionController::createPieceSwappingAction(const cocos2d::Vec2
 	return seq;
 }
 
+Action* ActionController::createSwapBoosterAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node)
+{
+	Sequence* seq = Sequence::create(
+		MoveTo::create(0.3, targetPos),
+		CallFunc::create(callback),
+		CallFunc::create([this, node]() { this->endAction(node); }),
+		nullptr);
+	seq->retain();
+	return seq;
+}
+
 Action* ActionController::createScoreShowAction(std::function<void()> callback, cocos2d::Node* node)
 {
 	Sequence* seq = Sequence::create(

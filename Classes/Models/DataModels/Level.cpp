@@ -1,7 +1,8 @@
 #include "Level.h"
 #include "General/Constants.h"
 #include "Controllers/LevelController.h"
-#include "spine/Json.h"
+
+using namespace rapidjson;
 
 Level::Level()
 	:title("level")
@@ -47,12 +48,15 @@ void Level::initWithJson(rapidjson::Value& json)
 	this->boards = cocos2d::__Array::create();
 	this->boards->retain();
 
-#ifndef NDEBUG
-	cocos2d::log("Level number: %d", this->levelNumber);
-#endif
-
 	//auto& boardsArray = json["boards"].GetArray();
 	this->BoardsJson = &(json["boards"]);
+
+	auto boardsArray = json["boards"].GetArray();
+	auto& board = boardsArray[0];
+	auto& goal = board["goals"].GetArray()[0];
+	auto goalType = goal["object_type"].GetString();
+	levelType = GoalTypes::_from_string(goalType);
+
 	limit = new std::list<Limit>;
 	if(json["limit"].IsArray())
 	{

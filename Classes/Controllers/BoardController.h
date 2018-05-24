@@ -182,6 +182,7 @@ protected:
 
 	void spreedHoneyModifier();
 	void executeBooster(Cell* cell);
+	void showSwapBoosterAction(Cell* first, Cell* second);
 
 	void playCreateBonusSoundEffect(MovingTileTypes bonusType);
 
@@ -264,6 +265,9 @@ protected:
 	Node* boosterMaskNode = nullptr;
 
 	int checkFallingCount = 0;
+
+	Cell* swapBoosterCell = nullptr;
+	Node* swapEffectNode = nullptr;
 
 #pragma endregion
 

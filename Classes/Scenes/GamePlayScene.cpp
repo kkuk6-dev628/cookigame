@@ -59,6 +59,7 @@ bool GamePlayScene::init()
 	rootNode->setContentSize(visibleSize);
 	addChild(rootNode);
 
+	showStartDlg();
 
 	boardController = GameController::getInstance()->getBoardController();
 	initEffectNode();
@@ -143,6 +144,7 @@ void GamePlayScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 	if (keyCode == EventKeyboard::KeyCode::KEY_BACKSPACE || keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
 	{
 		showSettingsDlg();
+		event->stopPropagation();
 	}
 }
 
@@ -283,6 +285,18 @@ void GamePlayScene::showSettingsDlg()
 	}
 	BoardController::gameState = Paused;
 	showPopup(settingsDlg);
+}
+
+void GamePlayScene::showStartDlg()
+{
+	auto dlg = OpenLevelDialog::createWithLevel(LevelController::getInstance()->getCurrentLevel());
+	dlg->btn_play->addClickEventListener([=](Ref*)
+	{
+		BoardController::gameState = Idle;
+		dlg->close();
+	});
+	dlg->retain();
+	dlg->show(this, LayerId::ShowLayer);
 }
 
 void GamePlayScene::showGameWinDlg()

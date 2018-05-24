@@ -1054,15 +1054,15 @@ MovingTile* BoardModel::moveTile(Cell* cell, MovingTile* movingTile)
 
 void BoardModel::setNoShuffleCells(rapidjson::Value& json)
 {
-	for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
-	{
-		if (itr->value.IsBool())
-		{
-			auto gridPos = Utils::StrToGridPos(itr->name.GetString(), "_");
-			assert(this->width > gridPos.Col && this->height > gridPos.Row);
-			cells[gridPos.Row][gridPos.Col]->noShuffleCell = itr->value.GetBool();
-		}
-	}
+	//for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
+	//{
+	//	if (itr->value.IsBool())
+	//	{
+	//		auto gridPos = Utils::StrToGridPos(itr->name.GetString(), "_");
+	//		assert(this->width > gridPos.Col && this->height > gridPos.Row);
+	//		cells[gridPos.Row][gridPos.Col]->noShuffleCell = itr->value.GetBool();
+	//	}
+	//}
 
 }
 

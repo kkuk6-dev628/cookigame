@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "json/document.h"
+//#include "json/document.h"
 #include "General/TypeDefs.h"
 using namespace rapidjson;
 
@@ -18,6 +18,7 @@ public:
 	rapidjson::Value* BoardsJson;
 
 	int getMoveCount() const { return limit->front().Value; }
+	GoalTypes getLevelType() { return levelType; }
 
 private:
 	int levelNumber;
@@ -33,7 +34,7 @@ private:
 	std::string background;
 	std::vector<int>* scores = nullptr;
 	bool ignoreEveryoneHardDelta;
-
+	GoalTypes levelType = GoalTypes::WaffleObject;
 
 public:
 	int getLevelNumber() const

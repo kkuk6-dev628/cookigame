@@ -113,6 +113,13 @@ void BoardController::initWithNode(Node* node, Node* effect)
 	scoreController->setTotalScoreNode(topMenuArea);
 	scoreController->setStarScores(currentLevel->getScores()->at(0), currentLevel->getScores()->at(1), currentLevel->getScores()->at(2));
 
+	swapEffectNode = rootNode->getChildByName("swapBoosterEffect");
+	if(swapEffectNode != nullptr)
+	{
+		swapEffectNode->removeFromParent();
+		showObjectsLayer->addChild(swapEffectNode);
+		swapEffectNode->setVisible(false);
+	}
 	bottomMenuArea = rootNode->getChildByName("bottom_menu_area");
 	boosterMaskNode = bottomMenuArea->getChildByName("boosterMask");
 	boosterMaskNode->setVisible(false);
@@ -210,26 +217,57 @@ void BoardController::showGameWinDlg()
 {
 	auto dlg = GameWinDialog::create();
 	auto buttonText = static_cast<ui::Text*>(dlg->btn_next->getChildByName("text_1"));
-	if(gameState == Failed)
-	{
-
-		buttonText->setString("Restart");
-	}
-	else
-	{
-		buttonText->setString("Next");
-	}
-
-	char star = scoreController->getStar();
-	auto totalScore = scoreController->getTotalScore();
-	dlg->lbl_score->setString(StringUtils::toString(totalScore));
-
-	auto levelNumber = currentLevel->getLevelNumber();
 	auto userData = UserData::getInstance();
-	userData->onLevelPass(levelNumber, totalScore, star);
+	auto levelNumber = currentLevel->getLevelNumber();
+	int currentLevelScore = userData->getLevelMaxScore(levelNumber);
+	int newScore = scoreController->getTotalScore();
+
+	if (currentLevelScore == 0) {
+		dlg->lbl_maxscore->setVisible(false);
+		dlg->lbl_maxscore_title->setVisible(false);
+
+		float delY = 20;
+
+		dlg->lbl_score_title->setFontSize(dlg->lbl_score_title->getFontSize()*1.3f);
+		dlg->lbl_score_title->setPositionY(dlg->lbl_score_title->getPositionY() - delY);
+
+		dlg->lbl_score->setFontSize(dlg->lbl_score->getFontSize()*1.3f);
+		dlg->lbl_score->setPositionY(dlg->lbl_score->getPositionY() - delY*1.3f);
+	}
+	int rewardedCoin[] = { 0,1,3,6 };
+
+	int oldStarCount = userData->getLevelStar(levelNumber);
+	int nStarCount = scoreController->getStar();
+	int nGoldCount = rewardedCoin[nStarCount] - rewardedCoin[oldStarCount];
+
+	//int coin = rewardedCoin[nGoldCount];
+
+	if (nGoldCount <= 0) {
+		dlg->m_rewardedCoin->setVisible(false);
+	}
+	else {
+
+		auto lbl_coin = (cocos2d::ui::Text*)dlg->m_rewardedCoin->getChildByName("lbl_coin");
+		lbl_coin->setString(__String::createWithFormat("+%d", nGoldCount)->getCString());
+
+		auto orpos = dlg->m_rewardedCoin->getPosition();
+		dlg->m_rewardedCoin->setVisible(false);
+		dlg->m_rewardedCoin->setPositionY(dlg->m_rewardedCoin->getPositionY() - 250);
+
+		dlg->m_rewardedCoin->runAction(Sequence::create(DelayTime::create(0.5 + nStarCount*0.5f), Show::create(), EaseSineIn::create(MoveTo::create(0.5, orpos)), nullptr));
+
+		userData->changeGold(nGoldCount);
+		userData->saveGold();
+	}
+
+	//char star = scoreController->getStar();
+	//auto totalScore = newScore;
+	dlg->lbl_score->setString(StringUtils::toString(newScore));
+
+	userData->onLevelPass(levelNumber, newScore, nStarCount);
 	dlg->lbl_maxscore->setString(StringUtils::toString(userData->getLevelMaxScore(levelNumber)));
 
-	dlg->setStar(star);
+	dlg->setStar(nStarCount);
 	dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
 		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
 		dlg->close();
@@ -286,6 +324,8 @@ void BoardController::setBoosterActive(BoosterType boosterType)
 	} 
 	else
 	{
+		swapEffectNode->setVisible(false);
+		swapBoosterCell = nullptr;
 		activeBooster = None;
 		gameState = GameState::Idle;
 		boosterMaskNode->setVisible(false);
@@ -2134,6 +2174,13 @@ void BoardController::crushCell(Cell* cell, bool forceClear)
 		crushXBreaker(cell);
 		break;
 	case MovingTileTypes::RainbowObject:
+		{
+			auto rainbowMatch = Match::create();
+			rainbowMatch->color = TileColors::_from_integral(rand_0_1() * 6);
+			rainbowMatch->refCell = cell;
+
+			crushRainbowMatch(rainbowMatch);
+		}
 		break;
 	case MovingTileTypes::SeekerObject:
 		crushSeeker(cell);
@@ -2270,7 +2317,21 @@ void BoardController::executeBooster(Cell* cell)
 		//setBoosterActive(activeBooster);
 		break;
 	case BoosterSwap:
-		crushXBreaker(cell);
+		if(!cell->canMove())
+		{
+			return;
+		}
+		if(swapBoosterCell == nullptr)
+		{
+			swapBoosterCell = cell;
+			swapEffectNode->setPosition(cell->getBoardPos());
+			swapEffectNode->setVisible(true);
+			return;
+		}
+
+		showSwapBoosterAction(swapBoosterCell, cell);
+		swapEffectNode->setVisible(false);
+		swapBoosterCell = nullptr;
 		break;
 	default:
 		break;
@@ -2279,6 +2340,62 @@ void BoardController::executeBooster(Cell* cell)
 	UserData::getInstance()->saveBooster();
 	updateBoosterCount();
 	setBoosterActive(activeBooster);
+}
+
+void BoardController::showSwapBoosterAction(Cell* first, Cell* second)
+{
+	if(first == nullptr || second == nullptr)
+	{
+		return;
+	}
+	auto firstTile = first->getMovingTile();
+	auto secondTile = second->getMovingTile();
+	if(firstTile == nullptr || !firstTile->isMovable() || secondTile == nullptr || !secondTile->isMovable())
+	{
+		return;
+	}
+
+	auto firstTileShow = poolController->getTileShowObject();
+	firstTileShow->setSpriteFrame(firstTile->getSpriteFrame());
+	firstTileShow->setPosition(firstTile->getPosition());
+	firstTileShow->setAnchorPoint(Vec2(0.5, 0.5));
+	showObjectsLayer->addChild(firstTileShow);
+
+	second->setSourceTile(firstTile);
+	firstTile->setPosition(second->getBoardPos());
+	CKAction ckAction;
+	ckAction.node = firstTileShow;
+	BoardController::fallingTileCount++;
+	ckAction.action = actionController->createSwapBoosterAction(second->getBoardPos(), [=]()
+	{
+		firstTile->setVisible(true);
+		PoolController::getInstance()->recycleTileShowObject(firstTileShow);
+		BoardController::fallingTileCount--;
+	},
+		ckAction.node);
+	firstTile->setVisible(false);
+	actionController->pushAction(ckAction, false);
+
+	auto secondTileShow = poolController->getTileShowObject();
+	secondTileShow->setSpriteFrame(secondTile->getSpriteFrame());
+	secondTileShow->setPosition(secondTile->getPosition());
+	secondTileShow->setAnchorPoint(Vec2(0.5, 0.5));
+	showObjectsLayer->addChild(secondTileShow);
+
+	first->setSourceTile(secondTile);
+	secondTile->setPosition(first->getBoardPos());
+	CKAction ckAction2;
+	ckAction2.node = secondTileShow;
+	BoardController::fallingTileCount++;
+	ckAction2.action = actionController->createSwapBoosterAction(first->getBoardPos(), [=]()
+	{
+		secondTile->setVisible(true);
+		PoolController::getInstance()->recycleTileShowObject(secondTileShow);
+		BoardController::fallingTileCount--;
+	},
+		ckAction2.node);
+	secondTile->setVisible(false);
+	actionController->pushAction(ckAction2, false);
 }
 
 void BoardController::fillLiquid(bool inverse)

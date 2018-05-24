@@ -40,6 +40,7 @@ private:
 	Popup* settingsDlg = nullptr;
 
 	void showSettingsDlg();
+	void showStartDlg();
 	void showPopup(Popup* popup);
 	void endGame();
 	void showGameWinDlg();

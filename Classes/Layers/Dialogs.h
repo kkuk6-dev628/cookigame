@@ -46,6 +46,9 @@ public:
 	OpenLevelDialog();
 	static OpenLevelDialog* createWithLevel(Level* level);
 	bool initWithLevel(Level* level);
+
+	cocos2d::ui::Button* btn_play;
+
 protected:
 	void onClickGift(cocos2d::Ref* pSender);
 	

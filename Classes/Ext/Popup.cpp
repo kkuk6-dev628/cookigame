@@ -98,6 +98,7 @@ void Popup::show(Node* parent, int zOrder, FiniteTimeAction* action)
 		action = Show::create();
 
 	parent->addChild(this, zOrder);
+	stopAllActions();
 	runAction(Sequence::create(
 		action,
 		CallFunc::create([this]() {
@@ -119,7 +120,7 @@ void Popup::close(FiniteTimeAction* action)
 		action = getDefaultCloseAction();
 	if (action == nullptr)
 		action = Hide::create();
-
+	stopAllActions();
 	runAction(Sequence::create(
 		action,
 		CallFunc::create([this]() {

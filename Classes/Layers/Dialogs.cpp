@@ -169,15 +169,61 @@ bool OpenLevelDialog::initWithLevel(Level* level)
 
 	_level = level;
 
-	//auto dlg = CSLoader::getInstance()->createNode("res/OpenLevelDlg.csb");
-	//addChild(dlg);
+	auto dlg = CSLoader::getInstance()->createNode("res/LevelOpenDialog.csb");
+	addChild(dlg);
 
-	//rootNode = dlg->getChildByName("rootNode");
-
-	//auto lbl_level = (Text*)rootNode->getChildByName("ig_title")->getChildByName("lbl_level");
+	rootNode = dlg->getChildByName("rootNode");
+	btn_play = (Button*)rootNode->getChildByName("startButton");
+	auto lbl_level = (Text*)rootNode->getChildByName("title")->getChildByName("title");
 	////TextBMFont* lbl_level = (TextBMFont*)dlg->getChildByName("lbl_level");
-	//lbl_level->setString(__String::createWithFormat("Level %d", level->getIndex())->getCString());
+	lbl_level->setString(__String::createWithFormat("Level %d", _level->getLevelNumber())->getCString());
+	auto lblMessage = (Text*)rootNode->getChildByName("message");
 
+	auto imagePath = rootNode->getChildByName("imagePath");
+	imagePath->setVisible(false);
+	auto imagePopsicle = rootNode->getChildByName("imagePopsicle");
+	imagePopsicle->setVisible(false);
+	auto imageThoppler = rootNode->getChildByName("imageThoppler");
+	imageThoppler->setVisible(false);
+	auto imageHider = rootNode->getChildByName("imageHider");
+	imageHider->setVisible(false);
+	auto imageWaffle = rootNode->getChildByName("imageWaffle");
+	imageWaffle->setVisible(false);
+
+	auto message = "";
+	switch (_level->getLevelType())
+	{
+	case GoalTypes::WaffleObject:
+		imageWaffle->setVisible(true);
+		message = "Collecting Waffles";
+		break;
+	case GoalTypes::HiderSegmentObject:
+		imageHider->setVisible(true);
+		message = "Collecting Hiders";
+		break;
+	case GoalTypes::HopplingObject:
+		imageThoppler->setVisible(true);
+		imageThoppler->getChildByName("Toppler")->setVisible(false);
+		imageThoppler->getChildByName("Hoppler")->setVisible(true);
+		message = "Collecting Hopplers";
+		break;
+	case GoalTypes::PathObject:
+		imagePath->setVisible(true);
+		message = "Collecting Powers";
+		break;
+	case GoalTypes::PopsicleObject:
+		imagePopsicle->setVisible(true);
+		message = "Collecting Popsicles";
+		break;
+	case GoalTypes::TopplingObject:
+		imageThoppler->setVisible(true);
+		imageThoppler->getChildByName("Toppler")->setVisible(true);
+		imageThoppler->getChildByName("Hoppler")->setVisible(false);
+		message = "Collecting Topplers";
+		break;
+	}
+	lblMessage->setString(message);
+	//auto levelType = 
 	//Button* btn_close = (Button*)rootNode->getChildByName("btn_close");
 	//btn_close->addClickEventListener([this](Ref*){
 	//	SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
@@ -357,8 +403,8 @@ SettingDialog::SettingDialog()
 	btn_continue = (Button*)rootNode->getChildByName("btn_continue");
 
 
-	//mute_music->setVisible(!SoundManager::isBgMusicOn());
-	//mute_sound->setVisible(!SoundManager::isEffectsOn());
+	//mute_music->setVisible(!SoundController::isBgMusicOn());
+	//mute_sound->setVisible(!SoundController::isEffectsOn());
 
 	//btn_music->addClickEventListener([this](Ref*){
 	//	SoundManager::toggleBgMusicOn();
@@ -390,7 +436,7 @@ GameWinDialog::GameWinDialog()
 	lbl_score = (Text*)rootNode->getChildByName("text_4");
 	lbl_score_title = (Text*)rootNode->getChildByName("text_2");
 
-	//m_rewardedCoin = rootNode->getChildByName("ig_coin");
+	m_rewardedCoin = rootNode->getChildByName("ig_coin");
 	
 	
 	star1 = (Sprite*)rootNode->getChildByName("image_13")->getChildByName("image_14");
@@ -677,7 +723,7 @@ BoosterBuyDialog::BoosterBuyDialog()
 	_instance = this;
 	nFee = 0;
 	Popup::initWithMask(true);
-	setTouchMode(kCCTouchesOneByOne);
+	//setTouchMode(kCCTouchesOneByOne);
 	auto dlgRoot = CSLoader::getInstance()->createNode("res/BoosterBuyDlg.csb");
 	addChild(dlgRoot);
 

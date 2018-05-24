@@ -55,6 +55,8 @@ public:
 
 	cocos2d::Action* createPieceSwappingAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
 
+	Action* createSwapBoosterAction(const cocos2d::Vec2& targetPos, std::function<void()> callback, cocos2d::Node* node);
+
 	Action* createScoreShowAction(std::function<void()> callback, cocos2d::Node* node);
 
 	void endAction(cocos2d::Node* node) const;
