@@ -19,6 +19,7 @@
 #include "Models/Tiles/LavaCakeObject.h"
 #include "Scenes/GamePlayScene.h"
 #include "Models/Tiles/LayeredCrackerTile.h"
+#include "Models/Tiles/FruitRollGroup.h"
 
 char BoardController::cellSize = 79;
 GameState BoardController::gameState;
@@ -735,8 +736,83 @@ void BoardController::addCellToBoard(char col, char row)
 			addLavaCakeObject(col + 1, row - 1, tile);
 			addLavaCakeObject(col, row - 1, tile);
 		}
+		else if(tile->getType() == FRUITROLLOBJECT)
+		{
+			if(tile->getPositionString() == "origin")
+			{
+				constructFruitRollGroup(tile);
+			}
+		}
+	}
+}
+
+void BoardController::constructFruitRollGroup(CookieTile* startFruit)
+{
+	auto fruitOrigin = static_cast<FruitRollObject*>(startFruit);
+	auto fruitGroup = new FruitRollGroup;
+	
+	boardModel->addFruitGroup(fruitGroup);
+
+	auto nextFruit = fruitOrigin;
+	while (nextFruit != nullptr)
+	{
+		nextFruit->setGroup(fruitGroup);
+		fruitGroup->addFruitObject(nextFruit);
+		nextFruit = getNextFruitRollObject(nextFruit);
+	}
+	fruitGroup->setTailAnimation();
+}
+
+FruitRollObject* BoardController::getNextFruitRollObject(CookieTile* current)
+{
+	auto currentGridPos = current->getCell()->gridPos;
+	auto dir = current->getDirectionString();
+	GridPos nextGridPos;
+	if (dir == "down" || dir == "left-down" || dir == "right-down")
+	{
+		nextGridPos.Col = currentGridPos.Col;
+		nextGridPos.Row = currentGridPos.Row - 1;
+	}
+	else if (dir == "up" || dir == "left-up" || dir == "right-up")
+	{
+		nextGridPos.Col = currentGridPos.Col;
+		nextGridPos.Row = currentGridPos.Row + 1;
+	}
+	else if (dir == "left" || dir == "down-left" || dir == "up-left")
+	{
+		nextGridPos.Col = currentGridPos.Col - 1;
+		nextGridPos.Row = currentGridPos.Row;
+	}
+	else if (dir == "right" || dir == "down-right" || dir == "up-right")
+	{
+		nextGridPos.Col = currentGridPos.Col + 1;
+		nextGridPos.Row = currentGridPos.Row;
 	}
 
+	auto nextCell = getMatchCell(nextGridPos);
+	if (nextCell == nullptr || nextCell->isEmpty || nextCell->isOutCell)
+	{
+		return nullptr;
+	}
+
+	auto nextFruit = nextCell->getSourceTile();
+	if(nextFruit == nullptr || nextFruit->getType() != FRUITROLLOBJECT)
+	{
+		return nullptr;
+	}
+
+	auto outDir = dir;
+	auto pos = dir.find("-");
+	if(pos != std::string::npos)
+	{
+		outDir = dir.substr(pos + 1, dir.size() - pos);
+	}
+
+	if(nextFruit->getDirectionString().find(outDir) == std::string::npos)
+	{
+		return nullptr;
+	}
+	return static_cast<FruitRollObject*>(nextFruit);
 }
 
 void BoardController::addLavaCakeObject(char col, char row, CookieTile* lavaCake)
@@ -1372,6 +1448,7 @@ void BoardController::doSomethingPerMove()
 {
 	countDownMoveNumber();
 	boardModel->setIncreaseLavaCakeFlag(true);
+	boardModel->initFruitRollFlags();
 	moveConveyorsFlag = true;
 	moveSpinnerFlag = true;
 	moveSwappersFlag = true;

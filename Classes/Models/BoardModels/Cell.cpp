@@ -75,7 +75,7 @@ void Cell::setTileToLayer(CookieTile* pTile, const LayerId layer)
 			isFixed = !pTile->isMovable();
 			canPass = !isFixed;
 		}
-		if(pTile->getType() == PRETZELOBJECT || pTile->getType() == EMPTYOBJECT || pTile->getType() == HIDERSEGMENTOBJECT)
+		if(pTile->getType() == PRETZELOBJECT || pTile->getType() == EMPTYOBJECT || pTile->getType() == FRUITROLLOBJECT || pTile->getType() == HIDERSEGMENTOBJECT)
 		{
 			canPass = true;
 		}

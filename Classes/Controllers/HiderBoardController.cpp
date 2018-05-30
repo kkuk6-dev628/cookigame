@@ -149,18 +149,19 @@ bool HiderBoardController::searchCoveredCells(Cell* cell, Cell* exceptCell, Cell
 {
 	if (cell == nullptr || cell->isOutCell) return false;
 
-	if (count <= 0) return true;
+	if (count <= 0 && cell->canPlaceHiderHead()) return true;
 
 	for (auto adj : AdjacentIndents)
 	{
 		auto adjCell = getMatchCell(cell->gridPos.Col + adj[1], cell->gridPos.Row + adj[0]);
-		if (adjCell == nullptr || adjCell == exceptCell || adjCell->isOutCell || adjCell->hiderSearch || !adjCell->containsIceCover() || adjCell->containsPopsicle()) continue;
+		if (adjCell == nullptr || adjCell == exceptCell || adjCell->isOutCell || adjCell->hiderSearch 
+			|| !adjCell->containsIceCover() || adjCell->containsPopsicle()) continue;
 		adjCell->hiderSearch = true;
 		auto res = searchCoveredCells(adjCell, cell, coveredCells, count - 1);
 		adjCell->hiderSearch = false;
 		if (res)
 		{
-			coveredCells->push_front(adjCell);
+			coveredCells->push_back(adjCell);
 			return true;
 		}
 	}
@@ -237,7 +238,7 @@ void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 				iceCoverCell = nextSeg->getCell();
 			}
 			auto cells = findHiderMoveCells(nextSeg->getCell(), segmentsCount);
-			if(cells->size() == segmentsCount)
+			if(cells->size() >= segmentsCount)
 			{
 				headSeg->getCell()->clear();
 				headSeg->getGroup()->moveHiderGroup(cells, nextSeg->getCell());

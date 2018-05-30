@@ -44,6 +44,7 @@ protected:
 	std::string dirString;
 	std::string name;
 	char priority = 0;
+
 	bool createSpread = false;
 	bool mirror = false;
 	ModifierTypes modifierType = ModifierTypes::None;
@@ -51,6 +52,7 @@ protected:
 	SetTypes tileSetType = SetTypes::set;
 	bool createJelly = false;
 	HiderSegmentPosition hiderSegPosition = HiderSegmentPosition::body;
+	std::string positionString;
 	std::string chain;
 	std::string spawnType;
 	SpawnTable spawnData;
@@ -129,6 +131,11 @@ public:
 	void setTileName(const std::string& name)
 	{
 		this->name = name;
+	}
+
+	std::string getPositionString() const
+	{
+		return positionString;
 	}
 
 	char getPriority() const

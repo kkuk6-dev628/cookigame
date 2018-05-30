@@ -69,6 +69,7 @@
 #define LIQUIDDRAINERMATCHOBJECT "LiquidDrainerMatchObject"
 #define LIQUIDFILLERMATCHOBJECT "LiquidDrainerMatchObject"
 #define CONVEYORBELTOBJECT "ConveyorBeltObject"
+#define FRUITROLLOBJECT "FruitRollObject"
 
 //////////////////////////////////////////////////
 

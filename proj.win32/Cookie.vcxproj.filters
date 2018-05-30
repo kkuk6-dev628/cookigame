@@ -246,6 +246,12 @@
     <ClCompile Include="..\Classes\AppDelegate.cpp">
       <Filter>win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\FruitRollGroup.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\FruitRollObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -466,6 +472,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Native\GGBridge.h">
       <Filter>src\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\FruitRollObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\FruitRollGroup.h">
+      <Filter>src\Models\Tiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -35,7 +35,7 @@ void DisplayCaseObject::resetNumberNode()
 
 void DisplayCaseObject::initTexture()
 {
-	auto csbFileName = StringUtils::format("res/TailGlass.csb", type.c_str());
+	auto csbFileName = StringUtils::format("res/TailGlass.csb");
 	rootNode = cocos2d::CSLoader::createNode(csbFileName);
 	rootNode->setAnchorPoint(Vec2(0.5f, 0.5f));
 	rootNode->setPosition(CellSize / 2, CellSize / 2);

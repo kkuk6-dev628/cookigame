@@ -9,6 +9,7 @@
 #include "Cell.h"
 #include "Models/Tiles/FixTiles.h"
 #include "PieceSwapper.h"
+#include "Models/Tiles/FruitRollGroup.h"
 
 class BoardLayerModel;
 class LavaCakeObject;
@@ -70,7 +71,10 @@ public:
 	CellsList* getLavaCakeTargets();
 	void setIncreaseLavaCakeFlag(bool flag = true);
 	void addLavaCakeTile(LavaCakeObject* lavaCake);
-	
+
+	void addFruitGroup(FruitRollGroup* fruitGroup);
+	void initFruitRollFlags();
+
 	void addObjectSpinnerCell(Cell* cell);
 	void runObjectSpinner();
 	void rotateSpinner(Cell* cell, bool isClockWise);
@@ -121,6 +125,7 @@ private:
 	bool hasToAddSpawners = true;
 
 	std::list<LavaCakeObject*>* lavaCakeTiles = nullptr;
+	std::list<FruitRollGroup*>* fruitRollGroups = nullptr;
 	CellsList* objectSpinnerCells = nullptr;
 	std::map<std::string, PieceSwapper*> * pieceSwappers = nullptr;
 	SpawnOnCollectSystem* spawnOnCollectSystem = nullptr;

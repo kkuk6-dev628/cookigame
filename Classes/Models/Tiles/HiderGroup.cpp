@@ -35,26 +35,28 @@ void HiderGroup::initSegmentTextures()
 
 void HiderGroup::moveHiderGroup(CellsList* cells, Cell* startCell)
 {
-	CC_ASSERT(cells->size() == segmentsCount);
-	auto segment = segments->back();
-	auto segmentsItr = segments->end();
+	CC_ASSERT(cells->size() >= segmentsCount);
+	auto segment = segments->front();
+	auto segmentsItr = segments->begin();
 	for(auto cell : *cells)
 	{
+		if (cell == cells->front()) continue;
+
 		CellsList newVec;
 		auto cellItr = std::find(cells->begin(), cells->end(), cell);
-		std::copy(cells->begin(), cellItr, std::back_inserter(newVec));
+		std::copy(cellItr, cells->end(), std::back_inserter(newVec));
 		if(newVec.size() == 0)
 		{
 			newVec.push_back(cell);
 		}
 		moveSegmentToCell(segment, &newVec);
-		if(segmentsItr == segments->begin())
+		++segmentsItr;
+		if(segmentsItr == segments->end())
 		{
-			segment = head;
+			break;
 		}
 		else
 		{
-			--segmentsItr;
 			segment = *segmentsItr;
 		}
 	}
@@ -98,7 +100,7 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 	CKAction ckAction;
 	auto actionController = ActionController::getInstance();
 	ckAction.node = segment;
-	auto headCell = movePath->back();
+	auto headCell = movePath->front();
 	ckAction.action = actionController->createHiderSegmentMoveAction(movePath, [=]()
 	{
 		segment->initTexture();
@@ -123,6 +125,6 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 	actionController->pushAction(ckAction, false);
 	auto oldCell = segment->getCell();
 	oldCell->removeTileAtLayer(LayerId::UnderCover);
-	auto newCell = movePath->back();
+	auto newCell = movePath->front();
 	newCell->setTileToLayer(segment, LayerId::UnderCover);
 }

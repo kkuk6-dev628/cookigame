@@ -63,6 +63,8 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/Tiles/CookieTile.cpp \
 ../../../Classes/Models/Tiles/DisplayCaseObject.cpp \
 ../../../Classes/Models/Tiles/FixTiles.cpp \
+../../../Classes/Models/Tiles/FruitRollGroup.cpp \
+../../../Classes/Models/Tiles/FruitRollObject.cpp \
 ../../../Classes/Models/Tiles/HiderGroup.cpp \
 ../../../Classes/Models/Tiles/HiderSegmentObject.cpp \
 ../../../Classes/Models/Tiles/LargeTile.cpp \

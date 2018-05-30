@@ -433,8 +433,9 @@ cocos2d::Action* ActionController::createHiderSegmentMoveAction(CellsList* path,
 {
 	auto actions = Vector<FiniteTimeAction*>();
 	actions.pushBack(DelayTime::create(0.05f));
-	for (auto cell : *path)
+	for (auto itr = path->rbegin(); itr != path->rend(); ++itr)
 	{
+		auto cell = *itr;
 		actions.pushBack(MoveTo::create(0.1f, cell->boardPos));
 	}
 

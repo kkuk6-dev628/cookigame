@@ -13,6 +13,7 @@
 #include "Models/Tiles/ObjectSpinnerObject.h"
 #include "Models/Tiles/ColorPieObject.h"
 #include "Models/Tiles/DisplayCaseObject.h"
+#include "Models/Tiles/FruitRollObject.h"
 
 PoolController* PoolController::instance = nullptr;
 static factory TileClassFactory;
@@ -112,6 +113,7 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(ColorPie5Object);
 	REGISTER_CLASS(ColorPie6Object);
 	REGISTER_CLASS(DisplayCaseObject);
+	REGISTER_CLASS(FruitRollObject);
 
 	REGISTER_CLASS(PointerObject);
 	REGISTER_CLASS(InvisibleBrickObject);

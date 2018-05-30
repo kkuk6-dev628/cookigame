@@ -13,6 +13,7 @@
 #include "Models/BoardModels/BoardModel.h"
 #include "ScoreController.h"
 #include "SoundController.h"
+#include "Models/Tiles/FruitRollObject.h"
 
 class ActionController;
 class BoardModel;
@@ -184,6 +185,9 @@ protected:
 	void executeBooster(Cell* cell);
 	void showSwapBoosterAction(Cell* first, Cell* second);
 
+	void constructFruitRollGroup(CookieTile* startFruit);
+	FruitRollObject* getNextFruitRollObject(CookieTile* current);
+
 	void playCreateBonusSoundEffect(MovingTileTypes bonusType);
 
 	void endGame();
@@ -268,6 +272,8 @@ protected:
 
 	Cell* swapBoosterCell = nullptr;
 	Node* swapEffectNode = nullptr;
+
+
 
 #pragma endregion
 

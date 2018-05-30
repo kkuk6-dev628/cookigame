@@ -12,7 +12,7 @@ LevelController* LevelController::instance = nullptr;
 
 LevelController::LevelController()
 {
-	levelCount = 700;
+	levelCount = 1280;
 	//loadCurrentLevel();
 }
 

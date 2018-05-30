@@ -201,6 +201,7 @@ bool OpenLevelDialog::initWithLevel(Level* level)
 		imageHider->setVisible(true);
 		message = "Collecting Hiders";
 		break;
+	case GoalTypes::thoppling:
 	case GoalTypes::HopplingObject:
 		imageThoppler->setVisible(true);
 		imageThoppler->getChildByName("Toppler")->setVisible(false);
@@ -574,7 +575,7 @@ ShopDialog::ShopDialog()
 {
 	_instance = this;
 	Popup::initWithMask(true);
-	setTouchMode(kCCTouchesOneByOne);
+	//setTouchMode(kCCTouchesOneByOne);
 	dlgRoot = CSLoader::getInstance()->createNode("res/ShopDlg.csb");
 	addChild(dlgRoot);
 

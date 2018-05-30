@@ -65,6 +65,12 @@ public:
 	{
 		return !isOutCell && !isFixed;
 	}
+
+	bool canPlaceHiderHead() const
+	{
+		return !isOutCell && pSourceTile->getType() != FRUITROLLOBJECT;
+	}
+
 	bool isRainbowCell() const
 	{
 		return !isOutCell && !isEmpty && getMovingTile() != nullptr && getMovingTile()->getMovingTileType() == +MovingTileTypes::RainbowObject;

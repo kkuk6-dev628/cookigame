@@ -936,6 +936,25 @@ void BoardModel::addLavaCakeTile(LavaCakeObject* lavaCake)
 	lavaCakeTiles->push_back(lavaCake);
 }
 
+void BoardModel::addFruitGroup(FruitRollGroup* fruitGroup)
+{
+	if(fruitRollGroups == nullptr)
+	{
+		fruitRollGroups = new std::list<FruitRollGroup*>;
+	}
+	fruitRollGroups->push_back(fruitGroup);
+}
+
+void BoardModel::initFruitRollFlags()
+{
+	if (fruitRollGroups == nullptr) return;
+
+	for(auto fruitGroup : *fruitRollGroups)
+	{
+		fruitGroup->initRollFlag();
+	}
+}
+
 void BoardModel::addObjectSpinnerCell(Cell* cell)
 {
 	if(objectSpinnerCells == nullptr)

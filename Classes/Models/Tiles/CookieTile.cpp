@@ -149,13 +149,10 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	itr = data.FindMember("position");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		try
+		this->positionString = itr->value.GetString();
+		if (HiderSegmentPosition::_is_valid_nocase(positionString.c_str()))
 		{
-			this->hiderSegPosition = HiderSegmentPosition::_from_string(itr->value.GetString());
-		}
-		catch (const std::runtime_error&)
-		{
-			cocos2d::log("Undefined HiderSegmentPosition Type: %s", itr->value.GetString());
+			hiderSegPosition = HiderSegmentPosition::_from_string_nocase(positionString.c_str());
 		}
 	}
 

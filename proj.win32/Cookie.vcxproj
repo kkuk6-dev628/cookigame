@@ -192,6 +192,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\DisplayCaseObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\FruitRollGroup.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\FruitRollObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\HiderGroup.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\HiderSegmentObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LargeTile.cpp" />
@@ -266,6 +268,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\DisplayCaseObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\FruitRollGroup.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\FruitRollObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\HiderGroup.h" />
     <ClInclude Include="..\Classes\Models\Tiles\HiderSegmentObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LargeTile.h" />
