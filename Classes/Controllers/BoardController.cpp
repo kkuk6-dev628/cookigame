@@ -437,7 +437,7 @@ bool BoardController::onTouchBegan(Touch* touch, Event* unused_event)
 	}
 	if (cell == nullptr || cell->isEmpty || fallingTileCount > 0 || gameState != GameState::Idle || pendingSeekers->count() > 0)
 	{
-		selectedTile = nullptr;
+		//selectedTile = nullptr;
 		return false;
 	}
 
@@ -486,13 +486,18 @@ void BoardController::onTouchMoved(Touch* touch, Event* unused_event)
 		{
 			auto matchIdSelected = selectedTile->matchId;
 			auto matchIdTarget = targetTile->matchId;
-			BoardController::gameState = SwappingTile;
+
+			fallingTileCount++;
 			selectedTile->showSwapAction(targetCell->gridPos, [this, matchIdSelected](){
 				this->releaseWaitingMatch(matchIdSelected);
+				fallingTileCount--;
 			});
+			
+			fallingTileCount++;
 			targetTile->showSwapAction(selectedTile->gridPos, [this, matchIdTarget, targetCell](){
 				BoardController::gameState = Idle;
 				this->releaseWaitingMatch(matchIdTarget);
+				fallingTileCount--;
 				if(this->selectedTile == nullptr)
 				{
 					return;

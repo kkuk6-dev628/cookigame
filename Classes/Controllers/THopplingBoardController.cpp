@@ -57,16 +57,14 @@ void THopplingBoardController::addCellToBoard(char col, char row)
 		{
 			crackerCells = new std::vector<Cell*>;
 		}
-		auto thopplerTile = cell->getTileAtLayer(LayerId::Toppling);
-		if(thopplerTile != nullptr)
-		{
-			totalObjectCount ++;
-		}
-		else
-		{
-			crackerCells->push_back(cell);
-		}
+		crackerCells->push_back(cell);
 	}
+	auto thopplerTile = cell->getTileAtLayer(LayerId::Toppling);
+	if (thopplerTile != nullptr)
+	{
+		totalObjectCount++;
+	}
+
 }
 
 Cell* THopplingBoardController::findSeekerTarget(CellsList* targetsList) const
@@ -115,16 +113,44 @@ Cell* THopplingBoardController::findSeekerTarget(CellsList* targetsList) const
 
 Cell* THopplingBoardController::findHopplerTarget()
 {
+	std::vector<Cell*> targetCells;
+
 	if(crackerCells->size() > 0)
 	{
+		std::copy(crackerCells->begin(), crackerCells->end(), std::back_inserter(targetCells));
+	}
+	auto fruitRollGroups = boardModel->getFruitRollGroups();
+
+	if(fruitRollGroups->size() > 0)
+	{
+		for(auto fruitGroup : *fruitRollGroups)
+		{
+			auto fruitCells = fruitGroup->getAllFruitCells();
+			std::copy(fruitCells->begin(), fruitCells->end(), std::back_inserter(targetCells));
+			CC_SAFE_DELETE(fruitCells);
+		}
+	}
+
+	if(targetCells.size() > 0)
+	{
 		Cell* target = nullptr;
+		char loopCount = 5;
 		do {
-			auto random = rand_0_1() * crackerCells->size();
-			target = crackerCells->at(random);
+			auto random = rand_0_1() * targetCells.size();
+			target = targetCells.at(random);
+			loopCount--;
+			if(loopCount < 0)
+			{
+				target = nullptr;
+				break;
+			}
 		} while (std::find(thoplerTargets->begin(), thoplerTargets->end(), target) != thoplerTargets->end());
 
-		thoplerTargets->push_back(target);
-		return target;
+		if(target != nullptr)
+		{
+			thoplerTargets->push_back(target);
+			return target;
+		}
 	}
 	return nullptr;
 }
@@ -136,7 +162,7 @@ void THopplingBoardController::crushCell(Cell* cell, bool forceClear)
 		return;
 	}
 	auto sourceTile = cell->getSourceTile();
-	if(sourceTile->getType() == CRACKEROBJECT || sourceTile->getType() == PRETZELOBJECT)
+	if(sourceTile->getType() == CRACKEROBJECT || sourceTile->getType() == PRETZELOBJECT || sourceTile->getType() == FRUITROLLOBJECT)
 	{
 		auto crushResult = cell->crushCell(true);
 		auto thopplerTile = cell->getTileAtLayer(LayerId::Toppling);
@@ -205,7 +231,7 @@ void THopplingBoardController::movePendingThopplers()
 		auto typeString = thoppler->getType();
 
 		auto sourceTile = cell->getSourceTile();
-		if (sourceTile->getType() != CRACKEROBJECT && sourceTile->getType() != PRETZELOBJECT)
+		if (sourceTile->getType() != CRACKEROBJECT && sourceTile->getType() != PRETZELOBJECT && sourceTile->getType() != FRUITROLLOBJECT)
 		{
 			static_cast<ThopplerTile*>(thoppler)->moveDown();
 			cell->setSourceTile(thoppler);
@@ -269,7 +295,7 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 		targetCell = hopplingPath->back();
 	}
 	crackerCells->erase(std::remove(crackerCells->begin(), crackerCells->end(), targetCell), crackerCells->end());
-	crackerCells->push_back(cell);
+	if(cell->getSourceTile()->getType() == CRACKEROBJECT || cell->getSourceTile()->getType() == PRETZELOBJECT) crackerCells->push_back(cell);
 	cell->removeTileAtLayer(LayerId::Toppling);
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(hopplerShow);
@@ -287,7 +313,10 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 void THopplingBoardController::showHopplerMoveEffect(Cell* cell)
 {
 	auto topplerTile = cell->getTileAtLayer(LayerId::Toppling);
-
+	if(topplerTile == nullptr)
+	{
+		return;
+	}
 	auto targetCell = findHopplerTarget();
 	if (targetCell == nullptr)
 	{
@@ -377,7 +406,7 @@ Cell* THopplingBoardController::findNextCrackerCell(Cell* cell, char* inIndent, 
 		auto adjCell = getMatchCell(cell->gridPos.Col + indent[1], cell->gridPos.Row + indent[0]);
 		if(adjCell == nullptr || adjCell->isOutCell || adjCell->isEmpty || adjCell->containsThoppler()){continue;}
 		auto movingTile = adjCell->getSourceTile();
-		if((movingTile->getType() == CRACKEROBJECT || movingTile->getType() == PRETZELOBJECT) && !(inIndent != nullptr && inIndent[0] * -1 == indent[0] && inIndent[1] * -1 == indent[1]))
+		if((movingTile->getType() == CRACKEROBJECT || movingTile->getType() == PRETZELOBJECT || movingTile->getType() == FRUITROLLOBJECT) && !(inIndent != nullptr && inIndent[0] * -1 == indent[0] && inIndent[1] * -1 == indent[1]))
 		{
 			*outIndent = indent;
 			return adjCell;

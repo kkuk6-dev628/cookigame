@@ -95,6 +95,8 @@ public:
 	Cell* findHoneyTarget();
 	CellsList findNearbyMovingTiles(Cell* cell);
 
+	std::list<FruitRollGroup*>* getFruitRollGroups() const { return fruitRollGroups; }
+
 private:
 	cocos2d::__Dictionary* boardLayers;
 	int width;

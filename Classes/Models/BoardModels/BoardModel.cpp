@@ -675,11 +675,11 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 					{
 						spawnOnCollectSystem = new SpawnOnCollectSystem;
 					}
-					spawnOnCollectSystem->IntervalMax = customData["interval_max"].GetInt();
-					spawnOnCollectSystem->IntervalMin = customData["interval_min"].GetInt();
-					spawnOnCollectSystem->ObjectType = customData["object_type"].GetString();
-					spawnOnCollectSystem->EnsureOne = customData["ensure_one"].GetInt();
-					spawnOnCollectSystem->Type = customData["type"].GetString();
+					if (customData.HasMember("interval_max")) spawnOnCollectSystem->IntervalMax = customData["interval_max"].GetInt();
+					if (customData.HasMember("interval_min")) spawnOnCollectSystem->IntervalMin = customData["interval_min"].GetInt();
+					if (customData.HasMember("object_type")) spawnOnCollectSystem->ObjectType = customData["object_type"].GetString();
+					if (customData.HasMember("ensure_one")) spawnOnCollectSystem->EnsureOne = customData["ensure_one"].GetInt();
+					if (customData.HasMember("type")) spawnOnCollectSystem->Type = customData["type"].GetString();
 					SpawnController::getInstance()->setSpawnOnCollectSystem(spawnOnCollectSystem);
 				}
 			}
