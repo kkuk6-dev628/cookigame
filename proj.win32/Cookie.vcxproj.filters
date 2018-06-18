@@ -252,6 +252,15 @@
     <ClCompile Include="..\Classes\Models\Tiles\FruitRollObject.cpp">
       <Filter>src\Models\Tiles</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\DigDownYumbleObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Models\Tiles\DigDownObject.cpp">
+      <Filter>src\Models\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\DigDownController.cpp">
+      <Filter>src\Controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -478,6 +487,18 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Models\Tiles\FruitRollGroup.h">
       <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\DigDownYumbleObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Models\Tiles\DigDownObject.h">
+      <Filter>src\Models\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controllers\DigDownController.h">
+      <Filter>src\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Native\IMListener.h">
+      <Filter>src\Native</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

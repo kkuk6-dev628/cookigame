@@ -6,6 +6,8 @@ $(call import-add-path,$(LOCAL_PATH)/../../../cocos2d)
 $(call import-add-path,$(LOCAL_PATH)/../../../cocos2d/external)
 $(call import-add-path,$(LOCAL_PATH)/../../../cocos2d/cocos)
 $(call import-add-path,$(LOCAL_PATH)/../../../cocos2d/cocos/audio/include)
+$(call import-add-path, $(LOCAL_PATH))
+$(call import-add-path, $(LOCAL_PATH))
 
 LOCAL_MODULE := MyGame_shared
 
@@ -15,6 +17,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/AppDelegate.cpp \
 ../../../Classes/Controllers/ActionController.cpp \
 ../../../Classes/Controllers/BoardController.cpp \
+../../../Classes/Controllers/DigDownController.cpp \
 ../../../Classes/Controllers/GameController.cpp \
 ../../../Classes/Controllers/HiderBoardController.cpp \
 ../../../Classes/Controllers/HopplingBoardController.cpp \
@@ -61,6 +64,8 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Models/Tiles/ColorPieObject.cpp \
 ../../../Classes/Models/Tiles/ConveyorBeltObject.cpp \
 ../../../Classes/Models/Tiles/CookieTile.cpp \
+../../../Classes/Models/Tiles/DigDownObject.cpp \
+../../../Classes/Models/Tiles/DigDownYumbleObject.cpp \
 ../../../Classes/Models/Tiles/DisplayCaseObject.cpp \
 ../../../Classes/Models/Tiles/FixTiles.cpp \
 ../../../Classes/Models/Tiles/FruitRollGroup.cpp \
@@ -84,7 +89,15 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../../Classes/Scenes/MainMenuScene.cpp \
 ../../../Classes/Scenes/StartScene.cpp
 
+LOCAL_CPPFLAGS := -DSDKBOX_ENABLED
+LOCAL_LDLIBS := -landroid \
+-llog \
+-landroid \
+-llog
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes
+LOCAL_WHOLE_STATIC_LIBRARIES := PluginSdkboxAds \
+sdkbox \
+PluginAdMob
 
 # _COCOS_HEADER_ANDROID_BEGIN
 # _COCOS_HEADER_ANDROID_END
@@ -98,6 +111,11 @@ LOCAL_STATIC_LIBRARIES := cocos2dx_static
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,.)
+$(call import-module, ./sdkbox)
+$(call import-module, ./pluginsdkboxads)
+$(call import-module, ./sdkbox)
+$(call import-module, ./pluginsdkboxads)
+$(call import-module, ./pluginadmob)
 
 # _COCOS_LIB_IMPORT_ANDROID_BEGIN
 # _COCOS_LIB_IMPORT_ANDROID_END

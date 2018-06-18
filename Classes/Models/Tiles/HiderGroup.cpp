@@ -1,5 +1,6 @@
 #include "HiderGroup.h"
 #include "Controllers/ActionController.h"
+#include "Controllers/SoundController.h"
 
 
 HiderGroup::HiderGroup()
@@ -120,6 +121,7 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 			}
 			headCell->setSourceTile(segment);
 			headCell->canPass = true;
+			SoundController::getInstance()->playEffectSound(SoundEffects::sound_worm_chew);
 		}
 	}, segment);
 	actionController->pushAction(ckAction, false);

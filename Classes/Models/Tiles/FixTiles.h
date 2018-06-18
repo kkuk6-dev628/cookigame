@@ -57,6 +57,14 @@ public:
 	bool crush(bool showEffect) override { return false; };
 };
 
+class NullObject : public FixTiles
+{
+public:
+	NullObject();
+	CREATE_FUNC(NullObject)
+	bool crush(bool showEffect) override;;
+};
+
 class PieceSwapperObject : public FixTiles
 {
 public:

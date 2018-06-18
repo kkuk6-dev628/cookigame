@@ -20,13 +20,22 @@ GamePlayScene* GamePlayScene::instance = nullptr;
 
 GamePlayScene::GamePlayScene()
 {
-	instance = this;
+	//instance = this;
 }
 
 
 GamePlayScene::~GamePlayScene()
 {
 	instance = nullptr;
+}
+
+GamePlayScene* GamePlayScene::getInstance()
+{
+	if(instance == nullptr)
+	{
+		instance = new GamePlayScene;
+	}
+	return instance;
 }
 
 Scene* GamePlayScene::createScene()
@@ -74,7 +83,7 @@ bool GamePlayScene::init()
 	});
 	ui::Button *m_btn_spoon = static_cast<ui::Button*>(bottomMenuArea->getChildByName("spoon_button"));
 	m_btn_spoon->addClickEventListener([this](Ref*) {
-		if (UserData::getInstance()->nBoosterCount[BoosterType::BoosterSingle] > 0) 
+		if (UserData::getInstance()->getBoosterCount(BoosterType::BoosterSingle) > 0) 
 		{
 			this->boardController->setBoosterActive(BoosterType::BoosterSingle);
 		}
@@ -85,7 +94,7 @@ bool GamePlayScene::init()
 	});
 	ui::Button *rowBooster = static_cast<ui::Button*>(bottomMenuArea->getChildByName("rod_button"));
 	rowBooster->addClickEventListener([this](Ref*) {
-		if (UserData::getInstance()->nBoosterCount[BoosterType::BoosterHor] > 0)
+		if (UserData::getInstance()->getBoosterCount(BoosterType::BoosterHor) > 0)
 		{
 			this->boardController->setBoosterActive(BoosterType::BoosterHor);
 		}
@@ -96,7 +105,7 @@ bool GamePlayScene::init()
 	});
 	ui::Button *columnBooster = static_cast<ui::Button*>(bottomMenuArea->getChildByName("umbrella_button"));
 	columnBooster->addClickEventListener([this](Ref*) {
-		if (UserData::getInstance()->nBoosterCount[BoosterType::BoosterVer] > 0)
+		if (UserData::getInstance()->getBoosterCount(BoosterType::BoosterVer) > 0)
 		{
 			this->boardController->setBoosterActive(BoosterType::BoosterVer);
 		}
@@ -107,7 +116,7 @@ bool GamePlayScene::init()
 	});
 	ui::Button *swapBooster = static_cast<ui::Button*>(bottomMenuArea->getChildByName("gloves_button"));
 	swapBooster->addClickEventListener([this](Ref*) {
-		if (UserData::getInstance()->nBoosterCount[BoosterType::BoosterSwap] > 0)
+		if (UserData::getInstance()->getBoosterCount(BoosterType::BoosterSwap) > 0)
 		{
 			this->boardController->setBoosterActive(BoosterType::BoosterSwap);
 		}
@@ -182,10 +191,11 @@ void GamePlayScene::restartCallback(Ref* pSender)
 void GamePlayScene::restartGame()
 {
 	BoardController::gameState = Idle;
-	boardController->removeFromParentAndCleanup(true);
-	boardController = GameController::getInstance()->getBoardController(false);
-	boardController->initWithNode(rootNode, effectNode);
-	rootNode->addChild(boardController, kZBoard);
+	init();
+	//boardController->removeFromParentAndCleanup(true);
+	//boardController = GameController::getInstance()->getBoardController(false);
+	//boardController->initWithNode(rootNode, effectNode);
+	//rootNode->addChild(boardController, kZBoard);
 }
 
 void GamePlayScene::endGame()

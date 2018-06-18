@@ -63,6 +63,9 @@ public:
 	AnimationShowObject* getDonutCrushShow() const;
 	void recycleDonutCrushShow(AnimationShowObject* show) const;
 
+	AnimationShowObject* getDigdownCrushShow() const;
+	void recycleDigdownCrushShow(AnimationShowObject* show) const;
+
 	AnimationShowObject* getLineCrushShow() const;
 	void recycleLineCrushShow(AnimationShowObject* show) const;
 
@@ -106,6 +109,8 @@ public:
 	void recyclePopRainbowShow(SpriteShowObject* popRainbowShow) const;
 	SpriteShowObject* getHiderShow() const;
 	void recycleHiderShow(SpriteShowObject* popHiderShow) const;
+	SpriteShowObject* getDigdownShow() const;
+	void recycleDigdownShow(SpriteShowObject* digdownShow) const;
 
 	LabelShowObject* getScoreShow() const;
 	void recycleScoreShow(LabelShowObject* scoreNode) const;
@@ -150,6 +155,8 @@ private:
 	NodePool<DonutObject>* donutPool;
 	NodePool<AnimationShowObject>* donutCrushPool;
 
+	NodePool<AnimationShowObject>* digdownCrushPool;
+
 	NodePool<SpriteShowObject>* waffleShowPool;
 	NodePool<SpriteShowObject>* powerShowPool;
 	NodePool<SpriteShowObject>* lightLinePool;
@@ -161,6 +168,7 @@ private:
 	NodePool<SpriteShowObject>* popBombShowPool;
 	NodePool<SpriteShowObject>* popRainbowShowPool;
 	NodePool<SpriteShowObject>* hiderShowPool;
+	NodePool<SpriteShowObject>* digdownShowPool;
 
 	NodePool<LabelShowObject>* scoreShowPool;
 };

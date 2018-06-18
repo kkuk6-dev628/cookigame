@@ -1,5 +1,8 @@
 #include "AppDelegate.h"
 #include "Scenes/StartScene.h"
+#ifdef SDKBOX_ENABLED
+#include "PluginAdMob/PluginAdMob.h"
+#endif
 
 USING_NS_CC;
 
@@ -35,6 +38,11 @@ static int register_all_packages()
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
+
+#ifdef SDKBOX_ENABLED
+	sdkbox::PluginAdMob::init();
+#endif
+
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();

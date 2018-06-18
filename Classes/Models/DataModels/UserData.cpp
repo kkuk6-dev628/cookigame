@@ -12,6 +12,7 @@ UserData* UserData::getInstance()
 {
 	if (instance == nullptr)
 	{
+
 		instance = new UserData();
 	}
 	return instance;
@@ -31,10 +32,10 @@ UserData::UserData()
 	}
 
 	topLevel = userDefault->getIntegerForKey("top_level", 1);
-	topLevel = MAX(topLevel, 945);
+	//topLevel = MAX(topLevel, 1260);
 
 	//topLevel = 1599;//test
-	//if (g_bDebugMode) topLevel = 52;
+	//if (g_bDebugMode) topLevel = 46;
 #ifdef TEST_UserDataClearOnInit
 	clear();
 #endif
@@ -220,6 +221,24 @@ bool UserData::isRateClickOk() {
 }
 void UserData::clickRateOk() {
 	UserDefault::getInstance()->setBoolForKey("rateok", true);
+}
+
+int UserData::getBoosterCount(BoosterType boosterType)
+{
+	//return 10; // for testing
+	return nBoosterCount[boosterType];
+}
+
+int UserData::addBoosterCount(BoosterType boosterType, int count)
+{
+	nBoosterCount[boosterType] += count;
+	return nBoosterCount[boosterType];
+}
+
+int UserData::subtractBoosterCount(BoosterType boosterType, int count)
+{
+	nBoosterCount[boosterType] -= count;
+	return nBoosterCount[boosterType];
 }
 
 

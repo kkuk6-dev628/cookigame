@@ -5,6 +5,7 @@
 #include "StartScene.h"
 #include "GamePlayScene.h"
 #include "Layers/Dialogs.h"
+#include "Native/AdsControl.h"
 
 bool g_bDebugMode = true;
 
@@ -261,6 +262,8 @@ LevelMapScene::LevelMapScene()
 	for (int i = 1; i <= 6; i++)
 		clouds.add(rootNode->getChildByName(__String::createWithFormat("cloud_%d", i)->getCString()));
 	cloudtime = rand() % 5;
+
+	AdsControl::getInstance()->showBannerAds();
 
 }
 

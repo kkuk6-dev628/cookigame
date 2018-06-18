@@ -121,7 +121,7 @@ Cell* THopplingBoardController::findHopplerTarget()
 	}
 	auto fruitRollGroups = boardModel->getFruitRollGroups();
 
-	if(fruitRollGroups->size() > 0)
+	if(fruitRollGroups != nullptr && fruitRollGroups->size() > 0)
 	{
 		for(auto fruitGroup : *fruitRollGroups)
 		{

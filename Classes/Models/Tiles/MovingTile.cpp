@@ -153,6 +153,30 @@ bool MovingTile::crush(bool showEffect)
 			receiveNearbyAffect = false;
 		}
 		return false;
+	case ModifierTypes::DigDownModifier:
+		{
+			auto digDownObj = pCell->getTileAtLayer(LayerId::Cover);
+			if (digDownObj != nullptr && digDownObj->getType() == DIGDOWNOBJECT)
+			{
+				if(digDownObj->crush(true))
+				{
+					modifierType = ModifierTypes::None;
+					if (pCell != nullptr) pCell->isFixed = false;
+					if (movingTileType != +MovingTileTypes::DonutObject && movingTileType != +MovingTileTypes::ChocolateChipObject)
+					{
+						canMatch = true;
+					}
+
+					if (movingTileType != +MovingTileTypes::DonutObject && movingTileType != +MovingTileTypes::ChocolateChipObject)
+					{
+						receiveNearbyAffect = false;
+					}
+				}
+				return false;
+			}
+			return true;
+		}
+		break;
 	default:
 		return CookieTile::crush(showEffect);
 		break;
@@ -161,7 +185,7 @@ bool MovingTile::crush(bool showEffect)
 
 bool MovingTile::isMovable()
 {
-	if (modifierType == +ModifierTypes::CageModifier || modifierType == +ModifierTypes::HoneyModifier)
+	if (modifierType == +ModifierTypes::CageModifier || modifierType == +ModifierTypes::HoneyModifier || modifierType == +ModifierTypes::DigDownModifier)
 	{
 		return false;
 	}
@@ -274,29 +298,47 @@ void MovingTile::setHoneyModifier()
 
 void MovingTile::setModifierTexture()
 {
+	std::string spriteName;
 	if(modifierType == +ModifierTypes::CageModifier || modifierType == +ModifierTypes::HoneyModifier)
 	{
-		auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(StringUtils::format("%s.png", modifierType._to_string()));
-		if (spriteFrame == nullptr)
-		{
-			return;
-		}
-		if (modifierSprite == nullptr)
-		{
-			modifierSprite = Sprite::create();
-			addChild(modifierSprite);
-		}
-		modifierSprite->setSpriteFrame(spriteFrame);
-		modifierSprite->setContentSize(Size(CellSize, CellSize));
-		modifierSprite->setAnchorPoint(Vec2(0.5, 0.5));
-		modifierSprite->setPosition(CellSize / 2, CellSize / 2);
-		modifierSprite->setVisible(true);
-
-		if (modifierType == +ModifierTypes::HoneyModifier)
-		{
-			canMatch = false;
-		}
+		spriteName = StringUtils::format("%s.png", modifierType._to_string());
 	}
+
+	if (modifierType == +ModifierTypes::HoneyModifier)
+	{
+		canMatch = false;
+	}
+	else if(modifierType == +ModifierTypes::DigDownModifier)
+	{
+		receiveNearbyAffect = true;
+		canMatch = false;
+	}
+	//else if(modifierType == +ModifierTypes::DigDownModifier)
+	//{
+	//	auto digDownObj = pCell->getTileAtLayer(LayerId::Cover);
+	//	layers = digDownObj->getLayers();
+	//	spriteName = StringUtils::format("DigDownObject_%d.png", layers);
+	//}
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(spriteName);
+	initModifierWithSprite(spriteFrame);
+}
+
+void MovingTile::initModifierWithSprite(SpriteFrame* sprite)
+{
+	if (sprite == nullptr)
+	{
+		return;
+	}
+	if (modifierSprite == nullptr)
+	{
+		modifierSprite = Sprite::create();
+		addChild(modifierSprite);
+	}
+	modifierSprite->setSpriteFrame(sprite);
+	modifierSprite->setContentSize(Size(CellSize, CellSize));
+	modifierSprite->setAnchorPoint(Vec2(0.5, 0.5));
+	modifierSprite->setPosition(CellSize / 2, CellSize / 2);
+	modifierSprite->setVisible(true);
 }
 
 void MovingTile::showCrushEffect()

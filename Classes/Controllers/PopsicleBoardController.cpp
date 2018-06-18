@@ -109,14 +109,15 @@ void PopsicleBoardController::canCollectedPopsicle(Cell* cell)
 			{
 				continue;
 			}
-			if (checkCell->containsIceCover())
+			if (checkCell->containsIceCover() && checkCell->containsPopsicle())
 			{
 				allStripped = false;
 				//break;
 			}
 			else
 			{
-				coveredPopsicleCells->erase(std::remove(coveredPopsicleCells->begin(), coveredPopsicleCells->end(), checkCell), coveredPopsicleCells->end());
+				auto pos = std::find(coveredPopsicleCells->begin(), coveredPopsicleCells->end(), checkCell);
+				if(pos != coveredPopsicleCells->end()) coveredPopsicleCells->erase(pos);
 			}
 		}
 		//if (allStripped == false) break;
@@ -132,13 +133,15 @@ void PopsicleBoardController::canCollectedPopsicle(Cell* cell)
 
 Cell* PopsicleBoardController::findSeekerTarget(CellsList* targetsList) const
 {
-	if(coveredPopsicleCells != nullptr && coveredPopsicleCells->size() > 0)
+	auto specialTiles = boardModel->getSpecialTiles();
+	auto coveredCells = static_cast<__Array*>(specialTiles->objectForKey(COVEREDPOPSICLES));
+	if(coveredCells != nullptr && coveredCells->count() > 0)
 	{
 		Cell* retCell = nullptr;
 		auto loopCount = 3;
 		do
 		{
-			retCell = coveredPopsicleCells->at(coveredPopsicleCells->size() * rand_0_1());
+			retCell = static_cast<Cell*>(coveredCells->getRandomObject());
 			loopCount--;
 		} 
 		while (Utils::containsCell(targetsList, retCell) && loopCount > 0);

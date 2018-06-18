@@ -14,6 +14,8 @@
 #include "Models/Tiles/ColorPieObject.h"
 #include "Models/Tiles/DisplayCaseObject.h"
 #include "Models/Tiles/FruitRollObject.h"
+#include "Models/Tiles/DigDownObject.h"
+#include "Models/Tiles/DigDownYumbleObject.h"
 
 PoolController* PoolController::instance = nullptr;
 static factory TileClassFactory;
@@ -68,6 +70,8 @@ PoolController::PoolController()
 	popBombShowPool = new NodePool<SpriteShowObject>;
 	popRainbowShowPool = new NodePool<SpriteShowObject>;
 	hiderShowPool = new NodePool<SpriteShowObject>;
+	digdownShowPool = new NodePool<SpriteShowObject>;
+	digdownCrushPool = new NodePool<AnimationShowObject>;
 
 	scoreShowPool = new NodePool<LabelShowObject>;
 	RegisterTileClasses();
@@ -114,6 +118,9 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(ColorPie6Object);
 	REGISTER_CLASS(DisplayCaseObject);
 	REGISTER_CLASS(FruitRollObject);
+	REGISTER_CLASS(DigDownObject);
+	REGISTER_CLASS(NullObject);
+	REGISTER_CLASS(DigDownYumbleObject);
 
 	REGISTER_CLASS(PointerObject);
 	REGISTER_CLASS(InvisibleBrickObject);
@@ -729,6 +736,31 @@ void PoolController::recycleDonutCrushShow(AnimationShowObject* show) const
 	donutCrushPool->recycleNode(show);
 }
 
+AnimationShowObject* PoolController::getDigdownCrushShow() const
+{
+	AnimationShowObject* show;
+	if (digdownCrushPool->size() > 0)
+	{
+		show = digdownCrushPool->getNode();
+	}
+	else
+	{
+		show = new AnimationShowObject;
+		show->initWithCSB("res/particle/DigdownCrash.csb");
+	}
+	show->reuse([=]()
+	{
+		this->recycleDigdownCrushShow(show);
+	});
+	return show;
+}
+
+void PoolController::recycleDigdownCrushShow(AnimationShowObject* show) const
+{
+	show->recycle();
+	digdownCrushPool->recycleNode(show);
+}
+
 AnimationShowObject* PoolController::getLineCrushShow() const
 {
 	AnimationShowObject* show;
@@ -1082,6 +1114,28 @@ SpriteShowObject* PoolController::getHiderShow() const
 void PoolController::recycleHiderShow(SpriteShowObject* popHiderShow) const
 {
 	hiderShowPool->recycleNode(popHiderShow);
+}
+
+SpriteShowObject* PoolController::getDigdownShow() const
+{
+	SpriteShowObject* show;
+	if (digdownShowPool->size() > 0)
+	{
+		show = digdownShowPool->getNode();
+	}
+	else
+	{
+		show = SpriteShowObject::create();
+		show->retain();
+		show->initWithTextureName("DigDownYumbleObject.png");
+		show->setContentSize(Size(120, 120));
+	}
+	return show;
+}
+
+void PoolController::recycleDigdownShow(SpriteShowObject* digdownShow) const
+{
+	digdownShowPool->recycleNode(digdownShow);
 }
 
 LabelShowObject* PoolController::getScoreShow() const

@@ -1,0 +1,20 @@
+
+liwu.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+gift_gaizi
+  rotate: false
+  xy: 2, 2
+  size: 336, 289
+  orig: 336, 289
+  offset: 0, 0
+  index: -1
+gift_hezi
+  rotate: false
+  xy: 340, 43
+  size: 295, 248
+  orig: 295, 248
+  offset: 0, 0
+  index: -1

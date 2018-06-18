@@ -48,7 +48,7 @@ public:
 
 
 	int getGold() { return _nGold; };
-	void changeGold(int vel) { _nGold += vel; };
+	void addGold(int vel) { _nGold += vel; };
 	void saveGold() { userDefault->setIntegerForKey("gold", _nGold); };
 
 	void calDaily();
@@ -80,8 +80,10 @@ public:
 	bool isRateClickOk();
 	void clickRateOk();
 
+	int getBoosterCount(BoosterType boosterType);
+	int addBoosterCount(BoosterType boosterType, int count);
+	int subtractBoosterCount(BoosterType boosterType, int count);
 
-	int nBoosterCount[BoosterCount];
 	void saveBooster();
 
 	int getTodayAvailableAds(int type = 0);
@@ -100,6 +102,7 @@ public:
 
 
 private:
+	int nBoosterCount[BoosterCount];
 	int mDailyOrder;
 	long mDailyTime;
 	bool bBonusFlag;

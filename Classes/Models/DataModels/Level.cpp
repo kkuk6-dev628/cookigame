@@ -25,11 +25,14 @@ void Level::load(const int levelNumber)
 	this->levelNumber = levelNumber;
 	this->episode = GetEpisodeNumber(levelNumber);
 
+	
 	auto levelCtrl = LevelController::getInstance();
 	levelCtrl->loadEpisodeInfo(this->episode);
 
-	assert(levelCtrl->JsonDoc.IsObject());
-	auto levelsJson = levelCtrl->JsonDoc["data"]["level"].GetArray();
+	//assert(levelCtrl->JsonDoc.IsObject());
+	//auto obj = levelCtrl->JsonDoc.GetObjectW();
+	auto& dataE = levelCtrl->JsonDoc["data"];
+	auto levelsJson = dataE["level"].GetArray();
 
 	for (auto& v : levelsJson)
 	{

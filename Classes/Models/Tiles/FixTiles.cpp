@@ -1,5 +1,6 @@
 #include "FixTiles.h"
 #include "cocostudio/ActionTimeline/CSLoader.h"
+#include "Models/BoardModels/Cell.h"
 
 
 FixTiles::FixTiles()
@@ -49,6 +50,26 @@ void PathObject::initTexture()
 	}
 	auto textureName = StringUtils::format("%s_%s.png", type.c_str(), tempDirStr);
 	TileBase::initTexture(textureName);
+}
+
+NullObject::NullObject()
+{
+	receiveNearbyAffect = true;
+}
+
+bool NullObject::crush(bool showEffect)
+{
+	auto digDownObj = pCell->getTileAtLayer(LayerId::Cover);
+	if (digDownObj != nullptr && digDownObj->getType() == DIGDOWNOBJECT)
+	{
+		if (digDownObj->crush(true))
+		{
+			removeFromParent();
+			pCell->clear();
+			return true;
+		}
+	}
+	return false;
 }
 
 void PieceSwapperObject::initTexture()

@@ -141,7 +141,6 @@ protected:
 
 	cocos2d::ui::Text *mGoldLabel;
 
-
 	cocos2d::ui::Text* mTextDailyTime;
 	void refreshDailyTime();
 	void setDailyState();

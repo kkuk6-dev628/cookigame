@@ -189,6 +189,8 @@ bool OpenLevelDialog::initWithLevel(Level* level)
 	imageHider->setVisible(false);
 	auto imageWaffle = rootNode->getChildByName("imageWaffle");
 	imageWaffle->setVisible(false);
+	auto imageDigdown = rootNode->getChildByName("imageDigDown");
+	imageDigdown->setVisible(false);
 
 	auto message = "";
 	switch (_level->getLevelType())
@@ -215,6 +217,10 @@ bool OpenLevelDialog::initWithLevel(Level* level)
 	case GoalTypes::PopsicleObject:
 		imagePopsicle->setVisible(true);
 		message = "Collecting Popsicles";
+		break;
+	case GoalTypes::DigDownYumbleObject:
+		imageDigdown->setVisible(true);
+		message = "Collecting Popplers";
 		break;
 	case GoalTypes::TopplingObject:
 		imageThoppler->setVisible(true);
@@ -634,10 +640,10 @@ void ShopDialog::onClickBtnBuy(int gCount, int adType)
 	}
 	switch (adType) {
 	case 1:
-		if (GGBridge::hasInterstitialAd()) {
-			AdsControl::delayFullAds(0);
+		if (AdsControl::getInstance()->isAvailableInterstitialAds()) {
+			AdsControl::getInstance()->showInterstitialAds();
 			UserData::getInstance()->setTodayAdsClick(adType);
-			UserData::getInstance()->changeGold(gCount);
+			UserData::getInstance()->addGold(gCount);
 			UserData::getInstance()->saveGold();
 			LevelMapScene::getInstance()->setGoldLabel();
 
@@ -655,8 +661,8 @@ void ShopDialog::onClickBtnBuy(int gCount, int adType)
 		}
 		break;
 	case 0:
-		if (GGBridge::hasRewardVideoAds()) {
-			GGBridge::showRewardVideoAds();
+		if (AdsControl::getInstance()->isAvailableInterstitialAds()) {
+			AdsControl::getInstance()->showRewardedVideoAds();
 			UserData::getInstance()->setTodayAdsClick(adType);
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 			rewardedVideoFinish();
@@ -674,16 +680,12 @@ void ShopDialog::onClickBtnBuy(int gCount, int adType)
 }
 void ShopDialog::rewardedVideoFinish() {
 
-	
-	UserData::getInstance()->changeGold(REWARDED_VIDEO);
+	UserData::getInstance()->addGold(REWARDED_VIDEO);
 	UserData::getInstance()->saveGold();
 
 	if (LevelMapScene::getInstance())
 		LevelMapScene::getInstance()->setGoldLabel();
 
-	/*if (OutOfMovesLayer::getInstance()) {
-	OutOfMovesLayer::getInstance()->updateCoin();
-	}*/
 	if (BoosterBuyDialog::getInstance())
 		BoosterBuyDialog::getInstance()->updateCoin();
 
@@ -693,21 +695,21 @@ MessageDialog::MessageDialog()
 {
 	Popup::initWithMask(true);
 	//setTouchMode(kCCTouchesOneByOne);
-	//auto dlg = CSLoader::getInstance()->createNode("res/MessageDlg.csb");
-	//addChild(dlg);
+	auto dlg = CSLoader::getInstance()->createNode("res/MessageDlg.csb");
+	addChild(dlg);
 
-	//auto rootNode = dlg->getChildByName("rootNode");
+	auto rootNode = dlg->getChildByName("rootNode");
 
-	//((Button*)rootNode->getChildByName("btn_close"))->addClickEventListener([this](Ref*) {
-	//	this->close();
-	//});
-	//((Button*)rootNode->getChildByName("btn_ok"))->addClickEventListener([this](Ref*) {
-	//	this->close();
-	//});
-	//text_ok = (Text*)rootNode->getChildByName("btn_ok")->getChildByName("text_ok");
-	//text_ok->setString( "OK");
-	//lbl_title = (Text*)rootNode->getChildByName("ig_title")->getChildByName("lbl_title");
-	//lbl_info = (Text*)rootNode->getChildByName("lbl_info");
+	static_cast<Button*>(rootNode->getChildByName("btn_close"))->addClickEventListener([this](Ref*) {
+		this->close();
+	});
+	static_cast<Button*>(rootNode->getChildByName("btn_ok"))->addClickEventListener([this](Ref*) {
+		this->close();
+	});
+	text_ok = static_cast<Text*>(rootNode->getChildByName("btn_ok")->getChildByName("text_ok"));
+	text_ok->setString( "OK");
+	lbl_title = static_cast<Text*>(rootNode->getChildByName("ig_title")->getChildByName("lbl_title"));
+	lbl_info = static_cast<Text*>(rootNode->getChildByName("lbl_info"));
 }
 void MessageDialog::setTitle(const char* title) {
 	lbl_title->setString(title);
@@ -802,8 +804,8 @@ void BoosterBuyDialog::onClickBuy()
 	
 	if (UserData::getInstance()->getGold() >= goldCount)
 	{
-		UserData::getInstance()->changeGold(-goldCount);
-		UserData::getInstance()->nBoosterCount[nBoosterNum] += 3;
+		UserData::getInstance()->addGold(-goldCount);
+		UserData::getInstance()->addBoosterCount(static_cast<BoosterType>(nBoosterNum), 3);
 		UserData::getInstance()->saveGold();
 		UserData::getInstance()->saveBooster();
 		GamePlayScene::getInstance()->updateBoosterCount();

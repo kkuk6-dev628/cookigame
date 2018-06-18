@@ -48,11 +48,11 @@ enum ScoreType
 
 BETTER_ENUM(PopsicleType, char, normal, line, bomb, rainbow);
 
-BETTER_ENUM(GoalTypes, char, WaffleObject, PathObject, TopplingObject, PopsicleObject, HiderSegmentObject, HopplingObject, thoppling);
+BETTER_ENUM(GoalTypes, char, WaffleObject, PathObject, TopplingObject, PopsicleObject, HiderSegmentObject, HopplingObject, thoppling, DigDownYumbleObject);
 
 BETTER_ENUM(TileColors, char, blue, purple, yellow, green, orange, red, teal, pink, white, any, random);
 
-BETTER_ENUM(ModifierTypes, char, NoShuffleModifier, CageModifier, HoneyModifier, None);
+BETTER_ENUM(ModifierTypes, char, NoShuffleModifier, CageModifier, HoneyModifier, DigDownModifier, None);
 
 BETTER_ENUM(SetTypes, char, set, rnd);
 
@@ -133,6 +133,7 @@ BETTER_ENUM(SoundEffects, char,
 	VO_toppler_move_3,
 	VO_toppler_move_4,
 
-	sound_gameboard_shuffle
+	sound_gameboard_shuffle,
+	sound_worm_chew
 );
 

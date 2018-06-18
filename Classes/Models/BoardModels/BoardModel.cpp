@@ -272,6 +272,8 @@ __Dictionary* BoardModel::getSpecialTiles()
 	auto wafflesAndPathMovers = __Array::create();
 	auto thopplers = __Array::create();
 	auto liquids = __Array::create();
+	auto digdowns = __Array::create();
+	auto coveredPopsicles = __Array::create();
 
 	for(char i = 0; i < height; i++)
 	{
@@ -297,9 +299,17 @@ __Dictionary* BoardModel::getSpecialTiles()
 			{
 				liquids->addObject(cell);
 			}
+			if(tile->getType() == DIGDOWNYUMBLEOBJECT)
+			{
+				digdowns->addObject(cell);
+			}
 			if(cell->containsThoppler())
 			{
 				thopplers->addObject(cell);
+			}
+			if(cell->containsIceCover() && cell->containsPopsicle())
+			{
+				coveredPopsicles->addObject(cell);
 			}
 		}
 	}
@@ -308,6 +318,8 @@ __Dictionary* BoardModel::getSpecialTiles()
 	specialTiles->setObject(wafflesAndPathMovers, WAFFLEPATH);
 	specialTiles->setObject(liquids, LIQUIDS);
 	specialTiles->setObject(liquids, THOPPLERS);
+	specialTiles->setObject(digdowns, DIGDOWNS);
+	specialTiles->setObject(coveredPopsicles, COVEREDPOPSICLES);
 	return specialTiles;
 }
 

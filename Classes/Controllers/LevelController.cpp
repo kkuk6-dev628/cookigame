@@ -12,7 +12,7 @@ LevelController* LevelController::instance = nullptr;
 
 LevelController::LevelController()
 {
-	levelCount = 1280;
+	levelCount = 1260;
 	//loadCurrentLevel();
 }
 
@@ -37,7 +37,7 @@ void LevelController::loadEpisodeInfo(const char episodeNumber)
 		auto totalLevelsCount = 0;
 		const auto episodeFileName = StringUtils::format("levels/%s%d.json", EpisodeFilePrefix.c_str(), episodeNumber);
 		auto fileContent = fileUtils->getStringFromFile(episodeFileName);
-		this->JsonDoc.Parse<0>(fileContent.c_str());
+		this->JsonDoc.Parse(fileContent.c_str());
 	}
 	//while (fileUtils->isFileExist(episodeFileName))
 	//{

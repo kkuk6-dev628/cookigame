@@ -42,6 +42,8 @@
 #define WAFFLEPATH "wafflePath"
 #define LIQUIDS "liquids"
 #define THOPPLERS "thopplers"
+#define DIGDOWNS "digdowns"
+#define COVEREDPOPSICLES "coveredpopsicles"
 
 // tile objects
 
@@ -70,6 +72,8 @@
 #define LIQUIDFILLERMATCHOBJECT "LiquidDrainerMatchObject"
 #define CONVEYORBELTOBJECT "ConveyorBeltObject"
 #define FRUITROLLOBJECT "FruitRollObject"
+#define DIGDOWNOBJECT "DigDownObject"
+#define DIGDOWNYUMBLEOBJECT "DigDownYumbleObject"
 
 //////////////////////////////////////////////////
 

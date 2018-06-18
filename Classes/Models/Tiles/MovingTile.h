@@ -29,6 +29,7 @@ public:
 	void initMovingTile();
 	bool containsHoneyModifier();
 	void setHoneyModifier();
+	void initModifierWithSprite(SpriteFrame* sprite);
 
 	void setModifierTexture();
 	SpriteFrame* getMainSpriteFrame() const

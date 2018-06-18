@@ -110,7 +110,6 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	itr = data.FindMember("modifier_type");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		layers = 1;
 		try
 		{
 			this->modifierType = ModifierTypes::_from_string(itr->value.GetString());
@@ -118,6 +117,10 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 		catch (const std::runtime_error&)
 		{
 			cocos2d::log("Undefined ModifierTypes Type: %s", itr->value.GetString());
+		}
+		if(modifierType == +ModifierTypes::HoneyModifier || modifierType == +ModifierTypes::CageModifier)
+		{
+			layers = 1;
 		}
 	}
 

@@ -10,9 +10,20 @@ USING_NS_CC;
 class AdsControl 
 {
 public:	
-	static void delayFullAds(float delay,int adpos=0);
 
+	static AdsControl* getInstance();
+	void showInterstitialAds();
+	void showRewardedVideoAds(bool buyCoins = true);
+	void showBannerAds();
 
+	bool isAvailableInterstitialAds();
+	bool isAvailableRewardedVideoAds();
+	bool isAvailableBannerAds();
+
+private:
+	AdsControl();
+	static AdsControl* instance;
 };
+
 
 #endif

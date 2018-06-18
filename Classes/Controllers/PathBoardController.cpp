@@ -174,8 +174,20 @@ void PathBoardController::movePathFollower()
 
 void PathBoardController::showFrontCrushAction(Cell* frontCell)
 {
-	auto fixTileLayers = frontCell->getSourceTile()->getLayers();
+	auto sourceTile = frontCell->getSourceTile();
+	auto fixTileLayers = sourceTile->getLayers();
+	if(fixTileLayers <= 0)
+	{
+		if(sourceTile->getType() == FRUITROLLOBJECT)
+		{
+			auto fruitObject = static_cast<FruitRollObject*>(sourceTile);
+			fixTileLayers = fruitObject->getRemainderCount();
+		}
+	}
 	auto crushCount = fixTileLayers > collectedPowerCount ? collectedPowerCount : fixTileLayers;
+	
+	if(crushCount <= 0) return;
+
 	collectedPowerCount -= crushCount;
 	pathFollowerShow->setPosition(pathFollowerObject->getPosition());
 	pathFollowerShow->setVisible(true);
@@ -184,6 +196,7 @@ void PathBoardController::showFrontCrushAction(Cell* frontCell)
 	CKAction ckAction;
 	ckAction.node = pathFollowerShow;
 	ckAction.action = actionController->createFrontCrushAction(pathFollowerShow, frontCell->getBoardPos(), [=] {
+		boardModel->initFruitRollFlags();
 		frontCell->crushCell(true);
 	}, [=] {
 		pathFollowerObject->setVisible(true);

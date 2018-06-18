@@ -180,7 +180,7 @@ public:
 	ShopDialog();	
 	CREATE_FUNC(ShopDialog);
 	void onClickBtnBuy(int gCount, int adType = 1);
-	void rewardedVideoFinish();
+	static void rewardedVideoFinish();
 
 };
 class BoosterBuyDialog :public Popup {

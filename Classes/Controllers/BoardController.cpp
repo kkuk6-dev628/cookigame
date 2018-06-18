@@ -20,6 +20,7 @@
 #include "Scenes/GamePlayScene.h"
 #include "Models/Tiles/LayeredCrackerTile.h"
 #include "Models/Tiles/FruitRollGroup.h"
+#include "Native/AdsControl.h"
 
 char BoardController::cellSize = 79;
 GameState BoardController::gameState;
@@ -117,6 +118,7 @@ void BoardController::initWithNode(Node* node, Node* effect)
 	swapEffectNode = rootNode->getChildByName("swapBoosterEffect");
 	if(swapEffectNode != nullptr)
 	{
+		swapEffectNode->retain();
 		swapEffectNode->removeFromParent();
 		showObjectsLayer->addChild(swapEffectNode);
 		swapEffectNode->setVisible(false);
@@ -145,7 +147,7 @@ void BoardController::initWithNode(Node* node, Node* effect)
 	circleGroupNode->getChildByName("FileNode_6")->setVisible(true);
 
 	objectTargetPos = Utils::convertPos(circleGroupNode, effectNode);
-	for (char i = 1; i <= 6; i++)
+	for (char i = 1; i <= 7; i++)
 	{
 		auto nodeName = StringUtils::format("FileNode_%d", i);
 		circleGroupNode->getChildByName(nodeName)->setVisible(false);
@@ -227,7 +229,7 @@ void BoardController::showGameWinDlg()
 		dlg->lbl_maxscore->setVisible(false);
 		dlg->lbl_maxscore_title->setVisible(false);
 
-		float delY = 20;
+		float delY = 5;
 
 		dlg->lbl_score_title->setFontSize(dlg->lbl_score_title->getFontSize()*1.3f);
 		dlg->lbl_score_title->setPositionY(dlg->lbl_score_title->getPositionY() - delY);
@@ -257,7 +259,7 @@ void BoardController::showGameWinDlg()
 
 		dlg->m_rewardedCoin->runAction(Sequence::create(DelayTime::create(0.5 + nStarCount*0.5f), Show::create(), EaseSineIn::create(MoveTo::create(0.5, orpos)), nullptr));
 
-		userData->changeGold(nGoldCount);
+		userData->addGold(nGoldCount);
 		userData->saveGold();
 	}
 
@@ -303,10 +305,26 @@ void BoardController::showGameFailedDlg()
 		this->endGame();
 	});
 	dlg->btn_playon->addClickEventListener([=](Ref*){
+		auto userData = UserData::getInstance();
+		if(userData->getGold() >= 5)
+		{
+			dlg->close();
+			moveCount -= 5;
+			updateMoveCountText();
+			userData->addGold(-5);
+			gameState = Idle;
+		}
+		else
+		{
+			ShopDialog::create()->show(this, 2);
+		}
+	});
+	dlg->btn_video->addClickEventListener([=](Ref*)
+	{
+		AdsControl::getInstance()->showRewardedVideoAds(false);
 		dlg->close();
 		moveCount -= 5;
 		updateMoveCountText();
-
 		gameState = Idle;
 	});
 	dlg->retain();
@@ -338,8 +356,8 @@ void BoardController::updateBoosterCount()
 {
 	for (char i = 0; i < BoosterCount; i++)
 	{
-		auto boosterCountNode = (ui::Text*)bottomMenuArea->getChildren().at(i + 2)->getChildByName("count");
-		boosterCountNode->setString(StringUtils::toString(UserData::getInstance()->nBoosterCount[i]));
+		auto boosterCountNode = static_cast<ui::Text*>(bottomMenuArea->getChildren().at(i + 2)->getChildByName("count"));
+		boosterCountNode->setString(StringUtils::toString(UserData::getInstance()->getBoosterCount(static_cast<BoosterType>(i))));
 	}
 }
 
@@ -689,7 +707,6 @@ void BoardController::initBoardElements()
 	addMask();
 	initLiquidLayer();
 	boardModel->buildConveyors();
-
 	//addTile(4, 3, MovingTileTypes::SeekerObject, TileColors::red);
 	//addTile(5, 3, MovingTileTypes::RowBreakerObject, TileColors::red);
 	//addTile(4, 4, MovingTileTypes::ColumnBreakerObject, TileColors::yellow);
@@ -717,10 +734,15 @@ void BoardController::addCellToBoard(char col, char row)
 		{
 			getBoardLayer(layerId)->addChild(cellLayer, PRETZELZORDER);
 		}
+		else if(cellLayer->getType() == DIGDOWNOBJECT)
+		{
+			getBoardLayer(LayerId::Toppling)->addChild(cellLayer);
+		}
 		else
 		{
 			getBoardLayer(layerId)->addChild(cellLayer);
 		}
+
 		if (cellLayer->getType() == OBJECTSPINNEROBJECT)
 		{
 			boardModel->addObjectSpinnerCell(cell);
@@ -2418,7 +2440,7 @@ void BoardController::executeBooster(Cell* cell)
 	default:
 		break;
 	}
-	UserData::getInstance()->nBoosterCount[activeBooster]--;
+	UserData::getInstance()->subtractBoosterCount(activeBooster, 1);
 	UserData::getInstance()->saveBooster();
 	updateBoosterCount();
 	setBoosterActive(activeBooster);
@@ -2702,7 +2724,7 @@ void BoardController::crushRowBreaker(Cell* cell, bool showEffect)
 		return;
 	}
 	auto leftCell = cell->leftCell;
-	cell->crushCell();
+	//cell->crushCell();
 	while (leftCell != nullptr)
 	{
 		if (!leftCell->isEmpty && leftCell->getMovingTile() != nullptr)
@@ -2739,7 +2761,7 @@ void BoardController::crushRowBreaker(Cell* cell, bool showEffect)
 void BoardController::crushColumnBreaker(Cell* cell, bool showEffect)
 {
 	auto upCell = cell->upCell;
-	cell->crushCell();
+	//cell->crushCell();
 	while (upCell != nullptr)
 	{
 		if(!upCell->isEmpty && upCell->getMovingTile() != nullptr)
@@ -2774,7 +2796,7 @@ void BoardController::crushColumnBreaker(Cell* cell, bool showEffect)
 void BoardController::crushXBreaker(Cell* cell)
 {
 	auto col = cell->gridPos.Col, row = cell->gridPos.Row;
-	cell->crushCell();
+	//cell->crushCell();
 
 	for(char c = col - 1, r = row -1; (c >= 0 && r >= 0); c--, r--)
 	{
@@ -2827,7 +2849,7 @@ void BoardController::crushSeekerAndBonus(Cell* seekerCell, Cell* bonusCell)
 	auto seekerShow = poolController->getSeekerShow(seekerCell->tileColor);
 	auto bonusType = bonusCell->getMovingTile()->getType();
 	seekerShow->strData = bonusType;
-	cocos2d::log("crush seeker and bonus: %s", bonusType.c_str());
+	//cocos2d::log("crush seeker and bonus: %s", bonusType.c_str());
 	showObjectsLayer->addChild(seekerShow);
 	seekerShow->setPosition(seekerCell->getBoardPos());
 	CKAction ckAction;
@@ -2892,6 +2914,9 @@ void BoardController::landingSeeker(AnimationShowObject* seekerShow, Cell* targe
 		fallingTileCount--;
 		auto bonusString = seekerShow->strData;
 		this->crushCell(targetCell);
+		//if (/*bonusString.empty() || bonusString == "\0" || */MovingTileTypes::_from_string_nothrow(bonusString.c_str()) == +MovingTileTypes::LayeredMatchObject)
+		//{
+		//}
 		this->crushBonusManually(targetCell, bonusString);
 		poolController->recycleSeekerShow(seekerShow);
 		soundController->playEffectSound(SoundEffects::sound_gem_landing);

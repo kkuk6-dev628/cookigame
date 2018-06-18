@@ -10,6 +10,7 @@
 #include "PopsicleBoardController.h"
 #include "TopplingBoardController.h"
 #include "THopplingBoardController.h"
+#include "DigDownController.h"
 
 USING_NS_CC;
 
@@ -108,6 +109,9 @@ BoardController* GameController::getBoardController(bool next)
 		break;
 	case GoalTypes::thoppling:
 		boardController = new THopplingBoardController();
+		break;
+	case GoalTypes::DigDownYumbleObject:
+		boardController = new DigDownController();
 		break;
 	default:
 		boardController = new BoardController();

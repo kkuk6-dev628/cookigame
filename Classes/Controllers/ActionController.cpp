@@ -250,11 +250,9 @@ cocos2d::Action* ActionController::createFrontCrushAction(cocos2d::Node* node, c
 Action* ActionController::createScaleBouncingAction(std::function<void()> callback, Node* node)
 {
 	Sequence* seq = Sequence::create(
-		ScaleTo::create(0.2f, 0.5f),
-		ScaleTo::create(0.2f, 1.2f),
-		ScaleTo::create(0.2f, 0.8f), 
-		ScaleTo::create(0.2f, 1.1f),
-		ScaleTo::create(0.2f, 1.0f),
+		ScaleTo::create(0.1f, 0.8f),
+		ScaleTo::create(0.1f, 1.1f),
+		ScaleTo::create(0.1f, 1.0f), 
 		CallFunc::create(callback),
 		CallFunc::create([this, node]() { this->endAction(node); }),
 		nullptr);

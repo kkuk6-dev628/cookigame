@@ -148,6 +148,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\Controllers\ActionController.cpp" />
     <ClCompile Include="..\Classes\Controllers\BoardController.cpp" />
+    <ClCompile Include="..\Classes\Controllers\DigDownController.cpp" />
     <ClCompile Include="..\Classes\Controllers\GameController.cpp" />
     <ClCompile Include="..\Classes\Controllers\HiderBoardController.cpp" />
     <ClCompile Include="..\Classes\Controllers\HopplingBoardController.cpp" />
@@ -190,6 +191,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\Tiles\ColorPieObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\ConveyorBeltObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\CookieTile.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\DigDownObject.cpp" />
+    <ClCompile Include="..\Classes\Models\Tiles\DigDownYumbleObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\DisplayCaseObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\FixTiles.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\FruitRollGroup.cpp" />
@@ -218,6 +221,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\Controllers\ActionController.h" />
     <ClInclude Include="..\Classes\Controllers\BoardController.h" />
+    <ClInclude Include="..\Classes\Controllers\DigDownController.h" />
     <ClInclude Include="..\Classes\Controllers\GameController.h" />
     <ClInclude Include="..\Classes\Controllers\HiderBoardController.h" />
     <ClInclude Include="..\Classes\Controllers\HopplingBoardController.h" />
@@ -266,6 +270,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\ColorPieObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\ConveyorBeltObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\CookieTile.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\DigDownObject.h" />
+    <ClInclude Include="..\Classes\Models\Tiles\DigDownYumbleObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\DisplayCaseObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\FixTiles.h" />
     <ClInclude Include="..\Classes\Models\Tiles\FruitRollGroup.h" />
@@ -284,6 +290,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\Tile.h" />
     <ClInclude Include="..\Classes\Native\AdsControl.h" />
     <ClInclude Include="..\Classes\Native\GGBridge.h" />
+    <ClInclude Include="..\Classes\Native\IMListener.h" />
     <ClInclude Include="..\Classes\Scenes\GamePlayScene.h" />
     <ClInclude Include="..\Classes\Scenes\LevelMapScene.h" />
     <ClInclude Include="..\Classes\Scenes\MainMenuScene.h" />
