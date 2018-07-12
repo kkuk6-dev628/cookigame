@@ -15,6 +15,7 @@ public:
 protected:
 
 	void checkObjective() override {};
+	void checkMoveCount() override;
 
 	void addCellToBoard(char col, char row) override;
 	void processCustomLogic(float) override;

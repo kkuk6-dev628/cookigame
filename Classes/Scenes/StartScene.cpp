@@ -60,12 +60,10 @@ bool StartScene::init()
 	});
 	rootNode->runAction(action);
 
-	//auto skeletonNode = spine::SkeletonAnimation::createWithJsonFile("spineAnimations/liwu.json", "spineAnimations/liwu.atlas");
-	//skeletonNode->setAnimation(0, "liwu", true);
+	//auto skeletonNode = spine::SkeletonAnimation::createWithJsonFile("spineAnimations/HiderSegmentObject.json", "spineAnimations/HiderSegmentObject.atlas");
+	//skeletonNode->setAnimation(0, "animation", true);
 	//skeletonNode->setName("giftanimation");
-	//skeletonNode->setCompleteListener([skeletonNode](int trackIndex, int loopCount) {
-	//});
-	//skeletonNode->setPosition(Vec2(CenterX, CenterY));	
+	//skeletonNode->setPosition(Vec2(CenterX, CenterY));
 	//rootNode->addChild(skeletonNode);
 
 	this->initControllers();

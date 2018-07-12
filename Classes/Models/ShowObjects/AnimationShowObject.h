@@ -2,6 +2,7 @@
 #include "2d/CCLayer.h"
 #include "cocostudio/ActionTimeline/CCActionTimeline.h"
 #include "Models/Tiles/Tile.h"
+#include "spine/SkeletonAnimation.h"
 
 //#include "base/allocator/CCAllocatorStrategyPool.h"
 class AnimationShowObject : public cocos2d::Layer
@@ -78,4 +79,14 @@ public:
 	ParticleSystem* colorParticle = nullptr;
 	ParticleSystem* normalParticle = nullptr;
 	float originSpeed;
+};
+
+class SpineShowObject : public AnimationShowObject
+{
+public:
+	void initWithCSB(std::string csbFileName) override;
+	void initWithSpine(std::string jsonFileName, std::string atlasFileName, std::string animationName);
+	void reuse(const std::function<void()> callback) override;
+
+	spine::SkeletonAnimation* spineAnim = nullptr;
 };

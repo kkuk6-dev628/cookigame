@@ -74,6 +74,8 @@ PoolController::PoolController()
 	digdownCrushPool = new NodePool<AnimationShowObject>;
 
 	scoreShowPool = new NodePool<LabelShowObject>;
+	hiderHeadEatShowPool = new NodePool<SpineShowObject>;
+
 	RegisterTileClasses();
 }
 
@@ -1156,4 +1158,29 @@ LabelShowObject* PoolController::getScoreShow() const
 void PoolController::recycleScoreShow(LabelShowObject* scoreNode) const
 {
 	scoreShowPool->recycleNode(scoreNode);
+}
+
+SpineShowObject* PoolController::getHiderHeadEatShow() const
+{
+	SpineShowObject* show;
+	if (hiderHeadEatShowPool->size() > 0)
+	{
+		show = hiderHeadEatShowPool->getNode();
+	}
+	else
+	{
+		show = new SpineShowObject;
+		show->initWithSpine("spineAnimations/HiderSegmentObject.json", "spineAnimations/HiderSegmentObject.atlas", "animation");
+	}
+	show->reuse([=]()
+	{
+		this->recycleHiderHeadEatShow(show);
+	});
+	return show;
+
+}
+
+void PoolController::recycleHiderHeadEatShow(SpineShowObject* hiderHeadEatShow) const
+{
+	hiderHeadEatShowPool->recycleNode(hiderHeadEatShow);
 }

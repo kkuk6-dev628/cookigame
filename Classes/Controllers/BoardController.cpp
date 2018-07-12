@@ -379,7 +379,13 @@ void BoardController::checkObjective()
 void BoardController::checkMoveCount()
 {
 	if (fallingTileCount > 0 || gameState != Idle) return;
-	if(currentLevel->getMoveCount() <= moveCount)
+	if (pendingSeekers->count() > 0) return;
+
+	if (totalObjectCount == collectedObjectCount)
+	{
+		finishLevel();
+	}
+	else if(currentLevel->getMoveCount() <= moveCount)
 	{
 		gameState = Failed;
 		showGameFailedDlg();
@@ -2409,10 +2415,12 @@ void BoardController::executeBooster(Cell* cell)
 	switch (activeBooster)
 	{
 	case BoosterHor:
+		crushCell(cell);
 		crushRowBreaker(cell);
 		//setBoosterActive(activeBooster);
 		break;
 	case BoosterVer:
+		crushCell(cell);
 		crushColumnBreaker(cell);
 		//setBoosterActive(activeBooster);
 		break;

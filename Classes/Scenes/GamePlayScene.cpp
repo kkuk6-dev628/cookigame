@@ -44,10 +44,10 @@ Scene* GamePlayScene::createScene()
 	auto scene = Scene::create();
 
 	// 'layer' is an autorelease object
-	auto layer = GamePlayScene::create();
+	instance = GamePlayScene::create();
 
 	// add layer as a child to scene
-	scene->addChild(layer);
+	scene->addChild(instance);
 
 	// return the scene
 	return scene;

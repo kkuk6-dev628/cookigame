@@ -68,7 +68,7 @@ public:
 
 	bool canPlaceHiderHead() const
 	{
-		return !isOutCell && pSourceTile->getType() != FRUITROLLOBJECT;
+		return !isOutCell && (pSourceTile == nullptr || pSourceTile->getType() != FRUITROLLOBJECT);
 	}
 
 	bool isRainbowCell() const

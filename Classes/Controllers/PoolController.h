@@ -115,6 +115,9 @@ public:
 	LabelShowObject* getScoreShow() const;
 	void recycleScoreShow(LabelShowObject* scoreNode) const;
 
+	SpineShowObject* getHiderHeadEatShow() const;
+	void recycleHiderHeadEatShow(SpineShowObject* hiderHeadEatShow) const;
+
 private:
 	PoolController();
 	static PoolController* instance;
@@ -171,5 +174,7 @@ private:
 	NodePool<SpriteShowObject>* digdownShowPool;
 
 	NodePool<LabelShowObject>* scoreShowPool;
+
+	NodePool<SpineShowObject>* hiderHeadEatShowPool;
 };
 

@@ -1276,12 +1276,12 @@ bool BoardModel::checkAvailableMove(char col, char row)
 {
 	auto refCell = cells[row][col];
 	if (availableMove != nullptr) CC_SAFE_DELETE(availableMove);
-	if (refCell == nullptr || (!refCell->canMatch() && !refCell->isRainbowCell()))
+	if (refCell == nullptr || (!refCell->canMatch() && !refCell->isRainbowCell()) || refCell->isFixed)
 	{
 		return false;
 	}
 	auto refTile = refCell->getMovingTile();
-	if(refTile->isBonusTile() && !refCell->isFixed)
+	if(refTile->isBonusTile())
 	{
 		for(char i = 0; i < 4; i++)
 		{

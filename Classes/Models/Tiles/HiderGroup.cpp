@@ -121,6 +121,15 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 			}
 			headCell->setSourceTile(segment);
 			headCell->canPass = true;
+			segment->showEatAnimation();
+			//auto headEatShow = PoolController::getInstance()->getHiderHeadEatShow();
+			//headEatShow->setPosition(segment->getPosition());
+			//auto container = segment->getParent();
+			//if(container != nullptr)
+			//{
+			//	//segment->setVisible(false);
+			//	container->addChild(headEatShow);
+			//}
 			SoundController::getInstance()->playEffectSound(SoundEffects::sound_worm_chew);
 		}
 	}, segment);

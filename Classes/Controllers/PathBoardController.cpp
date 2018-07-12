@@ -1,5 +1,6 @@
 #include "PathBoardController.h"
 #include "ActionController.h"
+#include "Models/DataModels/Level.h"
 
 
 PathBoardController::PathBoardController()
@@ -47,6 +48,18 @@ void PathBoardController::pathMoverCollected(Cell* cell)
 
 }
 
+
+void PathBoardController::checkMoveCount()
+{
+	if (fallingTileCount > 0 || gameState != Idle) return;
+	if (pendingSeekers->count() > 0) return;
+
+	if (currentLevel->getMoveCount() <= moveCount)
+	{
+		gameState = Failed;
+		showGameFailedDlg();
+	}
+}
 
 void PathBoardController::addCellToBoard(char col, char row)
 {

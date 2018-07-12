@@ -2,6 +2,7 @@
 #include "cocostudio/ActionTimeline/CSLoader.h"
 #include "cocostudio/ActionTimeline/CCActionTimeline.h"
 #include "Controllers/PoolController.h"
+#include "spine/SkeletonAnimation.h"
 
 //cocos2d::allocator::AllocatorStrategyPool<AnimationShowObject> AnimationShowObject::allocator( "AnimationShowObjectAllocator" );
 
@@ -101,4 +102,25 @@ void ParticleShowObject::scheduleToRecycle(float dt)
 	{
 		recycleCallback();
 	}
+}
+
+void SpineShowObject::initWithCSB(std::string csbFileName)
+{
+}
+
+void SpineShowObject::initWithSpine(std::string jsonFileName, std::string atlasFileName, std::string animationName)
+{
+	spineAnim = spine::SkeletonAnimation::createWithJsonFile(jsonFileName, atlasFileName);
+	spineAnim->setAnimation(0, animationName, true);
+	spineAnim->setAnchorPoint(Vec2(0.5f, 0.5f));
+	spineAnim->setPosition(Vec2(0, 0));
+	addChild(spineAnim);
+	setAnchorPoint(Vec2(0.5f, 0.5f));
+}
+
+void SpineShowObject::reuse(const std::function<void()> callback)
+{
+	spineAnim->setCompleteListener([=](int trackIndex, int loopCount) {
+		callback();
+	});
 }

@@ -130,7 +130,7 @@ void HiderSegmentObject::initTexture()
 	}
 	else
 	{
-		textureName = "HiderSegmentObject_head.png";
+		textureName = "";
 		segmentDirection = Utils::getDirection(currPos, nextSegment->gridPos);
 		switch (segmentDirection)
 		{
@@ -155,6 +155,20 @@ void HiderSegmentObject::initTexture()
 
 void HiderSegmentObject::initTexture(std::string textureName)
 {
+	if(textureName.empty())
+	{
+		if (hiderSegPosition == +HiderSegmentPosition::head)
+		{
+			if(headSpine == nullptr)
+			{
+				headSpine = spine::SkeletonAnimation::createWithJsonFile("spineAnimations/HiderSegmentObject.json", "spineAnimations/HiderSegmentObject.atlas");
+				headSpine->setAnimation(0, "Idle", true);
+				headSpine->setAnchorPoint(Vec2(0.5f, 0.5f));
+				headSpine->setPosition(Vec2(CellSize / 2, CellSize / 2 - 6));
+				addChild(headSpine);
+			}
+		}
+	}
 	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(textureName);
 	if (spriteFrame == nullptr)
 	{
@@ -177,12 +191,6 @@ void HiderSegmentObject::initTexture(std::string textureName)
 		textureSprite->setPosition(CellSize / 2 + 4, CellSize / 2 + 4);
 		textureSprite->setContentSize(Size(CellSize - 6, CellSize - 6));
 	}
-	else if(hiderSegPosition == +HiderSegmentPosition::head)
-	{
-		auto height = originalTextureSize.height * CellSize / originalTextureSize.width;
-		textureSprite->setContentSize(Size(CellSize, height));
-		textureSprite->setPosition(CellSize / 2, CellSize / 2 - 2);
-	}
 	else
 	{
 		auto height = originalTextureSize.height * CellSize / originalTextureSize.width;
@@ -203,4 +211,16 @@ void HiderSegmentObject::showShakeAction()
 	ckAction.node = this;
 	ckAction.action = actionController->createHiderSegmentShakeAction(this, segmentDirection == +AdjacentDirs::E || segmentDirection == +AdjacentDirs::W);
 	actionController->pushAction(ckAction, false);
+}
+
+void HiderSegmentObject::showEatAnimation()
+{
+	if (!isHead()) return;
+
+	headSpine->setAnimation(0, "animation", false);
+	headSpine->setCompleteListener([=](int trackIndex, int loopCount)
+	{
+		//headSpine->clearTracks();
+		headSpine->setAnimation(0, "Idle", true);
+	});
 }

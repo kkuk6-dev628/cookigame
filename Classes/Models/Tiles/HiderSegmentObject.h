@@ -29,6 +29,7 @@ public:
 	void initTexture(std::string textureName) override;
 	bool crush(bool showEffect) override;
 	void showShakeAction();
+	void showEatAnimation();
 
 private:
 	HiderGroup* group = nullptr;
@@ -37,5 +38,6 @@ private:
 	bool isCurve = false;
 	Size originalTextureSize;
 	AdjacentDirs segmentDirection = AdjacentDirs::E;
+	spine::SkeletonAnimation* headSpine = nullptr;
 };
 

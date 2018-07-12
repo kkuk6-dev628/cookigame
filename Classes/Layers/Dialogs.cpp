@@ -654,10 +654,14 @@ void ShopDialog::onClickBtnBuy(int gCount, int adType)
 				BoosterBuyDialog::getInstance()->updateCoin();
 		}
 		else {
+
 			messageBox->setTitle("Error");
 			messageBox->setMessage("Ads not ready!");
 			messageBox->show(this, 2);
 			
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+			rewardedVideoFinish();
+#endif
 		}
 		break;
 	case 0:
@@ -672,6 +676,9 @@ void ShopDialog::onClickBtnBuy(int gCount, int adType)
 			messageBox->setTitle("Error");
 			messageBox->setMessage("Ads not ready!");
 			messageBox->show(this, 2);
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+			rewardedVideoFinish();
+#endif
 		}
 		break;
 	default:break;
@@ -812,6 +819,6 @@ void BoosterBuyDialog::onClickBuy()
 		this->close();
 	}
 	else {
-		ShopDialog::create()->show(this, 10);
+		ShopDialog::create()->show(this, 2);
 	}
 }
