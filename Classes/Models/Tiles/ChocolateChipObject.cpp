@@ -57,10 +57,7 @@ DonutObject::DonutObject()
 
 bool DonutObject::crush(bool showEffect)
 {
-	if (showEffect) showCrushEffect();
-	//pCell->afterTileCrushProc();
-	poolController->recycleCookieTile(this);
-	return true;
+	return MovingTile::crush(showEffect);
 }
 
 void DonutObject::showCrushEffect()

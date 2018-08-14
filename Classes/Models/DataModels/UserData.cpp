@@ -23,6 +23,7 @@ UserData::UserData()
 {
 	userDefault = cocos2d::UserDefault::getInstance();
 	_nGold = userDefault->getIntegerForKey("gold", 0);
+	//_nGold = 12;
 
 	auto strTmp = UserDefault::getInstance()->getStringForKey("BoosterCount", "3,3,3,3");
 	auto *arr = componentsSeparatedByString(__String::create(strTmp), ",");
@@ -34,7 +35,7 @@ UserData::UserData()
 	topLevel = userDefault->getIntegerForKey("top_level", 1);
 	//topLevel = MAX(topLevel, 1260);
 
-	//topLevel = 1599;//test
+	topLevel = 305;//test
 	//if (g_bDebugMode) topLevel = 46;
 #ifdef TEST_UserDataClearOnInit
 	clear();

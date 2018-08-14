@@ -75,6 +75,10 @@ public:
 
 #pragma region invisible objects
 
+class HiderPriorityObject : public FixTiles
+{	
+};
+
 class SeekerPriorityObject : public FixTiles
 {
 public:

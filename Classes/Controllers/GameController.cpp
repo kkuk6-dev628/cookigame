@@ -66,7 +66,7 @@ void GameController::goGamePlay(int levelNumber)
 	Director::getInstance()->pushScene(TransitionFade::create(0.6f, GamePlayScene::createScene()));
 }
 
-BoardController* GameController::getBoardController(bool next)
+BoardController* GameController::createBoardController(bool next)
 {
 	//if(next) currentBoardIndex++;
 

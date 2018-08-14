@@ -216,6 +216,40 @@ Cell* BoardModel::getInclinedFallCell(Cell* cell)
 	return nullptr;
 }
 
+CellsList* BoardModel::getSeekerTargets(int count) const
+{
+	if (seekerPriorityList == nullptr || seekerPriorityList->size() == 0)
+	{
+		return nullptr;
+	}
+	auto targets = new CellsList;
+
+	seekerPriorityList->sort([](SeekerPriorityObject* first, SeekerPriorityObject* second) {
+		if (first->getPriority() < second->getPriority())
+		{
+			return true;
+		}
+		if (first->getPriority() > second->getPriority())
+		{
+			return false;
+		}
+		if (first->getLayers() > second->getLayers())
+		{
+			return true;
+		}
+		return false;
+	});
+
+	auto i = 0;
+	for(auto seekerPriorityObj : *seekerPriorityList)
+	{
+		targets->push_back(seekerPriorityObj->getCell());
+		i++;
+		if(i >= count) break;
+	}
+	return targets;
+}
+
 Cell* BoardModel::getSeekerTarget()
 {
 	if(seekerPriorityList == nullptr || seekerPriorityList->size() == 0)
@@ -238,14 +272,19 @@ Cell* BoardModel::getSeekerTarget()
 		return false;
 	});
 	auto seekerTarget = seekerPriorityList->front();
-	seekerTarget->countDownLayer();
+	//seekerTarget->countDownLayer();
 	auto retCell = seekerTarget->getCell();
-	if(seekerTarget->getLayers() <= 0)
-	{
-		seekerPriorityList->pop_front();
-		//seekerTarget->release();
-	}
+	//if(seekerTarget->getLayers() <= 0)
+	//{
+	//	seekerPriorityList->pop_front();
+	//	//seekerTarget->release();
+	//}
 	return retCell;
+}
+
+void BoardModel::removeSeekerTarget(SeekerPriorityObject* target)
+{
+	seekerPriorityList->remove(target);
 }
 
 CellsList* BoardModel::getSameColorCells(TileColors tileColor)
@@ -740,8 +779,21 @@ void BoardModel::buildConveyors()
 			do
 			{
 				auto conveyorTile = static_cast<ConveyorBeltObject*>(itrCell->getTileAtLayer(LayerId::PathConveyor));
+				if(conveyorTile == nullptr || conveyorTile->getType() != CONVEYORBELTOBJECT)
+				{
+					auto nextSectionInfo = findConveyorInfo(prevCell);
+					if (nextSectionInfo != nullptr)
+					{
+						itrCell = getCell(nextSectionInfo->ToColumn, nextSectionInfo->ToRow);
+						continue;
+					}
+					else
+					{
+						break;
+					}
+				}
 				auto strDir = conveyorTile->getDirectionString();
-				if(conveyorTile == nullptr || conveyorTile->getType() != CONVEYORBELTOBJECT || strDir.find(prevDir) == std::string::npos)
+				if(strDir.find(prevDir) == std::string::npos)
 				{
 					auto nextSectionInfo = findConveyorInfo(prevCell);
 					if (nextSectionInfo != nullptr)
@@ -1085,15 +1137,15 @@ MovingTile* BoardModel::moveTile(Cell* cell, MovingTile* movingTile)
 
 void BoardModel::setNoShuffleCells(rapidjson::Value& json)
 {
-	//for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
-	//{
-	//	if (itr->value.IsBool())
-	//	{
-	//		auto gridPos = Utils::StrToGridPos(itr->name.GetString(), "_");
-	//		assert(this->width > gridPos.Col && this->height > gridPos.Row);
-	//		cells[gridPos.Row][gridPos.Col]->noShuffleCell = itr->value.GetBool();
-	//	}
-	//}
+	for (auto itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr)
+	{
+		if (itr->value.IsBool())
+		{
+			auto gridPos = Utils::StrToGridPos(itr->name.GetString(), "_");
+			assert(this->width > gridPos.Col && this->height > gridPos.Row);
+			cells[gridPos.Row][gridPos.Col]->noShuffleCell = itr->value.GetBool();
+		}
+	}
 
 }
 
@@ -1170,6 +1222,14 @@ void BoardModel::addLayerWithJson(rapidjson::Value& json, const LayerId layerNum
 							lavaCakeTargets = new CellsList;
 						}
 						lavaCakeTargets->push_back(cell);
+					}
+					else if (strcmp(typeName, HIDERPRIORITYOBJECT) == 0)
+					{
+						if (hiderTargets == nullptr)
+						{
+							hiderTargets = new std::map<std::string, Cell*>;
+						}
+						hiderTargets->insert(std::pair<std::string, Cell*>(tile->getChain(), cell));
 					}
 					else if(strcmp(typeName, SPAWNEROBJECT) == 0)
 					{

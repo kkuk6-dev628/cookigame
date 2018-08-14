@@ -144,7 +144,7 @@ Cell* THopplingBoardController::findHopplerTarget()
 				target = nullptr;
 				break;
 			}
-		} while (std::find(thoplerTargets->begin(), thoplerTargets->end(), target) != thoplerTargets->end());
+		} while (std::find(thoplerTargets->begin(), thoplerTargets->end(), target) != thoplerTargets->end() || target->containsThoppler());
 
 		if(target != nullptr)
 		{
@@ -299,6 +299,8 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 	cell->removeTileAtLayer(LayerId::Toppling);
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(hopplerShow);
+	targetCell->dirty = true;
+	cell->dirty = false;
 	ckAction.action = actionController->createTopplerMoveAction(hopplingPath, [=] {
 		PoolController::getInstance()->recycleTopplerShow(hopplerShow);
 		hopplerTile->setVisible(true);

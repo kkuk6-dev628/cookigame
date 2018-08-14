@@ -153,6 +153,28 @@ Cell* PopsicleBoardController::findSeekerTarget(CellsList* targetsList) const
 	return BoardController::findSeekerTarget(targetsList);
 }
 
+CellsList* PopsicleBoardController::getSeekerTargets(int count) const
+{
+	auto specialTiles = boardModel->getSpecialTiles();
+	auto coveredCells = static_cast<__Array*>(specialTiles->objectForKey(COVEREDPOPSICLES));
+	auto targets = new CellsList;
+	for (auto i = 0; i < count && coveredCells->count() > 0; i++)
+	{
+		auto cell = static_cast<Cell*>(coveredCells->getRandomObject());
+
+		targets->push_back(cell);
+		coveredCells->fastRemoveObject(cell);
+	}
+
+	if (targets->size() < count)
+	{
+		auto temp = BoardController::getSeekerTargets(count - targets->size());
+		targets->insert(targets->end(), temp->begin(), temp->end());
+		CC_SAFE_DELETE(temp);
+	}
+	return targets;
+}
+
 void PopsicleBoardController::showPopsicleCollectingAction(Cell* cell)
 {
 	auto popsicle = static_cast<PopsicleObject*>(cell->getTileAtLayer(LayerId::UnderCover));
@@ -189,11 +211,13 @@ void PopsicleBoardController::showPopNormalCollectingAction(Cell* cell)
 	auto popsicleShow = poolController->getPopsicleShow();
 	popsicleShow->setPosition(cell->getBoardPos());
 	effectNode->addChild(popsicleShow);
+	this->movingObjectiveCount++;
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(popsicleShow);
 	ckAction.action = actionController->createPopCollectionAction(objectTargetPos, [=] {
 		this->poolController->recyclePopsicleShow(popsicleShow);
 		this->increaseObjectCount();
+		this->movingObjectiveCount--;
 	}, ckAction.node);
 	actionController->pushAction(ckAction, true);
 
@@ -214,6 +238,7 @@ void PopsicleBoardController::showPopLineCollectingAction(Cell* cell)
 	auto cellPos = cell->getBoardPos();
 	popsicleShow->setPosition(cellPos);
 	effectNode->addChild(popsicleShow);
+	this->movingObjectiveCount++;
 	auto targetPos = popsicle->getLineTarget(boardModel->getWidth() * CellSize, boardModel->getHeight() * CellSize);
 	CKAction ckAction_0;
 	ckAction_0.node = reinterpret_cast<Node*>(popsicleShow);
@@ -224,6 +249,7 @@ void PopsicleBoardController::showPopLineCollectingAction(Cell* cell)
 		ckAction.action = actionController->createPopCollectionAction(objectTargetPos, [=] {
 			this->poolController->recyclePopLineShow(popsicleShow);
 			this->increaseObjectCount();
+			this->movingObjectiveCount--;
 		}, ckAction.node);
 		this->actionController->pushAction(ckAction, true);
 	}, popsicleShow);
@@ -249,11 +275,13 @@ void PopsicleBoardController::showPopBombCollectingAction(Cell* cell)
 	auto popBombShow = poolController->getPopBombShow();
 	popBombShow->setPosition(cell->getBoardPos());
 	effectNode->addChild(popBombShow);
+	this->movingObjectiveCount++;
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(popBombShow);
 	ckAction.action = actionController->createPopBombAction(objectTargetPos, [=] {
 		this->poolController->recyclePopBombShow(popBombShow);
 		this->increaseObjectCount();
+		this->movingObjectiveCount--;
 	}, ckAction.node);
 	actionController->pushAction(ckAction, true);
 	crushBombBreaker(cell);
@@ -269,11 +297,13 @@ void PopsicleBoardController::showPopRainbowCollectingAction(Cell* cell)
 	auto popBombShow = poolController->getPopRainbowShow();
 	popBombShow->setPosition(cell->getBoardPos());
 	effectNode->addChild(popBombShow);
+	this->movingObjectiveCount++;
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(popBombShow);
 	ckAction.action = actionController->createPopBombAction(objectTargetPos, [=] {
 		this->poolController->recyclePopRainbowShow(popBombShow);
 		this->increaseObjectCount();
+		this->movingObjectiveCount--;
 	}, ckAction.node);
 	actionController->pushAction(ckAction, true);
 	auto match = Match::create();

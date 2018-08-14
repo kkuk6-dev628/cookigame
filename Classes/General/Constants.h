@@ -52,6 +52,7 @@
 #define CRACKEROBJECT "CrackerObject"
 #define LAVACAKEOBJECT "LavaCakeObject"
 #define LAVACAKETARGETOBJECT "LavaCakeTargetObject"
+#define HIDERPRIORITYOBJECT "HiderPriorityObject"
 #define SEEKERPRIORITYOBJECT "SeekerPriorityObject"
 #define EMPTYOBJECT "EmptyObject"
 #define INVISIBLEBRICKOBJECT "InvisibleBrickObject"

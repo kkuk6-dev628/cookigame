@@ -298,6 +298,7 @@ void BoardController::showGameWinDlg()
 
 void BoardController::showGameFailedDlg()
 {
+
 	auto dlg = GameFailedDialog::create();
 	dlg->btn_close->addClickEventListener([this, dlg](Ref*) {
 		//SoundManager::playEffectSound(SoundManager::SoundEffect::sound_game_buttonclick);
@@ -316,7 +317,7 @@ void BoardController::showGameFailedDlg()
 		}
 		else
 		{
-			ShopDialog::create()->show(this, 2);
+			ShopDialog::create()->show(this->getParent(), LayerId::ShowLayer + 10);
 		}
 	});
 	dlg->btn_video->addClickEventListener([=](Ref*)
@@ -356,8 +357,19 @@ void BoardController::updateBoosterCount()
 {
 	for (char i = 0; i < BoosterCount; i++)
 	{
-		auto boosterCountNode = static_cast<ui::Text*>(bottomMenuArea->getChildren().at(i + 2)->getChildByName("count"));
-		boosterCountNode->setString(StringUtils::toString(UserData::getInstance()->getBoosterCount(static_cast<BoosterType>(i))));
+		if(bottomMenuArea == nullptr)
+		{
+			return;
+		}
+		if(bottomMenuArea->getChildrenCount() > i+2)
+		{
+			auto boosterNode = bottomMenuArea->getChildren().at(i + 2);
+			if(boosterNode != nullptr)
+			{
+				auto boosterCountNode = static_cast<ui::Text*>(boosterNode->getChildByName("count"));
+				if(boosterCountNode != nullptr) boosterCountNode->setString(StringUtils::toString(UserData::getInstance()->getBoosterCount(static_cast<BoosterType>(i))));
+			}
+		}
 	}
 }
 
@@ -380,6 +392,7 @@ void BoardController::checkMoveCount()
 {
 	if (fallingTileCount > 0 || gameState != Idle) return;
 	if (pendingSeekers->count() > 0) return;
+	if (this->movingObjectiveCount > 0) return;
 
 	if (totalObjectCount == collectedObjectCount)
 	{
@@ -395,7 +408,7 @@ void BoardController::checkMoveCount()
 void BoardController::finishLevel()
 {
 	auto delayTime = showRemainedMoveNumAction();
-	fallingTileCount++;
+	fallingTileCount+=10;
 	this->runAction(Sequence::create(DelayTime::create(delayTime), CallFunc::create([=]() {
 		UserData::getInstance()->setTopLevel(currentLevel->getLevelNumber() + 1);
 		isBonusTime = true;
@@ -713,8 +726,8 @@ void BoardController::initBoardElements()
 	addMask();
 	initLiquidLayer();
 	boardModel->buildConveyors();
-	//addTile(4, 3, MovingTileTypes::SeekerObject, TileColors::red);
-	//addTile(5, 3, MovingTileTypes::RowBreakerObject, TileColors::red);
+	//addTile(1, 3, MovingTileTypes::SeekerObject, TileColors::red);
+	//addTile(2, 3, MovingTileTypes::RainbowObject, TileColors::red);
 	//addTile(4, 4, MovingTileTypes::ColumnBreakerObject, TileColors::yellow);
 }
 
@@ -1794,6 +1807,16 @@ void BoardController::combineRainbowAndBonus(Cell* rainbowCell, Cell* bonusCell)
 {
 	auto bonusType = bonusCell->getMovingTile()->getMovingTileType();
 	auto tileColor = bonusCell->getMovingTile()->getTileColor();
+	if(bonusType == +MovingTileTypes::SeekerObject)
+	{
+		rainbowCell->crushCell(false);
+		addMovingTile(bonusCell, bonusType, tileColor);
+		auto match = Match::create();
+		match->matchType = SingleCellMatch;
+		match->refCell = bonusCell;
+		match->retain();
+		pendingCrushCells->addObject(match);
+	}
 	auto sameColorCells = boardModel->getSameColorCells(tileColor);
 	for (auto cell : *sameColorCells)
 	{
@@ -1907,6 +1930,30 @@ void BoardController::spawnNewTile(Cell* cell)
 			else
 			{
 				cell->spawnSpecialTile(MovingTileTypes::_from_string(spawnSys->ObjectType.c_str()));
+			}
+			auto newTile = cell->getMovingTile();
+			if (newTile != nullptr && newTile->getMovingTileType() == +MovingTileTypes::LiquidFillerMatchObject && boardModel->isLiquidFull())
+			{
+				newTile->initWithType(((MovingTileTypes)(MovingTileTypes::LayeredMatchObject))._to_string());
+			}
+			return;
+		}
+	}
+
+	auto countSpawnTable = spawnController->getCountSpawnTable();
+	if(countSpawnTable != nullptr)
+	{
+		auto tileCount = boardModel->getSpecialTilesCount(MovingTileTypes::_from_string(countSpawnTable->Type->c_str()));
+		if (tileCount < countSpawnTable->IntMin)
+		{
+			if ((*countSpawnTable->Type == (+MovingTileTypes::LiquidFillerMatchObject)._to_string() && boardModel->getLiquidSystem()->LevelMax <= boardModel->getCurrentLiquidLevel())
+				|| (*countSpawnTable->Type == (+MovingTileTypes::LiquidDrainerMatchObject)._to_string() && boardModel->getLiquidSystem()->LevelMin >= boardModel->getCurrentLiquidLevel()))
+			{
+				cell->spawnMatchTile();
+			}
+			else
+			{
+				cell->spawnSpecialTile(MovingTileTypes::_from_string(countSpawnTable->Type->c_str()));
 			}
 			auto newTile = cell->getMovingTile();
 			if (newTile != nullptr && newTile->getMovingTileType() == +MovingTileTypes::LiquidFillerMatchObject && boardModel->isLiquidFull())
@@ -2251,6 +2298,17 @@ void BoardController::crushCell(Cell* cell, bool forceClear)
 	auto canMatch = tile->canMatch;
 	auto tileColor = tile->getTileColor();
 	auto containsHoneyModifier = tile->containsHoneyModifier();
+
+	auto seekerTarget = cell->getTileAtLayer(LayerId::Target);
+	if (seekerTarget != nullptr && seekerTarget->getType() == SEEKERPRIORITYOBJECT)
+	{
+		auto st = static_cast<SeekerPriorityObject*>(seekerTarget);
+		st->countDownLayer();
+		if(seekerTarget->getLayers() < 0)
+		{
+			boardModel->removeSeekerTarget(st);
+		}
+	}
 
 	if(!cell->crushCell())
 	{
@@ -2893,20 +2951,28 @@ void BoardController::processPendingSeekers()
 	}
 	CellsList targetsList;
 	Ref* itr = nullptr;
+	auto seekersCount = pendingSeekers->count();
+	auto targets = this->getSeekerTargets(seekersCount);
+	auto it = targets->begin();
 	CCARRAY_FOREACH(pendingSeekers, itr)
 	{
 		auto seekerShow = static_cast<AnimationShowObject*>(itr);
-		auto targetCell = findSeekerTarget(&targetsList);
-		while(Utils::containsCell(&targetsList, targetCell))
-		{
-			targetCell = findSeekerTarget(&targetsList);
-		}
+		auto targetCell = *it;
+
+		//int repeat = 5;
+		//while(repeat > 0 && Utils::containsCell(&targetsList, targetCell))
+		//{
+		//	repeat--;
+		//	targetCell = findSeekerTarget(&targetsList);
+		//}
 		//if(targetCell == nullptr) continue;
 		//if(targetCell->getSourceTile() == nullptr) continue;
 		targetsList.push_back(targetCell);
 		landingSeeker(seekerShow, targetCell);
+		++it;
 	}
 	pendingSeekers->removeAllObjects();
+	CC_SAFE_DELETE(targets);
 }
 
 void BoardController::landingSeeker(AnimationShowObject* seekerShow, Cell* targetCell)
@@ -2956,6 +3022,53 @@ void BoardController::crushBonusManually(Cell* cell, std::string bonusString)
 	{
 		crushXBreaker(cell);
 	}
+}
+CellsList* BoardController::getSeekerTargets(int count) const
+{
+	auto targets = boardModel->getSeekerTargets(count);
+	if(targets == nullptr)
+	{
+		targets = new CellsList;
+	}
+
+	if(targets->size() == count)
+	{
+		return targets;
+	}
+
+	auto tempArray = __Array::create();
+	auto specialTiles = boardModel->getSpecialTiles();
+	auto breakers = static_cast<__Array*>(specialTiles->objectForKey("breakers"));
+	auto wafflePath = static_cast<__Array*>(specialTiles->objectForKey("wafflePath"));
+	auto liquids = static_cast<__Array*>(specialTiles->objectForKey("liquids"));
+
+	if (liquids->count() > 0)
+	{
+		tempArray->addObjectsFromArray(liquids);
+	}
+	if (wafflePath->count() > 0)
+	{
+		tempArray->addObjectsFromArray(wafflePath);
+	}
+	if (breakers->count() > 0)
+	{
+		tempArray->addObjectsFromArray(breakers);
+	}
+
+	auto reminderCount = count - targets->size();
+
+	for(auto i = 0; i < count && tempArray->count() > 0; i++)
+	{
+		auto cell = static_cast<Cell*>(tempArray->getRandomObject());
+		targets->push_back(cell);
+		tempArray->fastRemoveObject(cell);
+	}
+
+	while(targets->size() < count)
+	{
+		targets->push_back(boardModel->getRandomCell());
+	}
+	return targets;
 }
 
 Cell* BoardController::findSeekerTarget(CellsList* targetsList) const

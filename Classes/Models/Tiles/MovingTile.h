@@ -18,6 +18,7 @@ public:
 	//bool onTouchBegan(Touch* touch, Event* unused_event);
 
 	void showScaleBouncingAction();
+	void resetTileScale();
 	void showDirectionalScaleAction(AdjacentDirs dir);
 	void showFallAction(FallPath* path);
 	void showMoveAction(Cell* cell);
@@ -41,7 +42,7 @@ public:
 	bool crush(bool showEffect) override;
 	void showCrushEffect() override;
 
-	bool isBonusTile() const
+	bool isBonusTile() override
 	{ 
 		return movingTileType == +MovingTileTypes::BombBreakerObject || movingTileType == +MovingTileTypes::ColumnBreakerObject 
 		|| movingTileType == +MovingTileTypes::RowBreakerObject || movingTileType == +MovingTileTypes::XBreakerObject || movingTileType == +MovingTileTypes::SeekerObject

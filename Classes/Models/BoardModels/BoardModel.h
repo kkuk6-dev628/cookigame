@@ -41,6 +41,7 @@ public:
 	Cell* getCell(const char col, const char row) const;
 
 	Cell* getSeekerTarget();
+	void removeSeekerTarget(SeekerPriorityObject* target);
 	CellsList* getSameColorCells(TileColors tileColor);
 	__Dictionary* getSpecialTiles();
 	Cell* getRandomCell();
@@ -61,6 +62,7 @@ public:
 
 	Cell* getDirectFallCell(Cell* cell);
 	Cell* getInclinedFallCell(Cell* cell);
+	CellsList* getSeekerTargets(int count) const;
 	std::list<ConveyorInfo*>* getConveyorInfo() const { return conveyorInfo; }
 	void buildConveyors();
 	bool containedInConveyors(Cell* cell) const;
@@ -96,6 +98,8 @@ public:
 	CellsList findNearbyMovingTiles(Cell* cell);
 
 	std::list<FruitRollGroup*>* getFruitRollGroups() const { return fruitRollGroups; }
+	std::map<std::string, Cell*>* getHiderTargets() const { return hiderTargets; }
+	void removeHiderTarget(std::string chainName) const { hiderTargets->erase(chainName); }
 
 private:
 	cocos2d::__Dictionary* boardLayers;
@@ -131,6 +135,7 @@ private:
 	CellsList* objectSpinnerCells = nullptr;
 	std::map<std::string, PieceSwapper*> * pieceSwappers = nullptr;
 	SpawnOnCollectSystem* spawnOnCollectSystem = nullptr;
+	std::map<std::string, Cell*>* hiderTargets = nullptr;
 
 	bool containsHoney = false;
 

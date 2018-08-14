@@ -184,6 +184,7 @@ bool Cell::crushCell(bool showCrushEffect)
 		dirty = false;
 	}
 
+
 	auto thopplerTile = getTileAtLayer(LayerId::Toppling);
 	if (thopplerTile != nullptr && (thopplerTile->getType() == TOPPLINGOBJECT || thopplerTile->getType() == HOPPLINGOBJECT))
 	{

@@ -6,6 +6,7 @@ class CookieTile : public TileBase
 {
 public:
 	CookieTile();
+	void resetTileScale() { this->textureSprite->setScale(1); }
 	//~CookieTile();
 	CREATE_FUNC(CookieTile)
 
@@ -24,6 +25,7 @@ public:
 	virtual SpriteFrame* getSpriteFrame() { return textureSprite == nullptr ? nullptr : textureSprite->getSpriteFrame(); }
 
 	virtual bool isMovable() { return true; }
+	virtual bool isBonusTile() { return false; }
 	virtual bool crush(bool showEffect);
 
 	void setNearbyColor(TileColors color) { nearbyColor = color; }

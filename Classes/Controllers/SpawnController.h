@@ -15,6 +15,7 @@ public:
 	void setSpawnOnCollectSystem(SpawnOnCollectSystem* spawnSys) { spawnOnCollectSystem = spawnSys; }
 
 	TileColors getSpawnColor() const;
+	SpawnTable* getCountSpawnTable() const;
 	SpawnTable* getSpawnTable(std::string spawnerName, int spawnedCount, bool inWater = false) const;
 	void countSpawnedTiles() { spawnedTilesCount++; }
 

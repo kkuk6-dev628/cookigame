@@ -12,7 +12,8 @@ public:
 	static GameController* getInstance();
 	void goMainMenu();
 	void goGamePlay(int levelNumber);
-	BoardController* getBoardController(bool next = true);
+	BoardController* createBoardController(bool next = true);
+	BoardController* getBoardController() const { return boardController; }
 
 private:
 	GameController();

@@ -26,7 +26,7 @@ GamePlayScene::GamePlayScene()
 
 GamePlayScene::~GamePlayScene()
 {
-	instance = nullptr;
+	//instance = nullptr;
 }
 
 GamePlayScene* GamePlayScene::getInstance()
@@ -70,7 +70,7 @@ bool GamePlayScene::init()
 
 	showStartDlg();
 
-	boardController = GameController::getInstance()->getBoardController();
+	boardController = GameController::getInstance()->createBoardController();
 	initEffectNode();
 	boardController->initWithNode(rootNode, effectNode);
 
@@ -184,7 +184,7 @@ void GamePlayScene::initEffectNode()
 void GamePlayScene::restartCallback(Ref* pSender)
 {
 	boardController->removeFromParentAndCleanup(true);
-	boardController = GameController::getInstance()->getBoardController(false);
+	boardController = GameController::getInstance()->createBoardController(false);
 	rootNode->addChild(boardController, kZBoard);
 }
 

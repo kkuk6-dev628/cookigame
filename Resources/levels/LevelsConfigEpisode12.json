@@ -2520,11 +2520,9 @@
               },
               "4": {
                 "6_6": {
-                  "type": "LayeredMatchObject",
+                  "type": "LayeredMatchObject_yellow",
                   "data": {
-                    "color": "any",
-                    "layers": 1,
-                    "modifier_type": "CageModifier"
+                    "color": "yellow"
                   }
                 },
                 "6_7": {
@@ -2540,18 +2538,15 @@
                   "data": {}
                 },
                 "6_8": {
-                  "type": "LayeredMatchObject",
+                  "type": "LayeredMatchObject_yellow",
                   "data": {
-                    "color": "random",
-                    "layers": 1
+                    "color": "yellow"
                   }
                 },
                 "1_7": {
-                  "type": "LayeredMatchObject",
+                  "type": "LayeredMatchObject_yellow",
                   "data": {
-                    "color": "random",
-                    "layers": 1,
-                    "modifier_type": "CageModifier"
+                    "color": "yellow"
                   }
                 },
                 "1_6": {
@@ -2589,11 +2584,9 @@
                   }
                 },
                 "7_7": {
-                  "type": "LayeredMatchObject",
+                  "type": "LayeredMatchObject_yellow",
                   "data": {
-                    "color": "random",
-                    "layers": 1,
-                    "modifier_type": "CageModifier"
+                    "color": "yellow"
                   }
                 },
                 "7_6": {
@@ -2609,9 +2602,9 @@
                   "data": {}
                 },
                 "1_8": {
-                  "type": "LayeredMatchObject",
+                  "type": "LayeredMatchObject_yellow",
                   "data": {
-                    "layers": 1
+                    "color": "yellow"
                   }
                 },
                 "2_8": {
@@ -2654,19 +2647,15 @@
                   "data": {}
                 },
                 "2_6": {
-                  "type": "LayeredMatchObject",
+                  "type": "LayeredMatchObject_yellow",
                   "data": {
-                    "color": "any",
-                    "layers": 1,
-                    "modifier_type": "CageModifier"
+                    "color": "yellow"
                   }
                 },
                 "2_7": {
-                  "type": "LayeredMatchObject",
+                  "type": "LayeredMatchObject_yellow",
                   "data": {
-                    "color": "any",
-                    "layers": 1,
-                    "modifier_type": "CageModifier"
+                    "color": "yellow"
                   }
                 },
                 "5_3": {
@@ -19293,7 +19282,7 @@
         "limit": [
           {
             "type": "move",
-            "value": 29
+            "value": 49
           }
         ],
         "background": "",

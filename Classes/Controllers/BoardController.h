@@ -70,6 +70,7 @@ public:
 	void setBoosterActive(BoosterType boosterType);
 
 	void updateBoosterCount();
+	virtual void crushCell(Cell* pCell, bool forceClear = false);
 
 protected:
 
@@ -150,8 +151,8 @@ protected:
 	virtual Cell* findSeekerTarget(CellsList* targetsList) const;
 	void landingSeeker(AnimationShowObject* seekerShow, Cell* targetCell);
 	void crushBonusManually(Cell* cell, std::string bonusString);
+	virtual CellsList* getSeekerTargets(int count) const;
 
-	virtual void crushCell(Cell* pCell, bool forceClear = false);
 	void crushBombBreaker(Cell* cell);
 	void crushTwoBomb(Cell* cell);
 	void crushRowBreaker(Cell* cell, bool showEffect = true);
@@ -273,7 +274,7 @@ protected:
 	Cell* swapBoosterCell = nullptr;
 	Node* swapEffectNode = nullptr;
 
-
+	int movingObjectiveCount = 0;
 
 #pragma endregion
 

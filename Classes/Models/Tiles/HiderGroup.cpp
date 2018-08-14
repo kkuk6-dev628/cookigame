@@ -1,6 +1,8 @@
 #include "HiderGroup.h"
 #include "Controllers/ActionController.h"
 #include "Controllers/SoundController.h"
+#include "Controllers/BoardController.h"
+#include "Controllers/GameController.h"
 
 
 HiderGroup::HiderGroup()
@@ -102,13 +104,23 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 	auto actionController = ActionController::getInstance();
 	ckAction.node = segment;
 	auto headCell = movePath->front();
+	if(segment->isHead())
+	{
+		BoardController::fallingTileCount++;
+	}
 	ckAction.action = actionController->createHiderSegmentMoveAction(movePath, [=]()
 	{
 		segment->initTexture();
 		if(segment->isHead())
 		{
+			BoardController::fallingTileCount--;
 			auto oldTile = headCell->getSourceTile();
-			if(oldTile != nullptr && oldTile->getParent() != nullptr)
+			if(oldTile->isBonusTile())
+			{
+				auto boardController = GameController::getInstance()->getBoardController();
+				boardController->crushCell(headCell);
+			}
+			else if(oldTile != nullptr && oldTile->getParent() != nullptr)
 			{
 				oldTile->removeFromParent();
 			}

@@ -59,6 +59,11 @@ void MovingTile::showScaleBouncingAction()
 	BoardController::fallingTileCount++;
 }
 
+void MovingTile::resetTileScale()
+{
+	this->textureSprite->setScale(1.0f);
+}
+
 void MovingTile::showDirectionalScaleAction(const AdjacentDirs dir)
 {
 	if (this->textureSprite == nullptr) return;

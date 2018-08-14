@@ -1,6 +1,7 @@
 #include "HiderBoardController.h"
 #include "Models/Tiles/HiderSegmentObject.h"
 #include "ActionController.h"
+#include "Models/DataModels/Level.h"
 
 
 HiderBoardController::HiderBoardController()
@@ -109,7 +110,7 @@ void HiderBoardController::addCellToBoard(char col, char row)
 		} while (!newSeg->isTail());
 
 		hiderGroup->initSegmentTextures();
-		auto test = findHiderMoveCells(seg->getCell(), hiderGroup->getSegmentsCount());
+		//auto test = findHiderMoveCells(seg->getCell(), hiderGroup->getSegmentsCount());
 		hidersMap->insert(std::pair<std::string, HiderGroup*>(hiderSegment->getChain(), hiderGroup));
 	}
 }
@@ -138,6 +139,49 @@ void HiderBoardController::crushUnderCells(Cell* cell)
 	}
 }
 
+bool HiderBoardController::findPathToTarget(Cell* startCell, Cell* exceptCell, CellsList* path, Cell* targetCell)
+{
+	std::queue<Coord*> q;
+	auto curCell = startCell;
+	auto curDist = 1;
+	q.push(new Coord(curCell, curDist, path));
+	int check[10][10] = {0};
+	while(!q.empty())
+	{
+		auto coord = q.front();
+		curCell = coord->cell;
+		auto curPath = &coord->path;
+		curDist = coord->dist;
+		q.pop();
+		if (curCell == nullptr || curCell->isOutCell) continue;
+		if (curCell == targetCell) 
+		{
+			path->insert(path->begin(), curPath->begin(), curPath->end());
+			path->reverse();
+			return true;
+		}
+
+		for (auto adj : AdjacentIndents)
+		{
+			auto adjCol = curCell->gridPos.Col + adj[1];
+			auto adjRow = curCell->gridPos.Row + adj[0];
+
+			auto adjCell = getMatchCell(adjCol, adjRow);
+
+			if (adjCell == nullptr || adjCell == exceptCell || adjCell->isOutCell || !adjCell->containsIceCover() 
+				|| adjCell->containsPopsicle() || check[adjRow][adjCol] != 0) continue;
+
+			q.push(new Coord(adjCell, curDist + 1, curPath));
+			check[adjRow][adjCol] = check[curCell->gridPos.Row][curCell->gridPos.Col] + 1;
+		}
+
+		CC_SAFE_DELETE(coord);
+
+	}
+
+	return false;
+}
+
 CellsList* HiderBoardController::findHiderMoveCells(Cell* startCelll, char segmentsCount)
 {
 	auto hiderMoveCells = new CellsList;
@@ -154,8 +198,10 @@ bool HiderBoardController::searchCoveredCells(Cell* cell, Cell* exceptCell, Cell
 	for (auto adj : AdjacentIndents)
 	{
 		auto adjCell = getMatchCell(cell->gridPos.Col + adj[1], cell->gridPos.Row + adj[0]);
+
 		if (adjCell == nullptr || adjCell == exceptCell || adjCell->isOutCell || adjCell->hiderSearch 
 			|| !adjCell->containsIceCover() || adjCell->containsPopsicle()) continue;
+
 		adjCell->hiderSearch = true;
 		auto res = searchCoveredCells(adjCell, cell, coveredCells, count - 1);
 		adjCell->hiderSearch = false;
@@ -189,6 +235,53 @@ void HiderBoardController::checkHiders()
 	}
 }
 
+void HiderBoardController::checkMoveCount()
+{
+	if (fallingTileCount > 0 || gameState != Idle) return;
+	if (pendingSeekers->count() > 0) return;
+	if (this->movingObjectiveCount > 0) return;
+	if (this->pendingHiders->size() > 0) return;
+
+	if (totalObjectCount == collectedObjectCount)
+	{
+		finishLevel();
+	}
+	else if (currentLevel->getMoveCount() <= moveCount)
+	{
+		gameState = Failed;
+		showGameFailedDlg();
+	}
+}
+
+CellsList* HiderBoardController::getSeekerTargets(int count) const
+{
+	std::vector<Cell*> coveredSegmentCells;
+	for (auto hiderGroupItem : *hidersMap)
+	{
+		auto groupCells = hiderGroupItem.second->getCoveredSegmentCells();
+		coveredSegmentCells.insert(coveredSegmentCells.end(), groupCells->begin(), groupCells->end());
+	}
+	auto targets = new CellsList;
+	for (auto i = 0; i < count && coveredSegmentCells.size() > 0; i++)
+	{
+		int j = rand_0_1() * coveredSegmentCells.size();
+
+		auto cell = coveredSegmentCells.at(j);
+
+		targets->push_back(cell);
+		coveredSegmentCells.erase(coveredSegmentCells.begin() + i);
+	}
+
+	if(targets->size() < count)
+	{
+		auto temp = BoardController::getSeekerTargets(count - targets->size());
+		targets->insert(targets->end(), temp->begin(), temp->end());
+		CC_SAFE_DELETE(temp);
+	}
+	return targets;
+}
+
+
 void HiderBoardController::processPendingHiders()
 {
 	if (fallingTileCount > 0 || gameState != Idle) return;
@@ -208,9 +301,11 @@ void HiderBoardController::showHiderCollectingAction(Vec2& pos)
 	effectNode->addChild(showObj);
 	CKAction ckAction;
 	ckAction.node = showObj;
+	this->movingObjectiveCount++;
 	ckAction.action = actionController->createHiderCollectionAction(objectTargetPos, [=] {
 		this->increaseObjectCount();
 		this->poolController->recycleHiderShow(showObj);
+		this->movingObjectiveCount--;
 	}, showObj);
 	actionController->pushAction(ckAction, true);
 }
@@ -229,28 +324,61 @@ void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 	}
 
 	Cell* iceCoverCell = nullptr;
-	do
+
+	if(boardModel->getHiderTargets() != nullptr && boardModel->getHiderTargets()->find(headSeg->getChain()) != boardModel->getHiderTargets()->end())
 	{
-		if(nextSeg->getCell()->containsIceCover())
+		do
 		{
-			if(iceCoverCell == nullptr)
+			if (nextSeg->getCell()->containsIceCover())
 			{
-				iceCoverCell = nextSeg->getCell();
+				if (iceCoverCell == nullptr)
+				{
+					iceCoverCell = nextSeg->getCell();
+				}
+				auto path = new CellsList;
+				auto res = findPathToTarget(nextSeg->getCell(), nullptr, path, boardModel->getHiderTargets()->at(headSeg->getChain()));
+
+				if (res && path->size() > 0)
+				{
+					headSeg->getCell()->clear();
+					headSeg->getGroup()->moveHiderGroup(path, nextSeg->getCell());
+					boardModel->removeHiderTarget(headSeg->getChain());
+					CC_SAFE_DELETE(path);
+					return;
+				}
+				CC_SAFE_DELETE(path);
 			}
-			auto cells = findHiderMoveCells(nextSeg->getCell(), segmentsCount);
-			if(cells->size() >= segmentsCount)
+			nextSeg = nextSeg->getNextSegment();
+		} while (nextSeg != nullptr);
+	}
+	else
+	{
+		do
+		{
+			if (nextSeg->getCell()->containsIceCover())
 			{
-				headSeg->getCell()->clear();
-				headSeg->getGroup()->moveHiderGroup(cells, nextSeg->getCell());
-				return;
+				if (iceCoverCell == nullptr)
+				{
+					iceCoverCell = nextSeg->getCell();
+				}
+				auto cells = findHiderMoveCells(nextSeg->getCell(), segmentsCount);
+				if (cells->size() >= segmentsCount)
+				{
+					headSeg->getCell()->clear();
+					headSeg->getGroup()->moveHiderGroup(cells, nextSeg->getCell());
+					CC_SAFE_DELETE(cells);
+					return;
+				}
+				CC_SAFE_DELETE(cells);
 			}
-		}
-		nextSeg = nextSeg->getNextSegment();
-	} while (nextSeg != nullptr);
+			nextSeg = nextSeg->getNextSegment();
+		} while (nextSeg != nullptr);
+	}
 
 	if (iceCoverCell != nullptr)
 	{
 		iceCoverCell->crushUnderTiles(LayerId::Cover);
+		checkHiders();
 	}
 	//headSeg->showShakeAction();
 }

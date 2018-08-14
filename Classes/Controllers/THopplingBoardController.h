@@ -11,13 +11,13 @@ public:
 
 	void initWithModel(BoardModel* model) override;
 	void initWithNode(Node* rootNode, Node* effectNode) override;
+	void crushCell(Cell* cell, bool forceClear = false) override;
 
 protected:
 	void addCellToBoard(char col, char row) override;
 
 	void initThopplingGame();
 
-	void crushCell(Cell* cell, bool forceClear = false) override;
 	Cell* findHopplerTarget();
 	CellsList* findTopplingTarget(Cell* cell);
 	Cell* findNextCrackerCell(Cell* cell, char* inIndent, char** indent);

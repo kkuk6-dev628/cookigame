@@ -52,22 +52,38 @@ TileColors SpawnController::getSpawnColor() const
 	return TileColors::_from_integral(rnd * 6);
 }
 
+SpawnTable* SpawnController::getCountSpawnTable() const
+{
+	if(spawnTable == nullptr)
+	{
+		return nullptr;
+	}
+	for (auto table = spawnTable->begin(); table != spawnTable->end(); table++)
+	{
+		if (table->IntMax > 0 || table->IntMin > 0)
+		{
+			return &*table;
+		}
+	}
+	return nullptr;
+}
+
 SpawnTable* SpawnController::getSpawnTable(std::string spawnerName, int spawnedCount, bool inWater) const
 {
 	SpawnTable* spawnTypeString = nullptr;
 
-	if(inWater && liquidSpawnTable != nullptr)
-	{
-		for (auto table = liquidSpawnTable->begin(); table != liquidSpawnTable->end(); table++)
-		{
-			if (Utils::checkSpawn(spawnedCount, table->Percent))
-			{
-				return &(*table);
-			}
-		}
-	}
 	if(spawnerName == "normal" || spawnerName == "")
 	{
+		if (inWater && liquidSpawnTable != nullptr)
+		{
+			for (auto table = liquidSpawnTable->begin(); table != liquidSpawnTable->end(); table++)
+			{
+				if (Utils::checkSpawn(spawnedCount, table->Percent))
+				{
+					return &(*table);
+				}
+			}
+		}
 		if (pendingSpawnTypes->size() > 0)
 		{
 			spawnTypeString = pendingSpawnTypes->front();
@@ -90,10 +106,6 @@ SpawnTable* SpawnController::getSpawnTable(std::string spawnerName, int spawnedC
 				pendingSpawnTypes->pop_front();
 				return spawnTypeString;
 			}
-		}
-		if (spawnOnCollectSystem != nullptr)
-		{
-
 		}
 	}
 	else if(customSpawnTable != nullptr)

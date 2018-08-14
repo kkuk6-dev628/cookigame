@@ -129,6 +129,7 @@ void PoolController::RegisterTileClasses()
 	REGISTER_CLASS(EmptyObject);
 	REGISTER_CLASS(SeekerPriorityObject);
 	REGISTER_CLASS(LavaCakeTargetObject);
+	REGISTER_CLASS(HiderPriorityObject);
 }
 
 CookieTile* PoolController::getCookieTile(std::string typeName)
@@ -186,6 +187,7 @@ void PoolController::recycleCookieTile(CookieTile* cookieTile) const
 {
 	if (MovingTileTypes::_is_valid_nocase(cookieTile->getType().c_str()))
 	{
+		cookieTile->resetTileScale();
 		auto tileType = cookieTile->getMovingTileType();
 		switch(tileType)
 		{

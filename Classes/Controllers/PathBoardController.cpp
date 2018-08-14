@@ -53,6 +53,7 @@ void PathBoardController::checkMoveCount()
 {
 	if (fallingTileCount > 0 || gameState != Idle) return;
 	if (pendingSeekers->count() > 0) return;
+	if (this->flyingPowersCount > 0) return;
 
 	if (currentLevel->getMoveCount() <= moveCount)
 	{
@@ -176,6 +177,7 @@ void PathBoardController::movePathFollower()
 		{
 			showPathFollowerMovingAction(pathGoalCell);
 			collectedPowerCount = 0;
+			gameState = Completed;
 			finishLevel();
 		}
 		else if(nextCell != nullptr && !nextCell->canMove())
@@ -258,13 +260,13 @@ void PathBoardController::showPathFollowerMovingAction(Cell* cell)
 {
 	pathFollowerShow->setVisible(true);
 	pathFollowerObject->setVisible(false);
-	gameState = SwappingTile;
+	fallingTileCount++;
 	CKAction ckAction;
 	ckAction.node = pathFollowerShow;
 	ckAction.action = actionController->createTileMoveAction(pathFollowerShow->getPosition(), cell->getBoardPos(), [=] {
 		pathFollowerShow->setVisible(false);
 		if(cell != pathGoalCell) pathFollowerObject->setVisible(true);
-		gameState = Idle;
+		fallingTileCount--;
 	}, ckAction.node);
 
 	actionController->pushAction(ckAction, false);
@@ -274,13 +276,13 @@ void PathBoardController::showPathFollowerMovingAction(CellsList* path)
 {
 	pathFollowerShow->setVisible(true);
 	pathFollowerObject->setVisible(false);
-	gameState = SwappingTile;
+	fallingTileCount++;
 	CKAction ckAction;
 	ckAction.node = pathFollowerShow;
 	ckAction.action = actionController->createPathFollowerMoveAction(path, [=] {
 		pathFollowerShow->setVisible(false);
 		pathFollowerObject->setVisible(true);
-		gameState = Idle;
+		fallingTileCount--;
 	}, ckAction.node);
 
 	actionController->pushAction(ckAction, false);

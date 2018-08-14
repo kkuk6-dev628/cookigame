@@ -12,14 +12,16 @@ public:
 
 	void initWithModel(BoardModel* model) override;
 	void initWithNode(Node* rootNode, Node* effectNode) override;
+	void crushCell(Cell* pCell, bool forceClear = false) override;
 
 protected:
 	void addCellToBoard(char col, char row) override;
 	void crushUnderCells(Cell* cell) override;
-	void crushCell(Cell* pCell, bool forceClear=false) override;
+	bool findPathToTarget(Cell* startCell, Cell* exceptCell, CellsList* paath, Cell* targetCell);
 	void processCustomLogic(float dt) override;
 	Cell* findSeekerTarget(CellsList* targetsList) const override;
-
+	void checkMoveCount() override;
+	CellsList* getSeekerTargets(int count) const override;
 	void initHiderGame();
 
 private:
@@ -34,3 +36,19 @@ private:
 	void showHiderCollectingAction(Vec2& pos);
 };
 
+class Coord 
+{
+public:
+	Cell* cell;
+	int dist;
+	CellsList path;
+	Coord(Cell* cell, int dist, CellsList* oldPath) {
+		this->cell = cell;
+		this->dist = dist;
+		if(oldPath != nullptr && oldPath->size() > 0)
+		{
+			this->path.insert(this->path.begin(), oldPath->begin(), oldPath->end());
+		}
+		this->path.push_back(this->cell);
+	}
+};
