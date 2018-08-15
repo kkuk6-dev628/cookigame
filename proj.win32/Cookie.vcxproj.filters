@@ -261,9 +261,6 @@
     <ClCompile Include="..\Classes\Controllers\DigDownController.cpp">
       <Filter>src\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Models\Tiles\NewClass1.cpp">
-      <Filter>src\Models\Tiles</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -502,9 +499,6 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Native\IMListener.h">
       <Filter>src\Native</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Models\Tiles\NewClass1.h">
-      <Filter>src\Models\Tiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

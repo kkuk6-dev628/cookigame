@@ -36,6 +36,7 @@ public:
 
 	float getCurrentLiquidLevel() const { return currentLiquidLevel; }
 	bool isLiquidFull() const { return liquidSystem != nullptr ? currentLiquidLevel >= liquidSystem->LevelMax : false; }
+	bool isLiquidEmpty() const { return liquidSystem != nullptr ? currentLiquidLevel <= 0: false; }
 	void setCurrentLiquidLevel(float liquidLevel);
 
 	Cell* getCell(const char col, const char row) const;

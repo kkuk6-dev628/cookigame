@@ -968,7 +968,17 @@ CellsList* BoardModel::getLavaCakeTargets()
 	}
 	else
 	{
-		auto retList = std::vector<Cell*>(lavaCakeTargets->begin(), lavaCakeTargets->end());
+		std::vector<Cell*> retList;
+		for(auto target : *lavaCakeTargets)
+		{
+			auto tile = target->getSourceTile();
+			if(tile != nullptr && !tile->getType().empty() && tile->getType() == HIDERSEGMENTOBJECT)
+			{
+				continue;
+			}
+			retList.push_back(target);
+		}
+
 		while(retList.size() > 4)
 		{
 			retList.erase(retList.begin() + rand_0_1() * retList.size());

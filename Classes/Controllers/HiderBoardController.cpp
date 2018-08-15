@@ -269,7 +269,7 @@ CellsList* HiderBoardController::getSeekerTargets(int count) const
 		auto cell = coveredSegmentCells.at(j);
 
 		targets->push_back(cell);
-		coveredSegmentCells.erase(coveredSegmentCells.begin() + i);
+		coveredSegmentCells.erase(coveredSegmentCells.begin() + j);
 	}
 
 	if(targets->size() < count)

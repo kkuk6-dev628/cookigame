@@ -123,6 +123,7 @@ protected:
 	void crushMatch(Match* match);
 	void crushAllCells();
 	void findAndCrushBonus();
+	void checkLiquid(MovingTile* tile) const;
 
 	void addScore(ScoreType type, ScoreUnit val, char matchNumber, Vec2 pos) const;
 
@@ -146,6 +147,7 @@ protected:
 	void doShuffle();
 	void showShuffleAction();
 	void shuffle(float);
+	void recycleLayeredMatchLayer() const;
 	void showHintAction();
 
 	virtual Cell* findSeekerTarget(CellsList* targetsList) const;

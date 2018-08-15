@@ -75,6 +75,7 @@
 #define FRUITROLLOBJECT "FruitRollObject"
 #define DIGDOWNOBJECT "DigDownObject"
 #define DIGDOWNYUMBLEOBJECT "DigDownYumbleObject"
+#define COLORPIE "ColorPie"
 
 //////////////////////////////////////////////////
 

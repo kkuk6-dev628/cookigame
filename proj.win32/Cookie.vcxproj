@@ -204,7 +204,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Models\Tiles\LayeredCrackerTile.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\LayeredMatchObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\MovingTile.cpp" />
-    <ClCompile Include="..\Classes\Models\Tiles\NewClass1.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\ObjectSpinnerObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\PopsicleObject.cpp" />
     <ClCompile Include="..\Classes\Models\Tiles\SpawnerObject.cpp" />
@@ -284,7 +283,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Models\Tiles\LayeredCrackerTile.h" />
     <ClInclude Include="..\Classes\Models\Tiles\LayeredMatchObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\MovingTile.h" />
-    <ClInclude Include="..\Classes\Models\Tiles\NewClass1.h" />
     <ClInclude Include="..\Classes\Models\Tiles\ObjectSpinnerObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\PopsicleObject.h" />
     <ClInclude Include="..\Classes\Models\Tiles\SpawnerObject.h" />

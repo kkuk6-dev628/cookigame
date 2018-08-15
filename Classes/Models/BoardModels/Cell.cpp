@@ -5,6 +5,7 @@
 #include "Models/Tiles/LayeredCrackerTile.h"
 #include "Models/Tiles/DisplayCaseObject.h"
 #include "Models/Tiles/ThopplerTile.h"
+#include "BoardModel.h"
 
 Cell::Cell()
 {

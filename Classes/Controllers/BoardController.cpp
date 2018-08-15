@@ -1139,11 +1139,12 @@ Match* BoardController::findMatchInPendings(Match* newMatch)
 
 void BoardController::doShuffle()
 {
-	if (fallingTileCount > 0 || gameState != Idle || pendingCrushCells->count() > 0)
+	if (fallingTileCount > 0 || gameState != Idle || pendingCrushCells->count() > 0 || pendingSeekers->count() > 0)
 	{
 		return;
 	}
 
+	recycleLayeredMatchLayer();
 	if(boardModel->isShuffleNeed())
 	{
 		gameState = GameState::Shuffling;
@@ -1215,6 +1216,26 @@ void BoardController::shuffle(float)
 	if (boardModel->isShuffleNeed())
 	{
 		boardModel->addAvailableMove();
+	}
+}
+
+void BoardController::recycleLayeredMatchLayer() const
+{
+	auto children = layeredMatchLayer->getChildren();
+	auto childrenCount = layeredMatchLayer->getChildrenCount();
+	for(auto i = childrenCount - 1; i >= 0; i--)
+	{
+		auto child = children.at(i);
+		auto cookieTile = static_cast<CookieTile*>(child);
+		if(cookieTile != nullptr)
+		{
+			auto cell = cookieTile->getCell();
+			if(cell->getSourceTile() != cookieTile)
+			{
+				cookieTile->removeFromParent();
+			}
+		}
+
 	}
 }
 
@@ -1881,7 +1902,7 @@ void BoardController::crushAllCells()
 			auto cell = getMatchCell(j, i);
 			if(cell != nullptr && !cell->isOutCell)
 			{
-				cell->crushCell(true);
+				crushCell(cell);
 			}
 		}
 	}
@@ -1912,6 +1933,19 @@ void BoardController::findAndCrushBonus()
 	isBonusTime = false;
 }
 
+void BoardController::checkLiquid(MovingTile* tile) const
+{
+	if(tile == nullptr)
+	{
+		return;
+	}
+	if ((tile->getMovingTileType() == +MovingTileTypes::LiquidFillerMatchObject && boardModel->isLiquidFull()) 
+		|| (tile->getMovingTileType() == +MovingTileTypes::LiquidDrainerMatchObject && boardModel->isLiquidEmpty()))
+	{
+		tile->initWithType((+MovingTileTypes::LayeredMatchObject)._to_string());
+	}
+}
+
 void BoardController::spawnNewTile(Cell* cell)
 {
 	auto spawnSys = boardModel->getSpawnOnCollectSystem();
@@ -1931,11 +1965,7 @@ void BoardController::spawnNewTile(Cell* cell)
 			{
 				cell->spawnSpecialTile(MovingTileTypes::_from_string(spawnSys->ObjectType.c_str()));
 			}
-			auto newTile = cell->getMovingTile();
-			if (newTile != nullptr && newTile->getMovingTileType() == +MovingTileTypes::LiquidFillerMatchObject && boardModel->isLiquidFull())
-			{
-				newTile->initWithType(((MovingTileTypes)(MovingTileTypes::LayeredMatchObject))._to_string());
-			}
+			checkLiquid(cell->getMovingTile());
 			return;
 		}
 	}
@@ -1955,20 +1985,13 @@ void BoardController::spawnNewTile(Cell* cell)
 			{
 				cell->spawnSpecialTile(MovingTileTypes::_from_string(countSpawnTable->Type->c_str()));
 			}
-			auto newTile = cell->getMovingTile();
-			if (newTile != nullptr && newTile->getMovingTileType() == +MovingTileTypes::LiquidFillerMatchObject && boardModel->isLiquidFull())
-			{
-				newTile->initWithType(((MovingTileTypes)(MovingTileTypes::LayeredMatchObject))._to_string());
-			}
+			checkLiquid(cell->getMovingTile());
 			return;
 		}
 	}
 	cell->spawnMatchTile();
 	auto newTile = cell->getMovingTile();
-	if (newTile != nullptr && newTile->getMovingTileType() == +MovingTileTypes::LiquidFillerMatchObject && boardModel->isLiquidFull())
-	{
-		newTile->initWithType(((MovingTileTypes)(MovingTileTypes::LayeredMatchObject))._to_string());
-	}
+	checkLiquid(cell->getMovingTile());
 }
 
 
@@ -2373,10 +2396,12 @@ void BoardController::crushCell(Cell* cell, bool forceClear)
 	{
 		auto lavaCakeTagets = boardModel->getLavaCakeTargets();
 		spawnLavaCake(cell, lavaCakeTagets);
+		CC_SAFE_DELETE(lavaCakeTagets);
 	}
-	else if(strType.find("ColorPie") != std::string::npos)
+	else if(strType.find(COLORPIE) != std::string::npos)
 	{
-		crushBombBreaker(cell);
+		showBombAndLineCrushEffect(cell);
+		crushAllCells();
 	}
 }
 
@@ -3036,32 +3061,29 @@ CellsList* BoardController::getSeekerTargets(int count) const
 		return targets;
 	}
 
-	auto tempArray = __Array::create();
 	auto specialTiles = boardModel->getSpecialTiles();
 	auto breakers = static_cast<__Array*>(specialTiles->objectForKey("breakers"));
 	auto wafflePath = static_cast<__Array*>(specialTiles->objectForKey("wafflePath"));
 	auto liquids = static_cast<__Array*>(specialTiles->objectForKey("liquids"));
 
-	if (liquids->count() > 0)
+	while (targets->size() < count && liquids->count() > 0)
 	{
-		tempArray->addObjectsFromArray(liquids);
-	}
-	if (wafflePath->count() > 0)
-	{
-		tempArray->addObjectsFromArray(wafflePath);
-	}
-	if (breakers->count() > 0)
-	{
-		tempArray->addObjectsFromArray(breakers);
-	}
-
-	auto reminderCount = count - targets->size();
-
-	for(auto i = 0; i < count && tempArray->count() > 0; i++)
-	{
-		auto cell = static_cast<Cell*>(tempArray->getRandomObject());
+		auto cell = static_cast<Cell*>(liquids->getRandomObject());
 		targets->push_back(cell);
-		tempArray->fastRemoveObject(cell);
+		liquids->fastRemoveObject(cell);
+	}
+
+	while (targets->size() < count && wafflePath->count() > 0)
+	{
+		auto cell = static_cast<Cell*>(wafflePath->getRandomObject());
+		targets->push_back(cell);
+		wafflePath->fastRemoveObject(cell);
+	}
+	while (targets->size() < count && breakers->count() > 0)
+	{
+		auto cell = static_cast<Cell*>(breakers->getRandomObject());
+		targets->push_back(cell);
+		breakers->fastRemoveObject(cell);
 	}
 
 	while(targets->size() < count)
