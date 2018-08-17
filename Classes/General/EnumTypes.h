@@ -8,7 +8,7 @@ enum GameState {
 
 enum MatchType
 {
-	NormalMatch, BonusMatch, RainbowMatch, SingleCellMatch
+	NormalMatch, BonusMatch, RainbowMatch, SingleCellMatch, RingMatch
 };
 
 enum BoosterType

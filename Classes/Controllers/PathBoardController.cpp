@@ -1,6 +1,7 @@
 #include "PathBoardController.h"
 #include "ActionController.h"
 #include "Models/DataModels/Level.h"
+#include "Models/Tiles/ColorPieObject.h"
 
 
 PathBoardController::PathBoardController()
@@ -198,6 +199,11 @@ void PathBoardController::showFrontCrushAction(Cell* frontCell)
 			auto fruitObject = static_cast<FruitRollObject*>(sourceTile);
 			fixTileLayers = fruitObject->getRemainderCount();
 		}
+		else if(sourceTile->getType().find(COLORPIE) != std::string::npos)
+		{
+			auto colorPieObject = static_cast<ColorPieObject*>(sourceTile);
+			fixTileLayers = colorPieObject->getPieNumber();
+		}
 	}
 	auto crushCount = fixTileLayers > collectedPowerCount ? collectedPowerCount : fixTileLayers;
 	
@@ -212,7 +218,13 @@ void PathBoardController::showFrontCrushAction(Cell* frontCell)
 	ckAction.node = pathFollowerShow;
 	ckAction.action = actionController->createFrontCrushAction(pathFollowerShow, frontCell->getBoardPos(), [=] {
 		boardModel->initFruitRollFlags();
-		frontCell->crushCell(true);
+		auto tile = frontCell->getSourceTile();
+		if(sourceTile->getType().find(COLORPIE) != std::string::npos)
+		{
+			auto colorPieObject = static_cast<ColorPieObject*>(sourceTile);
+			colorPieObject->setNearbyColor(colorPieObject->getSlotColor());
+		}
+		crushCell(frontCell);
 	}, [=] {
 		pathFollowerObject->setVisible(true);
 		pathFollowerShow->setVisible(false);

@@ -115,14 +115,17 @@ void HiderGroup::moveSegmentToCell(HiderSegmentObject* segment, CellsList* moveP
 		{
 			BoardController::fallingTileCount--;
 			auto oldTile = headCell->getSourceTile();
-			if(oldTile->isBonusTile())
+			if(oldTile != nullptr)
 			{
-				auto boardController = GameController::getInstance()->getBoardController();
-				boardController->crushCell(headCell);
-			}
-			else if(oldTile != nullptr && oldTile->getParent() != nullptr)
-			{
-				oldTile->removeFromParent();
+				if (oldTile->isBonusTile())
+				{
+					auto boardController = GameController::getInstance()->getBoardController();
+					boardController->crushCell(headCell);
+				}
+				else if (oldTile->getParent() != nullptr)
+				{
+					oldTile->removeFromParent();
+				}
 			}
 			headCell->clear();
 			auto iceCover = headCell->getTileAtLayer(LayerId::Cover);

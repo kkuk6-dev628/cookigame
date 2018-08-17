@@ -35,7 +35,7 @@ UserData::UserData()
 	topLevel = userDefault->getIntegerForKey("top_level", 1);
 	//topLevel = MAX(topLevel, 1260);
 
-	//topLevel = 349;// test
+	//topLevel = 443;// test
 	//if (g_bDebugMode) topLevel = 46;
 #ifdef TEST_UserDataClearOnInit
 	clear();

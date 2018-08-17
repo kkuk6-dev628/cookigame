@@ -301,12 +301,14 @@ void THopplingBoardController::showTopplerMoveEffect(Cell* cell)
 	ckAction.node = reinterpret_cast<Node*>(hopplerShow);
 	targetCell->dirty = true;
 	cell->dirty = false;
+	fallingTileCount++;
 	ckAction.action = actionController->createTopplerMoveAction(hopplingPath, [=] {
 		PoolController::getInstance()->recycleTopplerShow(hopplerShow);
 		hopplerTile->setVisible(true);
 		targetCell->setTileToLayer(hopplerTile, LayerId::Toppling);
 		targetCell->dirty = false;
 		hopplerTile->setPosition(targetCell->getBoardPos());
+		fallingTileCount--;
 	}, ckAction.node);
 	actionController->pushAction(ckAction, true);
 	CC_SAFE_DELETE(hopplingPath);
@@ -333,6 +335,7 @@ void THopplingBoardController::showHopplerMoveEffect(Cell* cell)
 	crackerCells->erase(std::remove(crackerCells->begin(), crackerCells->end(), targetCell), crackerCells->end());
 	crackerCells->push_back(cell);
 	cell->removeTileAtLayer(LayerId::Toppling);
+	fallingTileCount++;
 	CKAction ckAction;
 	ckAction.node = reinterpret_cast<Node*>(topplerShow);
 	ckAction.action = actionController->createJumpAction(ckAction.node, targetCell->getBoardPos(), 2 * CellSize, [=] {
@@ -341,6 +344,7 @@ void THopplingBoardController::showHopplerMoveEffect(Cell* cell)
 		targetCell->setTileToLayer(topplerTile, LayerId::Toppling);
 		targetCell->dirty = false;
 		topplerTile->setPosition(targetCell->getBoardPos());
+		fallingTileCount--;
 	});
 	actionController->pushAction(ckAction, true);
 }

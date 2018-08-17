@@ -377,7 +377,14 @@ void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 
 	if (iceCoverCell != nullptr)
 	{
-		iceCoverCell->crushUnderTiles(LayerId::Cover);
+		if(iceCoverCell->getSourceTile()->getType() == CHOCOLATEOBJECT)
+		{
+			iceCoverCell->crushCell(true);
+		}
+		else
+		{
+			iceCoverCell->crushUnderTiles(LayerId::Cover);
+		}
 		checkHiders();
 	}
 	//headSeg->showShakeAction();

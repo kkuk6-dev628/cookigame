@@ -585,9 +585,9 @@ void BoardModel::initSpawners()
 			{
 				//char i = 0;
 				auto cell = cells[i][j];
-				if (!cell->isOutCell && (cell->inWater || i == 0))
+				if(!cell->isOutCell)
 				{
-					if (!cell->containsSpawner())
+					if (!cell->containsSpawner() && !cell->containsPortalIn() && !cell->containsPortalOut())
 					{
 						auto spawner = SpawnerObject::create();
 						spawner->initSpawner();
@@ -595,7 +595,11 @@ void BoardModel::initSpawners()
 						cell->setTileToLayer(spawner, LayerId::Spawner);
 						SpawnController::getInstance()->addSpawner(spawner);
 					}
-					break;
+
+					if(cell->containsPortalIn() || cell->containsPortalOut() || cell->getSpawner() != nullptr && cell->getSpawner()->getDirection() == +Direction::N)
+					{
+						break;
+					}
 				}
 			}
 		}

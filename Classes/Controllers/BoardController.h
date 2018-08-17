@@ -121,7 +121,8 @@ protected:
 	void combineXAndLine(Cell* refCell, Cell* targetCell);
 
 	void crushMatch(Match* match);
-	void crushAllCells();
+	void crushRingMatch(Cell* cell, int radius);
+	void crushAllCells(Cell* cell);
 	void findAndCrushBonus();
 	void checkLiquid(MovingTile* tile) const;
 
@@ -148,6 +149,7 @@ protected:
 	void showShuffleAction();
 	void shuffle(float);
 	void recycleLayeredMatchLayer() const;
+	void refreshCells() const;
 	void showHintAction();
 
 	virtual Cell* findSeekerTarget(CellsList* targetsList) const;

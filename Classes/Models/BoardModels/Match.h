@@ -18,6 +18,7 @@ public:
 	CellsList* vMatchedCells;
 	CellsList* sMatchedCells;
 	Cell* bonusMatchCell = nullptr;
+	int ringMatchRadius = 0;
 
 	bool equal(Match* other);
 

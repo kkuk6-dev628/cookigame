@@ -116,7 +116,10 @@ void PortalInletObject::initTexture()
 
 void PortalInletObject::setInWater()
 {
-	textureSprite->setPosition(Vec2(CellSize / 2, CellSize + PORTALLETHEIGHT / 2.f));
+	if (direction != +Direction::S)
+	{
+		textureSprite->setPosition(Vec2(CellSize / 2, CellSize + PORTALLETHEIGHT / 2.f));
+	}
 }
 
 void PortalOutletObject::initTexture()
@@ -137,5 +140,8 @@ void PortalOutletObject::initTexture()
 
 void PortalOutletObject::setInWater()
 {
-	textureSprite->setPosition(Vec2(CellSize / 2, -PORTALLETHEIGHT / 2.f));
+	if(direction != +Direction::N)
+	{
+		textureSprite->setPosition(Vec2(CellSize / 2, -PORTALLETHEIGHT / 2.f));
+	}
 }

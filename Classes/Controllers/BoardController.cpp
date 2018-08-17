@@ -1145,6 +1145,7 @@ void BoardController::doShuffle()
 	}
 
 	recycleLayeredMatchLayer();
+	refreshCells();
 	if(boardModel->isShuffleNeed())
 	{
 		gameState = GameState::Shuffling;
@@ -1239,6 +1240,27 @@ void BoardController::recycleLayeredMatchLayer() const
 	}
 }
 
+void BoardController::refreshCells() const
+{
+	for(auto i = 0; i < boardModel->getHeight(); i++)
+	{
+		for(auto j = 0; j < boardModel->getWidth(); j++)
+		{
+			auto cell = getMatchCell(j, i);
+			if (cell == nullptr || cell->isOutCell || cell->isEmpty)
+			{
+				continue;
+			}
+			auto sourceTile = cell->getSourceTile();
+			if(sourceTile->getCell() != cell)
+			{
+				auto newTile = static_cast<MovingTile*>(PoolController::getInstance()->getCookieTile((+MovingTileTypes::LayeredMatchObject)._to_string()));
+				newTile->setPosition(cell->getBoardPos());
+				cell->setSourceTile(newTile);
+			}
+		}
+	}
+}
 
 void BoardController::showShuffleAction()
 {
@@ -1854,7 +1876,7 @@ void BoardController::combineRainbowAndBonus(Cell* rainbowCell, Cell* bonusCell)
 void BoardController::combine2Rainbow(Cell* first, Cell* second)
 {
 	showBombCrushEffect(first);
-	crushAllCells();
+	crushAllCells(first);
 }
 
 void BoardController::combineBombAndLine(Cell* refCell, Cell* targetCell)
@@ -1887,24 +1909,41 @@ void BoardController::crushMatch(Match* match)
 		case SingleCellMatch:
 			crushCell(match->refCell);
 			break;
+		case RingMatch:
+			crushRingMatch(match->refCell, match->ringMatchRadius);
 		default:
 			break;
 		}
 	}
 }
 
-void BoardController::crushAllCells()
+void BoardController::crushRingMatch(Cell* cell, int radius)
 {
-	for(char i = 0; i < boardModel->getHeight(); i++)
+	auto x1 = cell->gridPos.Col - radius, x2 = cell->gridPos.Col + radius, y1 = cell->gridPos.Row - radius, y2 = cell->gridPos.Row + radius;
+	for(auto x = x1; x <= x2; x++)
 	{
-		for(char j = 0; j < boardModel->getWidth(); j++)
+		for(auto y = y1; y <= y2; y++)
 		{
-			auto cell = getMatchCell(j, i);
-			if(cell != nullptr && !cell->isOutCell)
+			if(x == x1 || x == x2 || y == y1 || y == y2)
 			{
-				crushCell(cell);
+				crushCell(getMatchCell(x, y));
 			}
 		}
+	}
+}
+void BoardController::crushAllCells(Cell* cell)
+{
+	auto x = boardModel->getWidth() - cell->gridPos.Col, y = boardModel->getHeight() - cell->gridPos.Row;
+	auto maxRadius = MAX(MAX(x, y), MAX(cell->gridPos.Col, cell->gridPos.Row));
+	auto matchId = getMatchId();
+	for(auto i = 1; i <= maxRadius; i++)
+	{
+		auto match = Match::create();
+		match->refCell = cell;
+		match->ringMatchRadius = i;
+		match->matchType = RingMatch;
+		match->matchId = matchId;
+		pendingCrushCells->addObject(match);
 	}
 }
 
@@ -2401,7 +2440,7 @@ void BoardController::crushCell(Cell* cell, bool forceClear)
 	else if(strType.find(COLORPIE) != std::string::npos)
 	{
 		showBombAndLineCrushEffect(cell);
-		crushAllCells();
+		crushAllCells(cell);
 	}
 }
 
