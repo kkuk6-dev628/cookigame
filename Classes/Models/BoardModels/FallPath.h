@@ -7,8 +7,13 @@ class FallPath
 {
 public:
 	FallPath();
+	FallPath(Cell* endCell);
+	FallPath(FallPath* other);
 	~FallPath();
 	void pushCell(Cell* cell);
+	void setStartCell(Cell* cell);
+
+	bool containsCell(Cell* cell);
 
 	void addPath(FallPath* path);
 

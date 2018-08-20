@@ -386,9 +386,9 @@ PortalInletObject* Cell::getPortalIn() const
 
 bool Cell::containsSpawner() const
 {
-	if (layers->size() > 0 && layers->find(LayerId::Spawner) != layers->end())
+	if (layers != nullptr &&  layers->size() > 0 && layers->find(LayerId::Spawner) != layers->end())
 	{
-		auto spawner = (SpawnerObject*)layers->at(LayerId::Spawner);
+		auto spawner = static_cast<SpawnerObject*>(layers->at(LayerId::Spawner));
 		auto spawnDir = spawner->getDirection();
 		if (inWater) 
 		{

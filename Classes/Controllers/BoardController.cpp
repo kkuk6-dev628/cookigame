@@ -185,7 +185,7 @@ void BoardController::initWithModel(BoardModel* model)
 
 	initBoardElements();
 	initAnimations();
-	schedule(schedule_selector(BoardController::processLogic), 0.05);
+	schedule(schedule_selector(BoardController::processLogic), 0.03);
 }
 
 void BoardController::initWithJson(rapidjson::Value& data)
@@ -198,7 +198,7 @@ void BoardController::initWithJson(rapidjson::Value& data)
 	this->boardModel->initWithJson(data);
 
 	initBoardElements();
-	schedule(schedule_selector(BoardController::processLogic), 0.1);
+	schedule(schedule_selector(BoardController::processLogic), 0.03);
 }
 
 void BoardController::initAnimations()
@@ -2041,8 +2041,8 @@ Cell* BoardController::fillCell(Cell* cell)
 		cell->fillDisplayCase();
 		return nullptr;
 	}
-	auto fallPath = findFallPath(cell);
-	if (fallPath->startCell != nullptr)
+	auto fallPath = findFallPathDFS(cell);
+	if (fallPath != nullptr && fallPath->startCell != nullptr)
 	{
 		Cell* movedCell = nullptr;
 		if (fallPath->startCell->isEmpty || (fallPath->startCell->isFixed && fallPath->startCell->canPass))
@@ -2081,28 +2081,8 @@ Cell* BoardController::fillCell(Cell* cell)
 			}
 		}
 
-		//if (!fallPath->startCell->isEmpty || fallPath->startCell->containsSpawner())
-		//{
-		//	//if (fallPath->startCell->getMovingTile() != nullptr && !fallPath->startCell->getMovingTile()->isMoving)
-		//	//{
-		//	//	fallPath->showFallAction();
-		//	//}
-		//	fallPath->showFallAction();
+		//CC_SAFE_DELETE(fallPath);
 
-		//	cell->setSourceTile(fallPath->startCell->getSpawnedTile());
-		//	if (!Utils::IsSameGrid(fallPath->startCell->gridPos, cell->gridPos))
-		//	{
-		//		if(fallPath->startCell->containsSpawner() && fallPath->startCell->isFixed)
-		//		{
-		//			fallPath->startCell->resetSpawnedTile();
-		//		}
-		//		else
-		//		{
-		//			fallPath->startCell->clear();
-		//		}
-		//	}
-		//	cell->getSourceTile()->setCellPos();
-		//}
 		return movedCell;
 	}
 	else
@@ -2198,6 +2178,75 @@ void BoardController::fallTilesLoop()
 	//	}
 	//}
 	//cocos2d::log("loop count: %d", loopCount);
+}
+
+FallPath* BoardController::findFallPathDFS(Cell* cell)
+{
+	std::stack<std::pair<Cell*, FallPath*>> stack;
+	auto curCell = cell;
+	if(cell->containsSpawner())
+	{
+		auto path = new FallPath;
+		path->endCell = path->startCell = cell;
+		return path;
+	}
+
+	stack.push(std::pair<Cell*, FallPath*>(cell, new FallPath(cell)));
+
+	int check[10][10] = { 0 };
+
+	auto colIndent = { 1, -1, 0 };
+
+	while(!stack.empty())
+	{
+		auto pair = stack.top();
+		curCell = pair.first;
+		auto curCol = curCell->gridPos.Col, curRow = curCell->gridPos.Row;
+		auto curPath = pair.second;
+		stack.pop();
+
+		if ((curCell->canFall() || (curCell->containsSpawner() && (curCell->canFill() || curCell->canPass))) && curPath->startCell != nullptr)
+		{
+			return curPath;
+		}
+
+		if(curCell->containsPortalOut())
+		{
+			curPath->containsPortal = true;
+			auto nextCell = curCell->findPortalInCell(boardModel->portalInList);
+
+			if(isValidPath(nextCell) && check[nextCell->gridPos.Row][nextCell->gridPos.Col] == 0 && !curPath->containsCell(nextCell))
+			{
+				auto nextPath = new FallPath(curPath);
+				nextPath->setStartCell(nextCell);
+				stack.push(std::pair<Cell*, FallPath*>(nextCell, nextPath));
+				check[nextCell->gridPos.Row][nextCell->gridPos.Col] = check[curRow][curCol] + 1;
+			}
+		}
+		else
+		{
+			auto rowIndent = curCell->inWater ? -1 : 1;
+			for(auto x : colIndent)
+			{
+				auto nextCol = curCol + x, nextRow = curRow + rowIndent;
+				auto nextCell = getMatchCell(nextCol, nextRow);
+				if(isValidPath(nextCell) && check[nextRow][nextCol] == 0 && !curPath->containsCell(nextCell))
+				{
+					auto nextPath = new FallPath(curPath);
+					nextPath->setStartCell(nextCell);
+					stack.push(std::pair<Cell*, FallPath*>(nextCell, nextPath));
+					check[nextRow][nextCol] = check[curRow][curCol] + 1;
+				}
+			}
+		}
+		CC_SAFE_DELETE(curPath);
+	}
+	return nullptr;
+}
+
+bool BoardController::isValidPath(Cell* cell)
+{
+	return cell != nullptr && (cell->canFall() || cell->canFill() || ((cell->canPass && (cell->isOutCell || cell->isFixed))));
 }
 
 FallPath* BoardController::findFallPath(Cell* cell)

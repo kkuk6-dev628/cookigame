@@ -139,6 +139,8 @@ protected:
 	Cell* fillCell(Cell* cell);
 	bool fallTiles();
 	void fallTilesLoop();
+	FallPath* findFallPathDFS(Cell* cell);
+	bool isValidPath(Cell* cell);
 	FallPath* findFallPath(Cell* cell);
 	virtual void spawnNewTile(Cell* cell);
 

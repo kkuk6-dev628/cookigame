@@ -263,7 +263,7 @@ LevelMapScene::LevelMapScene()
 		clouds.add(rootNode->getChildByName(__String::createWithFormat("cloud_%d", i)->getCString()));
 	cloudtime = rand() % 5;
 
-	AdsControl::getInstance()->showBannerAds();
+	//AdsControl::getInstance()->showBannerAds();
 
 }
 

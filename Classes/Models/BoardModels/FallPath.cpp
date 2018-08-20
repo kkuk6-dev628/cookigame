@@ -6,6 +6,22 @@ FallPath::FallPath()
 {
 }
 
+FallPath::FallPath(Cell* endCell)
+{
+	this->endCell = endCell;
+}
+
+FallPath::FallPath(FallPath* other)
+{
+	endCell = other->endCell;
+	startCell = other->startCell;
+	for (auto itr = other->fallPath.rbegin(); itr != other->fallPath.rend(); ++itr)
+	{
+		fallPath.push_front(*itr);
+	}
+	containsPortal = other->containsPortal;
+}
+
 
 FallPath::~FallPath()
 {
@@ -18,6 +34,27 @@ void FallPath::pushCell(Cell* cell)
 	//{
 	//	containsPortal = true;
 	//}
+}
+
+void FallPath::setStartCell(Cell* cell)
+{
+	if(cell != nullptr)
+	{
+		if(startCell != nullptr && (cell->gridPos.Col != startCell->gridPos.Col || startCell->containsPortalIn() || startCell->containsPortalOut()))
+		{
+			pushCell(startCell);
+		}
+		startCell = cell;
+	}
+}
+
+bool FallPath::containsCell(Cell* cell)
+{
+	if (cell == nullptr) return false;
+
+	if (cell == startCell || cell == endCell) return true;
+
+	return std::find(fallPath.begin(), fallPath.end(), cell) != fallPath.end();
 }
 
 void FallPath::addPath(FallPath* path)
