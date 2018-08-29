@@ -13,8 +13,10 @@ void ColorPieObject::showCrushEffect()
 
 bool ColorPieObject::crush(bool showEffect)
 {
-
-	if (slots->find(nearbyColor) == slots->end()) return false;
+	auto itr = std::find(slotColors->begin(), slotColors->end(), nearbyColor);
+	if (itr == slotColors->end()) return false;
+	slotColors->erase(itr);
+	pieNumber--;
 	if(!setVisibleColorNode(nearbyColor))
 	{
 		return false;
@@ -24,7 +26,6 @@ bool ColorPieObject::crush(bool showEffect)
 
 	//if (slotNode != nullptr) slotNode->setVisible(false);
 
-	pieNumber--;
 
 	if (pieNumber > 0)
 	{
@@ -56,7 +57,7 @@ void ColorPieObject::initTexture()
 		auto slotNode1 = getSlotNodeWithColor(StringUtils::format("%s_%d", type.c_str(), i), slotColor);
 		if (slotNode1 != nullptr)
 		{
-			slots->insert(std::pair<TileColors, Node*>(slotColor, slotNode1));
+			//slots->insert(std::pair<TileColors, Node*>(slotColor, slotNode1));
 		}
 	}
 }
@@ -77,6 +78,17 @@ bool ColorPieObject::setVisibleColorNode(TileColors color)
 	return false;
 }
 
+
+TileColors ColorPieObject::getSlotColor() const
+{
+	if(slotColors != nullptr && slotColors->size() > 0)
+	{
+		auto color = slotColors->front();
+		//slotColors->pop_front();
+		return color;
+	}
+	return TileColors::any;
+}
 
 Node* ColorPieObject::getSlotNodeWithColor(std::string nodeName, TileColors slotColor)
 {

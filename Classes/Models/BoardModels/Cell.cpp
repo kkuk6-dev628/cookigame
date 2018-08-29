@@ -140,6 +140,14 @@ bool Cell::isReceiveNearbyAffect()
 	{
 		return false;
 	}
+	if(containsThoppler())
+	{
+		auto thoppler = getTileAtLayer(LayerId::Toppling);
+		if(thoppler != nullptr && thoppler->getType() == HOPPLINGOBJECT)
+		{
+			return true;
+		}
+	}
 	return getSourceTile()->receiveNearbyAffect;
 }
 

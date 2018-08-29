@@ -15,6 +15,10 @@ ChocolateChipObject::ChocolateChipObject()
 
 bool ChocolateChipObject::crush(bool showEffect)
 {
+	if(modifierType != +ModifierTypes::None)
+	{
+		return MovingTile::crush(showEffect);
+	}
 	layers--;
 	if (showEffect) showCrushEffect();
 	if (layers <= 0)

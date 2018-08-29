@@ -20,7 +20,7 @@ public:
 	~BoardModel();
 	
 	static TileColorsTable CreateColorsTableFromJson(const rapidjson::Value& json);
-	static std::map<std::string, CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json);
+	static std::map<std::string, CustomSpawnTableItem>* CreateCustomSpawnTablesListFromJson(rapidjson::Value& json, bool isQueue = false);
 	
 	
 	void CreateSpawnTableFromJson(rapidjson::Value& json);
@@ -111,11 +111,12 @@ private:
 	bool spawnBottom = false;
 	std::string transitionOut;
 	SpawnTablesList spawnTable = nullptr;
-	SpawnTablesList conveyorSpawnTable;
+	SpawnTablesList conveyorSpawnTable = nullptr;
 	TileColorsTable colors;
 	TileColorsTable colorsEasy;
 	std::list<Goal>* goals;
-	std::map<std::string, CustomSpawnTableItem>* customSpawnTable;
+	std::map<std::string, CustomSpawnTableItem>* customSpawnTable = nullptr;
+	std::map<std::string, CustomSpawnTableItem>* forcedSpawnQueue = nullptr;
 	std::list<SeekerPriorityObject*>* seekerPriorityList = nullptr;
 
 	CellsList* lavaCakeTargets = nullptr;

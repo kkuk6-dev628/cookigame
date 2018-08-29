@@ -60,7 +60,7 @@ void THopplingBoardController::addCellToBoard(char col, char row)
 		crackerCells->push_back(cell);
 	}
 	auto thopplerTile = cell->getTileAtLayer(LayerId::Toppling);
-	if (thopplerTile != nullptr)
+	if (thopplerTile != nullptr && (thopplerTile->getType() == TOPPLINGOBJECT || thopplerTile->getType() == HOPPLINGOBJECT))
 	{
 		totalObjectCount++;
 	}
@@ -200,7 +200,18 @@ void THopplingBoardController::crushCell(Cell* cell, bool forceClear)
 	}
 	else
 	{
-		BoardController::crushCell(cell, forceClear);
+		auto thopplerTile = cell->getTileAtLayer(LayerId::Toppling);
+		if (cell->containsThoppler() && thopplerTile->getType() == HOPPLINGOBJECT)
+		{
+			static_cast<ThopplerTile*>(thopplerTile)->moveDown();
+			poolController->recycleCookieTile(sourceTile);
+			cell->setSourceTile(thopplerTile);
+			cell->removeTileAtLayer(LayerId::Toppling);
+		}
+		else
+		{
+			BoardController::crushCell(cell, forceClear);
+		}
 	}
 }
 

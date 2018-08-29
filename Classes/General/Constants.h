@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "Particle3D/PU/CCPUSineForceAffector.h"
 
 // design
 #define SCREEN_X	720.f
@@ -91,6 +92,7 @@ static const char MaxCol = 9;
 static const char MaxRow = 9;
 static const char MaxTileCount = 9 * 9;
 static const float TileMovingTime = 0.08f; 
+extern cocos2d::Size DesignResolutionSize;
 extern char CellSize;
 extern char MovingTileSize;
 extern float CenterX;

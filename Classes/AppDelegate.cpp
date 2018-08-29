@@ -8,7 +8,7 @@ USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(SCREEN_X, SCREEN_Y);
 static cocos2d::Size smallResolutionSize = cocos2d::Size(360, 640);
-static cocos2d::Size mediumResolutionSize = cocos2d::Size(720, 1280);
+static cocos2d::Size mediumResolutionSize = cocos2d::Size(720, 1440);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(1440, 2560);
 
 AppDelegate::AppDelegate()
@@ -48,7 +48,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto glview = director->getOpenGLView();
     if(!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-        glview = GLViewImpl::createWithRect("Cookie", cocos2d::Rect(0, 0, 480, 860));
+        //glview = GLViewImpl::createWithRect("Cookie", cocos2d::Rect(0, 0, 480, 860)); // 1.9 : 1
+		glview = GLViewImpl::createWithRect("Cookie", cocos2d::Rect(0, 0, 420, 860)); // 2.05 : 1
 #else
         glview = GLViewImpl::create("Cookie");
 #endif
@@ -61,8 +62,42 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
 	FileUtils::getInstance()->addSearchPath("res");
+
     // Set the design resolution
-    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::EXACT_FIT);
+    //glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::EXACT_FIT);
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// design resolution
+	float designAR(designResolutionSize.width / designResolutionSize.height);
+
+	CCLOG("design res width: %4.4f; height: %4.4f; ar: %4.4f;\n", designResolutionSize.width, designResolutionSize.height, designAR);
+
+
+	// device resolution
+	Size deviceSize(Director::getInstance()->getOpenGLView()->getFrameSize());
+	float deviceAR(deviceSize.width / deviceSize.height);
+
+	CCLOG("device res width: %4.4f; height: %4.4f; ar: %4.4f;\n", deviceSize.width, deviceSize.height, deviceAR);
+
+	// final design size, enlarged if aspect ratio is different than 3:2
+	Size finalDesignSize(designResolutionSize);
+
+	// wide screen
+	if (deviceAR > designAR)
+	{
+		finalDesignSize.width = finalDesignSize.width * (deviceAR / designAR);
+	}
+	// narrow screen
+	else if (deviceAR < designAR)
+	{
+		finalDesignSize.height = finalDesignSize.height * (designAR / deviceAR);
+	}
+
+	float finalDesignAR(finalDesignSize.width / finalDesignSize.height);
+	DesignResolutionSize = finalDesignSize;
+	glview->setDesignResolutionSize(finalDesignSize.width, finalDesignSize.height, ResolutionPolicy::EXACT_FIT);
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     auto frameSize = glview->getFrameSize();
 
 	//CellSize = (frameSize.width - 9) / 9;

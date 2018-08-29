@@ -8,7 +8,7 @@ public:
 	CustomSpawnTableItem();
 	~CustomSpawnTableItem();
 	static SpawnTablesList CreateSpawnTablesFromJson(rapidjson::Value& json);
-	void initWithJson(rapidjson::Value& json);
+	void initWithJson(rapidjson::Value& json, bool isQueue = false);
 
 private:
 	std::string name;

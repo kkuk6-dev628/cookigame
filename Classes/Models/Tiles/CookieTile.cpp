@@ -193,37 +193,85 @@ void CookieTile::initWithJson(rapidjson::Value& json)
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
 		if (slotColors == nullptr) slotColors = new std::list<TileColors>;
-		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		auto slotColor = itr->value.GetString();
+		if(strcmp(slotColor, "any") == 0 || strcmp(slotColor, "random") == 0)
+		{
+			slotColors->push_back(TileColors::_from_integral(rand_0_1() * 6));
+		}
+		else
+		{
+			slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		}
 	}
 
 	itr = data.FindMember("slot_2");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		auto slotColor = itr->value.GetString();
+		if (strcmp(slotColor, "any") == 0 || strcmp(slotColor, "random") == 0)
+		{
+			slotColors->push_back(TileColors::_from_integral(rand_0_1() * 6));
+		}
+		else
+		{
+			slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		}
 	}
 
 	itr = data.FindMember("slot_3");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		auto slotColor = itr->value.GetString();
+		if (strcmp(slotColor, "any") == 0 || strcmp(slotColor, "random") == 0)
+		{
+			slotColors->push_back(TileColors::_from_integral(rand_0_1() * 6));
+		}
+		else
+		{
+			slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		}
 	}
 
 	itr = data.FindMember("slot_4");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		auto slotColor = itr->value.GetString();
+		if (strcmp(slotColor, "any") == 0 || strcmp(slotColor, "random") == 0)
+		{
+			slotColors->push_back(TileColors::_from_integral(rand_0_1() * 6));
+		}
+		else
+		{
+			slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		}
 	}
 
 	itr = data.FindMember("slot_5");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		auto slotColor = itr->value.GetString();
+		if (strcmp(slotColor, "any") == 0 || strcmp(slotColor, "random") == 0)
+		{
+			slotColors->push_back(TileColors::_from_integral(rand_0_1() * 6));
+		}
+		else
+		{
+			slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		}
 	}
 
 	itr = data.FindMember("slot_6");
 	if (itr != data.MemberEnd() && itr->value.IsString())
 	{
-		slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		auto slotColor = itr->value.GetString();
+		if (strcmp(slotColor, "any") == 0 || strcmp(slotColor, "random") == 0)
+		{
+			slotColors->push_back(TileColors::_from_integral(rand_0_1() * 6));
+		}
+		else
+		{
+			slotColors->push_back(TileColors::_from_string(itr->value.GetString()));
+		}
 	}
 
 	itr = data.FindMember("sequence_id");

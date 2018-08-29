@@ -420,7 +420,7 @@ Cell* BoardModel::getRandomCell()
 	auto col = static_cast<char>(rand_0_1() * width);
 	auto row = static_cast<char>(rand_0_1() * height);
 	char loopCount = 10;
-	while(loopCount > 0 && (cells[row][col] == nullptr || cells[row][col]->isOutCell || cells[row][col]->isEmpty))
+	while(loopCount > 0 && (cells[row][col] == nullptr || cells[row][col]->isOutCell || cells[row][col]->isEmpty || cells[row][col]->isFixed))
 	{
 		loopCount--;
 		col = static_cast<char>(rand_0_1() * width);
@@ -513,6 +513,34 @@ BoardModel::~BoardModel()
 	}
 	CC_SAFE_DELETE_ARRAY(cells);
 
+	if(seekerPriorityList != nullptr)
+	{
+		for(auto obj : *seekerPriorityList)
+		{
+			CC_SAFE_DELETE(obj);
+		}
+		CC_SAFE_DELETE(seekerPriorityList);
+	}
+	if(spawnTable != nullptr)
+	{
+		CC_SAFE_DELETE(spawnTable);
+	}
+	if (conveyorSpawnTable != nullptr)
+	{
+		CC_SAFE_DELETE(conveyorSpawnTable);
+	}
+	if (liquidSpawnTable != nullptr)
+	{
+		CC_SAFE_DELETE(liquidSpawnTable);
+	}
+	if(customSpawnTable != nullptr)
+	{
+		CC_SAFE_DELETE(customSpawnTable);
+	}
+	if(forcedSpawnQueue != nullptr)
+	{
+		CC_SAFE_DELETE(forcedSpawnQueue);
+	}
 }
 
 TileColorsTable BoardModel::CreateColorsTableFromJson(const rapidjson::Value& json)
@@ -532,7 +560,7 @@ TileColorsTable BoardModel::CreateColorsTableFromJson(const rapidjson::Value& js
 	return nullptr;
 }
 
-std::map<std::string, CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTablesListFromJson(rapidjson::Value& json)
+std::map<std::string, CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTablesListFromJson(rapidjson::Value& json, bool isQueue)
 {
 	if (json.IsArray() && json.Size() > 0)
 	{
@@ -542,7 +570,7 @@ std::map<std::string, CustomSpawnTableItem>* BoardModel::CreateCustomSpawnTables
 		for (auto& conv : arr)
 		{
 			CustomSpawnTableItem spt;
-			spt.initWithJson(conv);
+			spt.initWithJson(conv, isQueue);
 			ret->insert(std::pair<std::string, CustomSpawnTableItem>(spt.getName(), spt));
 		}
 		return ret;
@@ -640,6 +668,11 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 	liquidSpawnTable = CustomSpawnTableItem::CreateSpawnTablesFromJson(json["liquid_spawn_table"]);
 	SpawnController::getInstance()->setLiquidSpawnTable(liquidSpawnTable);
 
+	if(json.HasMember("forced_spawn_queue") && json["forced_spawn_queue"].IsArray())
+	{
+		SpawnController::getInstance()->setForcedSpawnQueue(CreateCustomSpawnTablesListFromJson(json["forced_spawn_queue"], true));
+	}
+
 
 	auto& layersJson = json["layers"];
 	for (auto itr = layersJson.MemberBegin(); itr != layersJson.MemberEnd(); ++itr)
@@ -673,15 +706,15 @@ void BoardModel::initWithJson(rapidjson::Value& json)
 				if (strcmp(dataType, "LiquidSystem") == 0)
 				{
 					liquidSystem = new LiquidSystem();
-					liquidSystem->TurnTimer = customData["turn_timer"].GetInt();
-					liquidSystem->LevelMax = customData["level_max"].GetFloat();
-					liquidSystem->FillerToggle = customData["filler_toggle"].GetInt();
-					liquidSystem->DrainerToggle = customData["drainer_toggle"].GetInt();
-					liquidSystem->DrainStep = customData["drain_step"].GetFloat();
-					liquidSystem->FillStep = customData["fill_step"].GetFloat();
-					liquidSystem->LevelMin = customData["level_min"].GetFloat();
-					liquidSystem->LevelStep = customData["level_step"].GetFloat();
-					liquidSystem->LevelStart = customData["level_start"].GetFloat();
+					liquidSystem->TurnTimer = customData.HasMember("turn_timer") ? customData["turn_timer"].GetInt() : 0;
+					liquidSystem->LevelMax = customData.HasMember("level_max") ? customData["level_max"].GetFloat() : 9;
+					liquidSystem->FillerToggle = customData.HasMember("filler_toggle") ? customData["filler_toggle"].GetInt() : 0;
+					liquidSystem->DrainerToggle = customData.HasMember("drainer_toggle") ? customData["drainer_toggle"].GetInt() : 1;
+					liquidSystem->DrainStep = customData.HasMember("drain_step") ? customData["drain_step"].GetFloat() : 1;
+					liquidSystem->FillStep = customData.HasMember("fill_step") ? customData["fill_step"].GetFloat() : 1;
+					liquidSystem->LevelMin = customData.HasMember("level_min") ? customData["level_min"].GetFloat() : 0;
+					liquidSystem->LevelStep = customData.HasMember("level_step") ? customData["level_step"].GetFloat() : 1;
+					liquidSystem->LevelStart = customData.HasMember("level_start") ? customData["level_start"].GetFloat() : 0;
 					if(customData["ignore_columns"].IsArray() && customData["ignore_columns"].Size() > 0)
 					{
 						auto ignorColumns = customData["ignore_columns"].GetArray();
@@ -1472,6 +1505,10 @@ void BoardModel::shuffle(BoardLayer* showObjectsLayer)
 			{
 				auto movingTile = shuffleTiles[shufflePos];
 				movingTile->setVisible(false);
+				if(movingTile->getMainSpriteFrame() == nullptr)
+				{
+					continue;
+				}
 				auto showObj = PoolController::getInstance()->getTileShowObject();
 				showObj->setSpriteFrame(movingTile->getMainSpriteFrame());
 				showObj->setPosition(movingTile->getPosition());

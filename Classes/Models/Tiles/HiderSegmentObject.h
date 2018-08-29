@@ -28,7 +28,7 @@ public:
 	void initTexture() override;
 	void initTexture(std::string textureName) override;
 	bool crush(bool showEffect) override;
-	void showShakeAction();
+	void showShakeAnimation();
 	void showEatAnimation();
 
 private:

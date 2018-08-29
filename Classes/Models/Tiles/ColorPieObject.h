@@ -11,7 +11,7 @@ public:
 	bool crush(bool showEffect) override;
 	void initTexture() override;
 	char getPieNumber() const { return pieNumber; }
-	TileColors getSlotColor() const { auto color = slotColors->front(); slotColors->pop_front(); return color; }
+	TileColors getSlotColor() const;
 
 protected:
 	Node* getSlotNodeWithColor(std::string nodeName, TileColors slotColor);

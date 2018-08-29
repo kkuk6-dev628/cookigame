@@ -9,6 +9,7 @@ public:
 	void showCrushEffect() override;
 	bool crush(bool showEffect) override;
 	void initTexture() override;
+	void addLayers(char layerCount);
 };
 
 class CrackerObject : public LayeredCrackerTile
@@ -29,7 +30,6 @@ class ChocolateObject : public LayeredCrackerTile
 {
 public:
 	CREATE_FUNC(ChocolateObject)
-	void addLayers(char layerCount);
 };
 
 class WaffleObject : public LayeredCrackerTile

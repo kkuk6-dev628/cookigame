@@ -338,7 +338,7 @@ void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 				auto path = new CellsList;
 				auto res = findPathToTarget(nextSeg->getCell(), nullptr, path, boardModel->getHiderTargets()->at(headSeg->getChain()));
 
-				if (res && path->size() > 0)
+				if (res && path->size() >= headSeg->getGroup()->getSegmentsCount())
 				{
 					headSeg->getCell()->clear();
 					headSeg->getGroup()->moveHiderGroup(path, nextSeg->getCell());
@@ -377,7 +377,7 @@ void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 
 	if (iceCoverCell != nullptr)
 	{
-		if(iceCoverCell->getSourceTile()->getType() == CHOCOLATEOBJECT)
+		if(iceCoverCell->getSourceTile()->getType() == CHOCOLATEOBJECT || iceCoverCell->getSourceTile()->getType() == PRETZELOBJECT)
 		{
 			iceCoverCell->crushCell(true);
 		}
@@ -387,7 +387,7 @@ void HiderBoardController::moveHider(HiderSegmentObject* headSeg)
 		}
 		checkHiders();
 	}
-	//headSeg->showShakeAction();
+	headSeg->showShakeAnimation();
 }
 
 void HiderBoardController::crushCell(Cell* pCell, bool forceClear)

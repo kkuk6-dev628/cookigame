@@ -69,6 +69,10 @@ void Level::initWithJson(rapidjson::Value& json)
 			Limit lim;
 			lim.Type = item["type"].GetString();
 			lim.Value = item["value"].GetInt();
+			if (lim.Type == "move")
+			{
+				lim.Value += 30;
+			}
 			limit->push_back(lim);
 		}
 	}

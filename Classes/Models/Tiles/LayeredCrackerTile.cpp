@@ -34,7 +34,7 @@ void LayeredCrackerTile::initTexture()
 	}
 }
 
-void ChocolateObject::addLayers(char layerCount)
+void LayeredCrackerTile::addLayers(char layerCount)
 {
 	layers += layerCount;
 	if (layers > 6)

@@ -76,9 +76,11 @@ SpawnTable* SpawnController::getSpawnTable(std::string spawnerName, int spawnedC
 	{
 		if (inWater && liquidSpawnTable != nullptr)
 		{
+			auto percent = 0.0f;
 			for (auto table = liquidSpawnTable->begin(); table != liquidSpawnTable->end(); table++)
 			{
-				if (Utils::checkSpawn(spawnedCount, table->Percent))
+				percent += table->Percent;
+				if (Utils::checkSpawn(spawnedCount, percent))
 				{
 					return &(*table);
 				}
@@ -108,23 +110,41 @@ SpawnTable* SpawnController::getSpawnTable(std::string spawnerName, int spawnedC
 			}
 		}
 	}
-	else if(customSpawnTable != nullptr)
+	else
 	{
-		if(customSpawnTable->find(spawnerName) != customSpawnTable->end())
+		if (forcedSpawnQueue != nullptr)
 		{
-			auto spawnTable = customSpawnTable->at(spawnerName);
-			auto spt = spawnTable.getSpawnTable();
-			if(spt != nullptr)
+			if (forcedSpawnQueue->find(spawnerName) != forcedSpawnQueue->end())
 			{
-				for (auto table = spt->begin(); table != spt->end(); table++)
+				auto spawnTable = forcedSpawnQueue->at(spawnerName);
+				auto spt = spawnTable.getSpawnTable();
+				if (spt != nullptr && spt->size() > 0)
 				{
-					if (Utils::checkSpawn(spawnedCount, table->Percent))
+					auto ret = new SpawnTable(spt->front());
+					spt->pop_front();
+					return ret;
+				}
+
+			}
+		}
+		if (customSpawnTable != nullptr)
+		{
+			if (customSpawnTable->find(spawnerName) != customSpawnTable->end())
+			{
+				auto spawnTable = customSpawnTable->at(spawnerName);
+				auto spt = spawnTable.getSpawnTable();
+				if (spt != nullptr)
+				{
+					for (auto table = spt->begin(); table != spt->end(); table++)
 					{
-						return &*table;
+						if (Utils::checkSpawn(spawnedCount, table->Percent))
+						{
+							return &*table;
+						}
 					}
 				}
-			}
 
+			}
 		}
 	}
 	return nullptr;

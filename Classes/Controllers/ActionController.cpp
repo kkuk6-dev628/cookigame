@@ -37,32 +37,39 @@ ActionController* ActionController::getInstance()
 
 void ActionController::pushAction(CKAction ckAction, const bool isPending) const
 {
-	if (runningActions != nullptr && runningActions->size() > 0)
+	try
 	{
-		auto itr = runningActions->find(ckAction.node);
-		if (itr != runningActions->end())
+		if (runningActions != nullptr && runningActions->size() > 0)
 		{
-			if (isPending)
+			auto itr = runningActions->find(ckAction.node);
+			if (itr != runningActions->end())
 			{
-				(*pendingActions)[ckAction.node] = ckAction;
-				return;
-			}
-			else
-			{
-				itr->first->stopAllActions();
-				runningActions->erase(itr);
+				if (isPending)
+				{
+					(*pendingActions)[ckAction.node] = ckAction;
+					return;
+				}
+				else
+				{
+					itr->first->stopAllActions();
+					runningActions->erase(itr);
+				}
 			}
 		}
-	}
 
-	if(ckAction.delayCount > 0)
-	{
-		(*pendingActions)[ckAction.node] = ckAction;
+		if (ckAction.delayCount > 0)
+		{
+			(*pendingActions)[ckAction.node] = ckAction;
+		}
+		else
+		{
+			ckAction.node->runAction(ckAction.action);
+			(*runningActions)[ckAction.node] = ckAction;
+		}
 	}
-	else
+	catch (const std::exception&)
 	{
-		ckAction.node->runAction(ckAction.action);
-		(*runningActions)[ckAction.node] = ckAction;
+
 	}
 }
 

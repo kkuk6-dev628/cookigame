@@ -38,7 +38,7 @@ struct Goal
 struct SpawnTable
 {
 	char Layers;
-	Direction direction = Direction::E;
+	Direction direction = Direction::any;
 	TileColors Color = TileColors::any;
 	float Percent;
 	char IntMin;
@@ -57,13 +57,13 @@ struct SpawnTable
 			itr = json.FindMember("direction");
 			if (itr != json.MemberEnd() && itr->value.IsString())
 			{
-				this->direction = Direction::_from_string(itr->value.GetString());
+				this->direction = Direction::_from_string_nocase(itr->value.GetString());
 			}
 
 			itr = json.FindMember("color");
 			if (itr != json.MemberEnd() && itr->value.IsString())
 			{
-				this->Color = TileColors::_from_string(itr->value.GetString());
+				this->Color = TileColors::_from_string_nocase(itr->value.GetString());
 				cocos2d::log("StawnTable Color field: %s", this->Color._to_string());
 			}
 

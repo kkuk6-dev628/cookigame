@@ -6,6 +6,7 @@
 #include "GamePlayScene.h"
 #include "Layers/Dialogs.h"
 #include "Native/AdsControl.h"
+#include "AppDelegate.h"
 
 bool g_bDebugMode = true;
 
@@ -170,11 +171,6 @@ LevelMapScene::~LevelMapScene()
 
 LevelMapScene::LevelMapScene()
 {
-
-
-	//SoundController::playBgMusic(SoundController::MusicKind::musicGameOut);
-
-
 	_instance = this;
 	_levelManager = LevelController::getInstance();
 	_prevOffsetY = 0;
@@ -182,7 +178,7 @@ LevelMapScene::LevelMapScene()
 	//create scrollview
 	_scrollView = cocos2d::extension::ScrollView::create();
 	_scrollView->setDelegate(this);
-	_scrollView->setViewSize(Size(SCREEN_X, SCREEN_Y));
+	_scrollView->setViewSize(DesignResolutionSize);
 	_scrollView->setDirection(cocos2d::extension::ScrollView::Direction::VERTICAL);
 	_scrollView->setClippingToBounds(true);
 	addChild(_scrollView);
@@ -191,7 +187,7 @@ LevelMapScene::LevelMapScene()
 	auto nd = CSLoader::createNode("res/LevelSelectScene.csb");
 	auto bg0 = nd->getChildByName("bg_map_ep0");
 	bg0->removeFromParent();
-	bg0->setPosition(SCREEN_X / 2, bg0->getContentSize().height / 2);
+	bg0->setPosition(DesignResolutionSize.width / 2, bg0->getContentSize().height / 2);
 	_scrollView->addChild(bg0);
 
 	_bottomHeight = bg0->getContentSize().height;
@@ -207,7 +203,7 @@ LevelMapScene::LevelMapScene()
 		_bgSegments.add(bgSeg);
 
 		seg->removeFromParent();
-		seg->setPosition(SCREEN_X / 2, _hSum + seg->getContentSize().height / 2);
+		seg->setPosition(DesignResolutionSize.width / 2, _hSum + seg->getContentSize().height / 2);
 		_scrollView->addChild(seg);
 
 		_hSum += seg->getContentSize().height;
@@ -230,36 +226,39 @@ LevelMapScene::LevelMapScene()
 	auto rootNode = CSLoader::createNode("res/LevelUi.csb");
 	addChild(rootNode, kZUi);
 
-	auto btnSettigns = (ui::Button*)rootNode->getChildByName("btn_settings");
+	auto btnSettigns = static_cast<ui::Button*>(rootNode->getChildByName("btn_settings"));
 	btnSettigns->addClickEventListener([this](Ref*) {
 		//SoundController::playEffectSound(SoundController::SoundEffect::sound_game_buttonclick);
 		showSettingDlg();
 	});
+	btnSettigns->setPositionY(DesignResolutionSize.height * 0.85);
 
-	auto btnCoin = (ui::Button*)rootNode->getChildByName("btn_coin");
+	auto btnCoin = static_cast<ui::Button*>(rootNode->getChildByName("btn_coin"));
 	btnCoin->addClickEventListener([this](Ref*) {
 		ShopDialog::create()->show(this, kZPopup);
 	});
+	btnCoin->setPositionY(DesignResolutionSize.height * 0.85);
 
-	int nGoldCount = UserData::getInstance()->getGold();
 	mGoldLabel = static_cast<ui::Text*>(btnCoin->getChildByName("lbl_coin"));
+
+	auto nGoldCount = UserData::getInstance()->getGold();
 	mGoldLabel->setString(StringUtils::toString(nGoldCount));
 
-	auto btn_daily = (ui::Button*)rootNode->getChildByName("btn_daily");
+	auto btn_daily = static_cast<ui::Button*>(rootNode->getChildByName("btn_daily"));
 	btn_daily->setVisible(false);
-	btn_daily->addClickEventListener([this](Ref*) {
-		//DailyLayer::create()->show(this, 5);
-	});
-	mTextDailyTime = (Text*)btn_daily->getChildByName("text_time");
+	//btn_daily->addClickEventListener([this](Ref*) {
+	//	//DailyLayer::create()->show(this, 5);
+	//});
+	//mTextDailyTime = (Text*)btn_daily->getChildByName("text_time");
 
-	auto btn_videoAds = (ui::Button*)rootNode->getChildByName("btn_gift");
-	btn_videoAds->addClickEventListener([this](Ref*) {
-		//VideoBoosterFreeLayer::create()->show(this, 5);
-	});
+	auto btn_videoAds = static_cast<ui::Button*>(rootNode->getChildByName("btn_gift"));
+	//btn_videoAds->addClickEventListener([this](Ref*) {
+	//	//VideoBoosterFreeLayer::create()->show(this, 5);
+	//});
 	btn_videoAds->setVisible(false);
-	mTextVideoAdsTime = (Text*)btn_videoAds->getChildByName("text_time");
+	//mTextVideoAdsTime = (Text*)btn_videoAds->getChildByName("text_time");
 
-	for (int i = 1; i <= 6; i++)
+	for (auto i = 1; i <= 6; i++)
 		clouds.add(rootNode->getChildByName(__String::createWithFormat("cloud_%d", i)->getCString()));
 	cloudtime = rand() % 5;
 

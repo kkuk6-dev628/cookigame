@@ -29,9 +29,16 @@ SpawnTablesList CustomSpawnTableItem::CreateSpawnTablesFromJson(rapidjson::Value
 }
 
 
-void CustomSpawnTableItem::initWithJson(rapidjson::Value& json)
+void CustomSpawnTableItem::initWithJson(rapidjson::Value& json, bool isQueue)
 {
 	assert(json.IsObject());
 	this->name = json["name"].GetString();
-	this->spawnTable = CreateSpawnTablesFromJson(json["spawn_table"]);
+	if(isQueue)
+	{
+		this->spawnTable = CreateSpawnTablesFromJson(json["spawn_queue"]);
+	}
+	else
+	{
+		this->spawnTable = CreateSpawnTablesFromJson(json["spawn_table"]);
+	}
 }

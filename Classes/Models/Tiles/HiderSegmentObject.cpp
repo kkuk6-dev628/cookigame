@@ -204,13 +204,16 @@ bool HiderSegmentObject::crush(bool showEffect)
 	return true;
 }
 
-void HiderSegmentObject::showShakeAction()
+void HiderSegmentObject::showShakeAnimation()
 {
-	CKAction ckAction;
-	auto actionController = ActionController::getInstance();
-	ckAction.node = this;
-	ckAction.action = actionController->createHiderSegmentShakeAction(this, segmentDirection == +AdjacentDirs::E || segmentDirection == +AdjacentDirs::W);
-	actionController->pushAction(ckAction, false);
+	if (!isHead()) return;
+
+	headSpine->setAnimation(0, "animation2", false);
+	headSpine->setCompleteListener([=](int trackIndex, int loopCount)
+	{
+		//headSpine->clearTracks();
+		headSpine->setAnimation(0, "Idle", true);
+	});
 }
 
 void HiderSegmentObject::showEatAnimation()

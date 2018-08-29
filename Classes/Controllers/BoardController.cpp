@@ -1145,7 +1145,7 @@ void BoardController::doShuffle()
 	}
 
 	recycleLayeredMatchLayer();
-	refreshCells();
+	//refreshCells();
 	if(boardModel->isShuffleNeed())
 	{
 		gameState = GameState::Shuffling;
@@ -1252,7 +1252,7 @@ void BoardController::refreshCells() const
 				continue;
 			}
 			auto sourceTile = cell->getSourceTile();
-			if(sourceTile->getCell() != cell)
+			if(sourceTile->getCell() != cell && dynamic_cast<LargeTile*> (sourceTile) == nullptr)
 			{
 				auto newTile = static_cast<MovingTile*>(PoolController::getInstance()->getCookieTile((+MovingTileTypes::LayeredMatchObject)._to_string()));
 				newTile->setPosition(cell->getBoardPos());
@@ -2060,7 +2060,7 @@ Cell* BoardController::fillCell(Cell* cell)
 		//////////////////////////////////////
 		// fallPath->log();
 		fallPath->showFallAction();
-		soundController->playEffectSound(SoundEffects::sound_gem_fall);
+		//soundController->playEffectSound(SoundEffects::sound_gem_fall);
 		auto newTile = fallPath->startCell->getSpawnedTile();
 		if(newTile == nullptr)
 		{
@@ -2232,6 +2232,10 @@ FallPath* BoardController::findFallPathDFS(Cell* cell)
 				auto nextCell = getMatchCell(nextCol, nextRow);
 				if(isValidPath(nextCell) && check[nextRow][nextCol] == 0 && !curPath->containsCell(nextCell))
 				{
+					if((x != 0 && nextCell->isOutCell) || curCell->inWater != nextCell->inWater)
+					{
+						continue;
+					}
 					auto nextPath = new FallPath(curPath);
 					nextPath->setStartCell(nextCell);
 					stack.push(std::pair<Cell*, FallPath*>(nextCell, nextPath));
@@ -2522,8 +2526,14 @@ void BoardController::spawnLavaCake(Cell* cell, CellsList* targets)
 			auto originTile = targetCell->getSourceTile();
 			if (originTile != nullptr && originTile->getType() == CHOCOLATEOBJECT && spawnTile->getType() == CHOCOLATEOBJECT)
 			{
-				auto chocolateTile = (ChocolateObject*)originTile;
+				auto chocolateTile = static_cast<ChocolateObject*>(originTile);
 				chocolateTile->addLayers(spawnTile->getLayers());
+				poolController->recycleCookieTile(spawnTile);
+			}
+			else if(originTile != nullptr && originTile->getType() == PRETZELOBJECT && spawnTile->getType() == PRETZELOBJECT)
+			{
+				auto pretzelTile = static_cast<PretzelObject*>(originTile);
+				pretzelTile->addLayers(pretzelTile->getLayers());
 				poolController->recycleCookieTile(spawnTile);
 			}
 			else
